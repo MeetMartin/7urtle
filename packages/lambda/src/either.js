@@ -12,7 +12,7 @@ import {identity} from "./core";
  * Either.try(a -> b) outputs Left(e.message) if error is thrown.
  * Either.of(a).map(a -> b) executes function over Either input a.
  * Either.Left(a).map(a -> b) does not execute provided function and retains Left input value.
- * Either.of(a).flatMap(a -> b) executes function over Either input a returns its raw value through join.
+ * Either.of(a).flatMap(a -> b) executes function over Either input a returns its raw value through flatten.
  * Either.Left(a).flatMap(a -> b) does not execute provided function and retains Left input value.
  */
 export class Either {

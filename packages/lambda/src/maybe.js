@@ -9,8 +9,9 @@ import {identity} from "./core";
  * Maybe.of(a).isJust() of an input a outputs true for a value that is not null or undefined.
  * Maybe.of(a).isNothing() of an input a outputs true for a value that is null or undefined.
  * Maybe.of(a).map(a -> b) executes function over Maybe input a.
+ * Maybe.of(a).map(a -> Just) outputs Just(Just)
  * Maybe.of(a).map(a -> b) hides over null, undefined, empty string and empty array values.
- * Maybe.of(a).flatMap(a -> b) executes function over Maybe input a returns its raw value through join.
+ * Maybe.of(a).flatMap(a -> b) executes function over Maybe input a returns its raw value through flatten.
  * Maybe.of(a).flatMap(a -> b) hides over null, undefined, empty string and empty array values.
  */
 export class Maybe {
@@ -43,10 +44,10 @@ export class Maybe {
   }
 
   flatMap(fn) {
-    return this.map(fn).join();
+    return this.map(fn).flatten();
   }
 
-  join() {
+  flatten() {
     return this.isNothing() ? this : this.value;
   }
 

@@ -48,7 +48,7 @@ test('Either.Left(a).map(a -> b) does not execute provided function and retains 
   expect(λ.Either.Left('I am an error.').map(a => a + '7turtle').inspect()).toBe('Left(\'I am an error.\')');
 });
 
-test('Either.of(a).flatMap(a -> b) executes function over Either input a returns its raw value through join.', () => {
+test('Either.of(a).flatMap(a -> b) executes function over Either input a returns its raw value through flatten.', () => {
   expect(λ.Either.of(3).flatMap(a => a + 2)).toBe(5);
   expect(λ.Either.of(λ.Either.of(3).flatMap(a => a + 2)).inspect()).toBe('Right(5)');
   expect(λ.Either.of(3).flatMap(a => a + 2)).toBe(λ.Either.of(3).map(a => a + 2).join());
