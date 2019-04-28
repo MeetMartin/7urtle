@@ -148,3 +148,17 @@ export const isEmpty = isLength(0);
  * isNotEmpty output is always true if b is an object and not an array or a string.
  */
 export const isNotEmpty = isNotLength(0);
+
+/**
+ * isNothing :: a -> boolean
+ *
+ * isNothing returns true if input is null, undefined or empty string or empty array.
+ */
+export const isNothing = a => isNull(a) || isUndefined(a) || isEmpty(a);
+
+/**
+ * isJust :: a -> boolean
+ *
+ * isJust returns true if input is not null, undefined or empty string or empty array.
+ */
+export const isJust = a => !isNothing(a);

@@ -95,7 +95,9 @@ test('isArray output is true if b is an array.', () => {
 });
 
 test('isFunction output is true if b is a function.', () => {
+  const someObject = {inspect: () => 'inspected'};
   expect(λ.isFunction(() => null)).toBe(true);
+  expect(λ.isFunction(someObject.inspect)).toBe(true);
   expect(λ.isFunction(1)).toBe(false);
 });
 
@@ -133,4 +135,24 @@ test('isNotEmpty output is true if b is not a length of 0.', () => {
 
 test('isNotEmpty output is always true if b is an object and not an array or a string.', () => {
   expect(λ.isNotEmpty({})).toBe(true);
+});
+
+test('isNothing returns true if input is null, undefined or empty string or empty array.', () => {
+  expect(λ.isNothing(null)).toBe(true);
+  expect(λ.isNothing(undefined)).toBe(true);
+  expect(λ.isNothing('')).toBe(true);
+  expect(λ.isNothing([])).toBe(true);
+  expect(λ.isNothing(1)).toBe(false);
+  expect(λ.isNothing('string')).toBe(false);
+  expect(λ.isNothing([1, 2])).toBe(false);
+});
+
+test('isJust returns true if input is not null, undefined or empty string or empty array.', () => {
+  expect(λ.isJust(1)).toBe(true);
+  expect(λ.isJust('string')).toBe(true);
+  expect(λ.isJust([1, 2])).toBe(true);
+  expect(λ.isJust(null)).toBe(false);
+  expect(λ.isJust(undefined)).toBe(false);
+  expect(λ.isJust('')).toBe(false);
+  expect(λ.isJust([])).toBe(false);
 });
