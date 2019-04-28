@@ -18,7 +18,7 @@ test('pipe(f,g)(x) is equivalent to g(f(x)).', () => {
   expect(λ.pipe(f, g)('a')).not.toBe(f(g('a')));
 });
 
-test('pipe executes function in reverse order to compose.', () => {
+test('pipe executes functions in reverse order to compose.', () => {
   const f = a => a + 'f';
   const g = a => a + 'g';
   expect(λ.pipe(g, f)('a')).toBe(λ.compose(f, g)('a'));
