@@ -12,8 +12,8 @@ import {identity} from "./core";
  * Either.try(a -> b) outputs Left(e.message) if error is thrown.
  * Either.of(a).map(a -> b) executes function over Either input a.
  * Either.Left(a).map(a -> b) does not execute provided function and retains Left input value.
- * Either.of(a).chain(a -> b) executes function over Either input a returns its raw value through join.
- * Either.Left(a).chain(a -> b) does not execute provided function and retains Left input value.
+ * Either.of(a).flatMap(a -> b) executes function over Either input a returns its raw value through join.
+ * Either.Left(a).flatMap(a -> b) does not execute provided function and retains Left input value.
  */
 export class Either {
   constructor(x) {
@@ -62,7 +62,7 @@ class Left extends Either {
     return this;
   }
 
-  chain() {
+  flatMap() {
     return this;
   }
 
@@ -100,7 +100,7 @@ class Right extends Either {
     return f.map(this.value);
   }
 
-  chain(fn) {
+  flatMap(fn) {
     return fn(this.value);
   }
 

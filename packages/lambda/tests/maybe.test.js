@@ -33,15 +33,15 @@ test('Maybe.of(a).map(a -> b) hides over null, undefined, empty string and empty
   expect(λ.Maybe.of([]).map(a => a + 2).inspect()).toBe('Nothing');
 });
 
-test('Maybe.of(a).chain(a -> b) executes function over Maybe input a returns its raw value through join.', () => {
-  expect(λ.Maybe.of(3).chain(a => a + 2)).toBe(5);
-  expect(λ.Maybe.of(λ.Maybe.of(3).chain(a => a + 2)).inspect()).toBe('Just(5)');
-  expect(λ.Maybe.of(3).chain(a => a + 2)).toBe(λ.Maybe.of(3).map(a => a + 2).join());
+test('Maybe.of(a).flatMap(a -> b) executes function over Maybe input a returns its raw value through join.', () => {
+  expect(λ.Maybe.of(3).flatMap(a => a + 2)).toBe(5);
+  expect(λ.Maybe.of(λ.Maybe.of(3).flatMap(a => a + 2)).inspect()).toBe('Just(5)');
+  expect(λ.Maybe.of(3).flatMap(a => a + 2)).toBe(λ.Maybe.of(3).map(a => a + 2).join());
 });
 
-test('Maybe.of(a).chain(a -> b) hides over null, undefined, empty string and empty array values.', () => {
-  expect(λ.Maybe.of(null).chain(a => a + 2).inspect()).toBe('Nothing');
-  expect(λ.Maybe.of(undefined).chain(a => a + 2).inspect()).toBe('Nothing');
-  expect(λ.Maybe.of('').chain(a => a + 2).inspect()).toBe('Nothing');
-  expect(λ.Maybe.of([]).chain(a => a + 2).inspect()).toBe('Nothing');
+test('Maybe.of(a).flatMap(a -> b) hides over null, undefined, empty string and empty array values.', () => {
+  expect(λ.Maybe.of(null).flatMap(a => a + 2).inspect()).toBe('Nothing');
+  expect(λ.Maybe.of(undefined).flatMap(a => a + 2).inspect()).toBe('Nothing');
+  expect(λ.Maybe.of('').flatMap(a => a + 2).inspect()).toBe('Nothing');
+  expect(λ.Maybe.of([]).flatMap(a => a + 2).inspect()).toBe('Nothing');
 });

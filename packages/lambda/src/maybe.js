@@ -10,8 +10,8 @@ import {identity} from "./core";
  * Maybe.of(a).isNothing() of an input a outputs true for a value that is null or undefined.
  * Maybe.of(a).map(a -> b) executes function over Maybe input a.
  * Maybe.of(a).map(a -> b) hides over null, undefined, empty string and empty array values.
- * Maybe.of(a).chain(a -> b) executes function over Maybe input a returns its raw value through join.
- * Maybe.of(a).chain(a -> b) hides over null, undefined, empty string and empty array values.
+ * Maybe.of(a).flatMap(a -> b) executes function over Maybe input a returns its raw value through join.
+ * Maybe.of(a).flatMap(a -> b) hides over null, undefined, empty string and empty array values.
  */
 export class Maybe {
   constructor(x) {
@@ -42,7 +42,7 @@ export class Maybe {
     return this.isNothing() ? this : f.map(this.value);
   }
 
-  chain(fn) {
+  flatMap(fn) {
     return this.map(fn).join();
   }
 
