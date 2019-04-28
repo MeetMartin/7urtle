@@ -143,13 +143,13 @@ test('isNothing returns true if input is null, undefined or empty string or empt
   expect(λ.isNothing('')).toBe(true);
   expect(λ.isNothing([])).toBe(true);
   expect(λ.isNothing(1)).toBe(false);
-  expect(λ.isNothing('string')).toBe(false);
+  expect(λ.isNothing('7urtle')).toBe(false);
   expect(λ.isNothing([1, 2])).toBe(false);
 });
 
 test('isJust returns true if input is not null, undefined or empty string or empty array.', () => {
   expect(λ.isJust(1)).toBe(true);
-  expect(λ.isJust('string')).toBe(true);
+  expect(λ.isJust('7urtle')).toBe(true);
   expect(λ.isJust([1, 2])).toBe(true);
   expect(λ.isJust(null)).toBe(false);
   expect(λ.isJust(undefined)).toBe(false);

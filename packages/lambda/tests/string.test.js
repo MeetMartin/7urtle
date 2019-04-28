@@ -11,13 +11,13 @@ test('trim output is a string without white characters around it.', () => {
 });
 
 test('includes output is true if b includes a.', () => {
-  expect(λ.includes('tr')('string')).toBe(true);
-  expect(λ.includes('string')('string')).toBe(true);
-  expect(λ.includes('turtle')('string')).toBe(false);
+  expect(λ.includes('rt')('7urtle')).toBe(true);
+  expect(λ.includes('7urtle')('7urtle')).toBe(true);
+  expect(λ.includes('turtle')('7urtle')).toBe(false);
 });
 
 test('testRegEx returns true if string b passes regular expression a.', () => {
-  expect(λ.testRegEx(/[a-z]/)('string')).toBe(true);
+  expect(λ.testRegEx(/[a-z]/)('7urtle')).toBe(true);
   expect(λ.testRegEx(/[0-9]/)('1')).toBe(true);
-  expect(λ.testRegEx(/[0-9]/)('string')).toBe(false);
+  expect(λ.testRegEx(/[0-9]/)('abc')).toBe(false);
 });

@@ -3,4 +3,5 @@ export * from './core';
 export * from './utils';
 export * from './conditional';
 export * from './string';
-export * from './functors';
+export * from './maybe';
+export * from './either';
