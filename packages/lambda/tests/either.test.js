@@ -16,6 +16,18 @@ test('Either.Left(a) outputs instance of Left holding its input value.', () => {
   expect(λ.Either.Left('I am an error.').inspect()).toBe('Left(\'I am an error.\')');
 });
 
+test('Either.of(a).inspect() outputs string Right(a).', () => {
+  expect(λ.Either.of(3).inspect()).toBe('Right(3)');
+});
+
+test('Either.Right(a).inspect() outputs string Right(a).', () => {
+  expect(λ.Either.Right(3).inspect()).toBe('Right(3)');
+});
+
+test('Either.Left(a).inspect() outputs string Left(a).', () => {
+  expect(λ.Either.Left('I am an error.').inspect()).toBe('Left(\'I am an error.\')');
+});
+
 test('Either.of(a).isRight() always outputs true.', () => {
   expect(λ.Either.of(3).isRight()).toBe(true);
   expect(λ.Either.of(3).isLeft()).toBe(false);
@@ -44,14 +56,17 @@ test('Either.of(a).map(a -> b) executes function over Either input a.', () => {
   expect(λ.Either.of(3).map(a => a + 2).inspect()).toBe('Right(5)');
 });
 
+test('Either.of(a).map(a -> Right) outputs Right(Right).', () => {
+  expect(λ.Either.of(3).map(a => λ.Either.of(a + 2)).inspect()).toBe('Right(Right(5))');
+});
+
 test('Either.Left(a).map(a -> b) does not execute provided function and retains Left input value.', () => {
   expect(λ.Either.Left('I am an error.').map(a => a + '7turtle').inspect()).toBe('Left(\'I am an error.\')');
 });
 
-test('Either.of(a).flatMap(a -> b) executes function over Either input a returns its raw value through flatten.', () => {
-  expect(λ.Either.of(3).flatMap(a => a + 2)).toBe(5);
+test('Either.of(a).flatMap(a -> b) executes function over Either input a returns its raw value.', () => {
   expect(λ.Either.of(λ.Either.of(3).flatMap(a => a + 2)).inspect()).toBe('Right(5)');
-  expect(λ.Either.of(3).flatMap(a => a + 2)).toBe(λ.Either.of(3).map(a => a + 2).join());
+  expect(λ.Either.of(3).flatMap(a => a + 2)).toBe(5);
 });
 
 test('Either.Left(a).flatMap(a -> b) does not execute provided function and retains Left input value.', () => {

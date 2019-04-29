@@ -5,3 +5,4 @@ export * from './conditional';
 export * from './string';
 export * from './maybe';
 export * from './either';
+export * from './syncEffect';
