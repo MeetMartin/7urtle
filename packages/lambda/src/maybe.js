@@ -15,6 +15,8 @@ import {identity} from "./core";
  * Maybe.of(a).map(a -> b) does not execute over Nothing.
  * Maybe.of(a).flatMap(a -> b) executes function over Maybe input a returns its raw value.
  * Maybe.of(a).flatMap(a -> b) does not execute over Nothing.
+ * Maybe.of(a).map(a -> b).ap(Maybe) provides applicative ability to apply functors to each other.
+ * Maybe.of(Maybe -> Maybe -> c).ap(Maybe).ap(Maybe) provides applicative interface for a functor of a function.
  */
 export class Maybe {
   constructor(x) {
@@ -43,12 +45,12 @@ class Just extends Maybe {
     return Maybe.of(fn(this.value));
   }
 
-  ap(f) {
-    return f.map(this.value);
-  }
-
   flatMap(fn) {
     return fn(this.value);
+  }
+
+  ap(f) {
+    return f.map(this.value);
   }
 
   sequence(of) {
@@ -77,11 +79,11 @@ class Nothing extends Maybe {
     return this;
   }
 
-  ap(f) {
+  flatMap(fn) {
     return this;
   }
 
-  flatMap(fn) {
+  ap(f) {
     return this;
   }
 

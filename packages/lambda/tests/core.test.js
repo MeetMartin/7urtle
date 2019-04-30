@@ -23,3 +23,41 @@ test('pipe executes functions in reverse order to compose.', () => {
   const g = a => a + 'g';
   expect(λ.pipe(g, f)('a')).toBe(λ.compose(f, g)('a'));
 });
+
+test('liftA2 provides point-free way of writing calls over applicative functors and functions with arity 2.', () => {
+  const add = a => b => a + b;
+  class Applicative {
+    constructor(x) {
+      this.value = x;
+    }
+    static of(x) {
+      return new Applicative(x);
+    }
+    map(fn) {
+      return Applicative.of(fn(this.value));
+    }
+    ap(f) {
+      return f.map(this.value);
+    }
+  }
+  expect(λ.liftA2(add)(Applicative.of(1))(Applicative.of(2)).value).toBe(3);
+});
+
+test('liftA3 provides point-free way of writing calls over applicative functors and functions with arity 3.', () => {
+  const add3 = a => b => c => a + b + c;
+  class Applicative {
+    constructor(x) {
+      this.value = x;
+    }
+    static of(x) {
+      return new Applicative(x);
+    }
+    map(fn) {
+      return Applicative.of(fn(this.value));
+    }
+    ap(f) {
+      return f.map(this.value);
+    }
+  }
+  expect(λ.liftA3(add3)(Applicative.of(1))(Applicative.of(2))(Applicative.of(3)).value).toBe(6);
+});

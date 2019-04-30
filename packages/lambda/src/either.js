@@ -18,6 +18,7 @@ import {identity} from "./core";
  * Either.Left(a).map(a -> b) does not execute provided function and retains Left input value.
  * Either.of(a).flatMap(a -> b) executes function over Either input a returns its raw value through flatten.
  * Either.Left(a).flatMap(a -> b) does not execute provided function and retains Left input value.
+ * Either.of(Either -> Either -> c).ap(Either).ap(Either) provides applicative interface.
  */
 export class Either {
   constructor(x) {
@@ -62,12 +63,12 @@ class Right extends Either {
     return Either.of(fn(this.value));
   }
 
-  ap(f) {
-    return f.map(this.value);
-  }
-
   flatMap(fn) {
     return fn(this.value);
+  }
+
+  ap(f) {
+    return f.map(this.value);
   }
 
   sequence(of) {
@@ -96,11 +97,11 @@ class Left extends Either {
     return this;
   }
 
-  ap() {
+  flatMap() {
     return this;
   }
 
-  flatMap() {
+  ap() {
     return this;
   }
 

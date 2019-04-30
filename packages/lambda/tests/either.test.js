@@ -72,3 +72,17 @@ test('Either.of(a).flatMap(a -> b) executes function over Either input a returns
 test('Either.Left(a).flatMap(a -> b) does not execute provided function and retains Left input value.', () => {
   expect(λ.Either.Left('I am an error.').flatMap(a => a + '7turtle').inspect()).toBe('Left(\'I am an error.\')');
 });
+
+test('Either.of(a).map(a -> b).ap(Either) provides applicative ability to apply functors to each other.', () => {
+  const add = a => b => a + b;
+  expect(λ.Either.of(1).map(add).ap(λ.Either.of(2)).inspect()).toBe('Right(3)');
+  expect(λ.Either.of(1).map(add).ap(λ.Either.Left('I am an error.')).inspect()).toBe('Left(\'I am an error.\')');
+  expect(λ.Either.Left('I am an error.').map(add).ap(λ.Either.of(2)).inspect()).toBe('Left(\'I am an error.\')');
+});
+
+test('Either.of(Either -> Either -> c).ap(Either).ap(Either) provides applicative interface for a functor of a function.', () => {
+  const add = a => b => a + b;
+  expect(λ.Either.of(add).ap(λ.Either.of(1)).ap(λ.Either.of(2)).inspect()).toBe('Right(3)');
+  expect(λ.Either.of(add).ap(λ.Either.Left('I am an error.')).ap(λ.Either.of(2)).inspect()).toBe('Left(\'I am an error.\')');
+  expect(λ.Either.Left('I am an error.').ap(λ.Either.of(1)).ap(λ.Either.of(2)).inspect()).toBe('Left(\'I am an error.\')');
+});

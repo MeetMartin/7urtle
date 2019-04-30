@@ -53,3 +53,17 @@ test('Maybe.of(a).flatMap(a -> b) executes function over Maybe input a returns i
 test('Maybe.of(a).flatMap(a -> b) does not execute over Nothing.', () => {
   expect(λ.Maybe.of(null).flatMap(a => a + 2).inspect()).toBe('Nothing');
 });
+
+test('Maybe.of(a).map(a -> b).ap(Maybe) provides applicative ability to apply functors to each other.', () => {
+  const add = a => b => a + b;
+  expect(λ.Maybe.of(1).map(add).ap(λ.Maybe.of(2)).inspect()).toBe('Just(3)');
+  expect(λ.Maybe.of(1).map(add).ap(λ.Maybe.of(null)).inspect()).toBe('Nothing');
+  expect(λ.Maybe.of(undefined).map(add).ap(λ.Maybe.of(2)).inspect()).toBe('Nothing');
+});
+
+test('Maybe.of(Maybe -> Maybe -> c).ap(Maybe).ap(Maybe) provides applicative interface for a functor of a function.', () => {
+  const add = a => b => a + b;
+  expect(λ.Maybe.of(add).ap(λ.Maybe.of(1)).ap(λ.Maybe.of(2)).inspect()).toBe('Just(3)');
+  expect(λ.Maybe.of(add).ap(λ.Maybe.of(null)).ap(λ.Maybe.of(2)).inspect()).toBe('Nothing');
+  expect(λ.Maybe.of(null).ap(λ.Maybe.of(1)).ap(λ.Maybe.of(2)).inspect()).toBe('Nothing');
+});
