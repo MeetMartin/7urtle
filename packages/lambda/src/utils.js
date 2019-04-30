@@ -1,6 +1,13 @@
 import {isArray, isString, isObject, isFunction} from "./conditional";
 
 /**
+ * typeOf :: a -> string
+ *
+ * typeOf outputs type of its input a.
+ */
+export const typeOf = a => typeof a;
+
+/**
  * passThrough :: function -> a -> a
  *
  * passThrough output is the same as input a.

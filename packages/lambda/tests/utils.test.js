@@ -1,5 +1,9 @@
 import * as λ from '../src';
 
+test('typeOf outputs type of its input a.', () => {
+  expect(λ.typeOf('7turtle')).toBe('string');
+});
+
 test('passThrough output is the same as input a.', () => {
   expect(λ.passThrough(() => 'b')('a')).toBe('a');
 });

@@ -1,6 +1,6 @@
 {
   "name": "@7urtle/lambda",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Functional programming library in JavaScript.",
   "main": "dist/lambda.min.js",
   "module": "src/index.js",
@@ -34,6 +34,7 @@
   "devDependencies": {
     "@babel/core": "^7.4.4",
     "@babel/plugin-proposal-throw-expressions": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
     "babel-jest": "^24.7.1",
     "babel-loader": "^8.0.5",

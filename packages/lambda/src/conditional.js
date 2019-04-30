@@ -1,3 +1,5 @@
+import {typeOf} from "./utils";
+
 /**
  * isEqual :: a -> b -> boolean
  *
@@ -61,7 +63,7 @@ export const isAtMost = a => b => b <= a;
  *
  * isTypeOf output is true if b is a type of a.
  */
-export const isTypeOf = a => b => isEqual(typeof b)(a);
+export const isTypeOf = a => b => isEqual(typeOf(b))(a);
 
 /**
  * isString :: a -> boolean
