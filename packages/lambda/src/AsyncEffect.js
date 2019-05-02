@@ -26,6 +26,10 @@ export class AsyncEffect {
     return new AsyncEffect(x);
   }
 
+  static wrap(x) {
+    return new AsyncEffect((_, resolve) => resolve(x));
+  }
+
   map(fn) {
     return new AsyncEffect((reject, resolve) => this.trigger(reject, compose(resolve, fn)));
   }

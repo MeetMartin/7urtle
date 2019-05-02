@@ -7,6 +7,16 @@ test('AsyncEffect.of() outputs instance of AsyncEffect.', () => {
   expect(λ.AsyncEffect.of() instanceof λ.AsyncEffect).toBe(true);
 });
 
+test('AsyncEffect.wrap(a) is equal to AsyncEffect.of((_, resolve) -> resolve(a)).', done => {
+  λ.AsyncEffect.of(resolving).trigger(error => error, result => {
+    const first = result;
+    λ.AsyncEffect.wrap('7urtle').trigger(error => error, result => {
+      expect(result).toBe(first);
+      done();
+    });
+  });
+});
+
 test('AsyncEffect.of(() -> a).inspect() outputs string AsyncEffect(a).', () => {
   expect(λ.AsyncEffect.of(() => '7turtle').inspect().includes('AsyncEffect(function')).toBe(true);
 });

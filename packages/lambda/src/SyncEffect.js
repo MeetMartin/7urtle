@@ -3,6 +3,7 @@ import {deepInspect} from "./utils";
 
 /**
  * SyncEffect.of() outputs instance of SyncEffect.
+ * SyncEffect.wrap(a) is equal to SyncEffect.of(() -> a).
  * SyncEffect.of(() -> a).inspect() outputs string SyncEffect(a).
  * SyncEffect.of(() -> a).trigger() executes function provided as input of SyncEffect.
  * SyncEffect.of(() -> a).map(b -> c) composes function over SyncEffect input function.
@@ -23,6 +24,10 @@ export class SyncEffect {
 
   static of(x) {
     return new SyncEffect(x);
+  }
+
+  static wrap(x) {
+    return new SyncEffect(() => x);
   }
 
   map(fn) {
