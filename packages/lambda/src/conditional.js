@@ -1,4 +1,5 @@
-import {typeOf} from "./utils";
+import {typeOf, lengthOf} from "./utils";
+import {compose} from "./core";
 
 /**
  * isEqual :: a -> b -> boolean
@@ -126,30 +127,44 @@ export const isFunction = isTypeOf('function');
  *
  * isLength output is true if b is a length of a.
  */
-export const isLength = a => b => isEqual(b.length)(a);
+export const isLength = a => b => isEqual(lengthOf(b))(a);
 
 /**
  * isNotLength :: (string|array) -> b -> boolean
  *
  * isNotLength output is true if b is not a length of a.
  */
-export const isNotLength = a => b => isNotEqual(b.length)(a);
+export const isNotLength = a => b => !isLength(a)(b);
 
 /**
  * isEmpty :: (string|array) -> boolean
  *
- * isEmpty output is true if b is a length of 0.
- * isEmpty output is always false if b is an object and not an array or a string.
+ * isEmpty output is true if input has a length of 0.
+ * isEmpty output is always false if input is an object and not an array or a string.
  */
 export const isEmpty = isLength(0);
 
 /**
  * isNotEmpty :: (string|array) -> boolean
  *
- * isNotEmpty output is true if b is not a length of 0.
- * isNotEmpty output is always true if b is an object and not an array or a string.
+ * isNotEmpty output is true if input does not have a length of 0.
+ * isNotEmpty output is always true if input is an object and not an array or a string.
  */
 export const isNotEmpty = isNotLength(0);
+
+/**
+ * isZero :: a -> boolean
+ *
+ * isZero output is true if a is 0.
+ */
+export const isZero = isEqual(0);
+
+/**
+ * isNotZero :: a -> boolean
+ *
+ * isNotZero output is true if a is not 0.
+ */
+export const isNotZero = isNotEqual(0);
 
 /**
  * isNothing :: a -> boolean

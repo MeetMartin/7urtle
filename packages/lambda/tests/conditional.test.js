@@ -115,26 +115,38 @@ test('isNotLength output is true if b is not a length of a.', () => {
   expect(λ.isNotLength(3)([1,2,3])).toBe(false);
 });
 
-test('isEmpty output is true if b is a length of 0.', () => {
+test('isEmpty output is true if input has a length of 0.', () => {
   expect(λ.isEmpty('')).toBe(true);
   expect(λ.isEmpty([])).toBe(true);
   expect(λ.isEmpty('abc')).toBe(false);
   expect(λ.isEmpty([1,2,3])).toBe(false);
 });
 
-test('isEmpty output is always false if b is an object and not an array or a string.', () => {
+test('isEmpty output is always false if input is an object and not an array or a string.', () => {
   expect(λ.isEmpty({})).toBe(false);
 });
 
-test('isNotEmpty output is true if b is not a length of 0.', () => {
+test('isNotEmpty output is true if input does not have a length of 0.', () => {
   expect(λ.isNotEmpty('abc')).toBe(true);
   expect(λ.isNotEmpty([1,2,3])).toBe(true);
   expect(λ.isNotEmpty('')).toBe(false);
   expect(λ.isNotEmpty([])).toBe(false);
 });
 
-test('isNotEmpty output is always true if b is an object and not an array or a string.', () => {
+test('isNotEmpty output is always true if input is an object and not an array or a string.', () => {
   expect(λ.isNotEmpty({})).toBe(true);
+});
+
+test('isZero output is true if a is 0.', () => {
+  expect(λ.isZero(0)).toBe(true);
+  expect(λ.isZero(1)).toBe(false);
+  expect(λ.isZero('7urtle')).toBe(false);
+});
+
+test('isNotZero output is true if a is not 0.', () => {
+  expect(λ.isNotZero(1)).toBe(true);
+  expect(λ.isNotZero('7urtle')).toBe(true);
+  expect(λ.isNotZero(0)).toBe(false);
 });
 
 test('isNothing returns true if input is null, undefined or empty string or empty array.', () => {

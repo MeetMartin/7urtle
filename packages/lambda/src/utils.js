@@ -8,6 +8,11 @@ import {isArray, isString, isObject, isFunction} from "./conditional";
 export const typeOf = a => typeof a;
 
 /**
+ * lengthOf :: (string|array) -> number
+ */
+export const lengthOf = a => a.length;
+
+/**
  * passThrough :: function -> a -> a
  *
  * passThrough output is the same as input a.
