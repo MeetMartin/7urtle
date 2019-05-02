@@ -9,7 +9,7 @@ Functional programming library in JavaScript.
 
 ## Why lambda
 
-Lambda was created to allows us to perform powerful functional programming in JavaScript. It focuses on providing highly
+Lambda was created to allows us to embrace functional programming in JavaScript. It focuses on providing highly
 performant code which is itself built using functional paradigms. Provided functions are simple, curried, pure
 and optimised for partial application and function composition.
 
