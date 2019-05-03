@@ -4,6 +4,8 @@ import {compose} from "./core";
 /**
  * AsyncEffect.of() outputs instance of AsyncEffect.
  * AsyncEffect.of(() -> a).inspect() outputs string AsyncEffect(a).
+ * AsyncEffect.wrap(a) is equal to AsyncEffect.of((_, resolve) -> resolve(a)).
+ * AsyncEffect.of((a, b) -> c).promise() outputs JavaScript promise.
  * AsyncEffect.of((a, b) -> c).trigger(d -> e, f -> g) for resolving async function resolves.
  * AsyncEffect.of((a, b) -> c).trigger(d -> e, f -> g) for rejecting async function rejects.
  * AsyncEffect.of((a, b) -> c).map(b -> c) composes function over AsyncEffect input function.
@@ -28,6 +30,10 @@ export class AsyncEffect {
 
   static wrap(x) {
     return new AsyncEffect((_, resolve) => resolve(x));
+  }
+
+  promise() {
+    return new Promise((resolve, reject) => this.trigger(reject, resolve));
   }
 
   map(fn) {
