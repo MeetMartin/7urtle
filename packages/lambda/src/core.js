@@ -32,6 +32,20 @@ export const compose = (...fns) => a => reduceRight(a)((v, f) => f(v))(fns);
 export const pipe = (...fns) => a => reduce(a)((v, f) => f(v))(fns);
 
 /**
+ * functorMap :: (a -> b) -> Functor -> Functor
+ *
+ * functorMap maps function over inputted functor outputting resulting functor.
+ */
+export const functorMap = fn => functor => functor.map(fn);
+
+/**
+ * functorFlatMap :: (a -> Functor) -> Functor -> Functor
+ *
+ * functorFlatMap flatMaps function outputting functor over inputted functor outputting resulting functor.
+ */
+export const functorFlatMap = fn => functor => functor.flatMap(fn);
+
+/**
  * liftA2 (a -> b -> c) -> Applicative a -> Applicative b -> Applicative c
  *
  * liftA2 provides point-free way of writing calls over applicative functors and functions with arity 2.

@@ -24,6 +24,42 @@ test('pipe executes functions in reverse order to compose.', () => {
   expect(λ.pipe(g, f)('a')).toBe(λ.compose(f, g)('a'));
 });
 
+test('functorMap maps function over inputted functor outputting resulting functor.', () => {
+  class Functor {
+    constructor(x) {
+      this.value = x;
+    }
+    static of(x) {
+      return new Functor(x);
+    }
+    map(fn) {
+      return Functor.of(fn(this.value));
+    }
+    flatMap(fn) {
+      return fn(this.value);
+    }
+  }
+  expect(λ.functorMap(a => a + 's')(Functor.of('7urtle')).value).toBe('7urtles');
+});
+
+test('functorFlatMap flatMaps function outputting functor over inputted functor outputting resulting functor.', () => {
+  class Functor {
+    constructor(x) {
+      this.value = x;
+    }
+    static of(x) {
+      return new Functor(x);
+    }
+    map(fn) {
+      return Functor.of(fn(this.value));
+    }
+    flatMap(fn) {
+      return fn(this.value);
+    }
+  }
+  expect(λ.functorFlatMap(a => Functor.of(a + 's'))(Functor.of('7urtle')).value).toBe('7urtles');
+});
+
 test('liftA2 provides point-free way of writing calls over applicative functors and functions with arity 2.', () => {
   const add = a => b => a + b;
   class Applicative {
