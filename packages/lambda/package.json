@@ -1,6 +1,6 @@
 {
   "name": "@7urtle/lambda",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Functional programming library in JavaScript.",
   "main": "dist/lambda.min.js",
   "module": "src/index.js",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ragnarecek/7urtle.git"
+    "url": "git+https://github.com/MartinGentleman/7urtle.git"
   },
   "keywords": [
     "JavaScript",
@@ -28,14 +28,15 @@
   "author": "Martin Novak <ragnarecek@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ragnarecek/7urtle/issues"
+    "url": "https://github.com/MartinGentleman/7urtle/issues"
   },
-  "homepage": "https://github.com/ragnarecek/7urtle#readme",
+  "homepage": "https://github.com/MartinGentleman/7urtle/tree/master/packages/lambda",
   "devDependencies": {
     "@babel/core": "^7.4.4",
     "@babel/plugin-proposal-throw-expressions": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
+    "@babel/runtime": "^7.4.4",
     "babel-jest": "^24.7.1",
     "babel-loader": "^8.0.5",
     "jest": "^24.7.1",

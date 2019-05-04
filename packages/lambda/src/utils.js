@@ -1,4 +1,4 @@
-import {isArray, isString, isObject, isFunction} from "./conditional";
+import {isArray, isString, isObject, isFunction, isNull, isUndefined} from "./conditional";
 
 /**
  * typeOf :: a -> string
@@ -68,12 +68,16 @@ export const inspectObject = a =>
  * deepInspect runs recursively over input and outputs string representing the input.
  */
 export const deepInspect = a =>
-  isFunction(a)
-    ? inspectFunction(a)
-    : isArray(a)
-      ? inspectArray(a)
-      : isObject(a)
-        ? inspectObject(a)
-        : isString(a)
-          ? inspectString(a)
-          : String(a);
+  isUndefined(a)
+    ? 'undefined'
+    : isNull(a)
+      ? 'null'
+      : isFunction(a)
+        ? inspectFunction(a)
+        : isArray(a)
+          ? inspectArray(a)
+          : isObject(a)
+            ? inspectObject(a)
+            : isString(a)
+              ? inspectString(a)
+              : String(a);

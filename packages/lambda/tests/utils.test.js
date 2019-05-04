@@ -65,3 +65,8 @@ test('deepInspect outputs inspectString if input is a string.', () => {
 test('deepInspect outputs string if input is not an object, function, array or a string.', () => {
   expect(λ.deepInspect(1)).toBe('1');
 });
+
+test('deepInspect works over null and undefined.', () => {
+  expect(λ.deepInspect(null)).toBe('null');
+  expect(λ.deepInspect(undefined)).toBe('undefined');
+});
