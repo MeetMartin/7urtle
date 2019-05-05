@@ -16,8 +16,13 @@ test('includes output is true if b includes a.', () => {
   expect(λ.includes('turtle')('7urtle')).toBe(false);
 });
 
-test('testRegEx returns true if string b passes regular expression a.', () => {
+test('testRegEx ouputs true if string b passes regular expression a.', () => {
   expect(λ.testRegEx(/[a-z]/)('7urtle')).toBe(true);
   expect(λ.testRegEx(/[0-9]/)('1')).toBe(true);
   expect(λ.testRegEx(/[0-9]/)('abc')).toBe(false);
+});
+
+test('substr outputs substring based on provided string, start and limit.', () => {
+  expect(λ.substr(3)(1)('7urtle')).toBe('urt');
+  expect(λ.substr(1)(0)('7urtle')).toBe('7');
 });

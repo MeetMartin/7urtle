@@ -15,7 +15,7 @@ export const includes = what => string => string.includes(what);
 /**
  * testRegEx :: regex -> string -> boolean
  *
- * testRegEx returns true if string b passes regular expression a.
+ * testRegEx outputs true if string b passes regular expression a.
  */
 export const testRegEx = regex => string => regex.test(string);
 
