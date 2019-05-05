@@ -1,4 +1,4 @@
-import Server from "./server";
+import Server from "./Server";
 import api404 from "./apis/api404";
 
 const defaultConfiguration = {

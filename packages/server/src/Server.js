@@ -1,7 +1,7 @@
 import {SyncEffect} from "@7urtle/lambda";
 import http from "http";
-import ResponseEffect from "./ResponseEffect";
 import Router from "./Router";
+import ResponseEffect from "./ResponseEffect";
 
 const getRequest = requestHook => ({
   path: requestHook.url,
@@ -18,6 +18,9 @@ const requestListener = configuration => Server => Server.on('request', onReques
 
 const listen = configuration => Server => Server.listen(configuration.port);
 
+/**
+ * Server :: object -> SyncEffect(http.Server)
+ */
 const Server = configuration =>
   SyncEffect
   .of(http.createServer)
@@ -25,3 +28,11 @@ const Server = configuration =>
   .map(listen(configuration));
 
 export default Server;
+
+export {
+  getRequest,
+  getResponse,
+  onRequest,
+  requestListener,
+  listen
+};

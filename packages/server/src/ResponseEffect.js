@@ -30,3 +30,9 @@ const ResponseEffect = responseHook => response =>
   );
 
 export default ResponseEffect;
+
+export {
+  getHeaders,
+  sendHead,
+  sendContent
+}

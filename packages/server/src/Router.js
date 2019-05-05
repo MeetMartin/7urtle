@@ -17,3 +17,12 @@ const getApi = configuration => request => route =>
 const getResponse = configuration => request => getApi(configuration)(request)(getRoute(configuration)(request)).value;
 
 export default {getResponse};
+
+export {
+  checkRoute,
+  findRoute,
+  verifyRouteIsFound,
+  getRoute,
+  anyOr404,
+  getApi
+};
