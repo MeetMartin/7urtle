@@ -1,59 +1,27 @@
-import http from 'http';
-import {passThrough, SyncEffect} from '@7urtle/lambda';
-import api404 from './apis/api404';
-
-const defaultConfiguration = {
-  port: process.env.port || 3000
-};
-
-const defaultRoutes = {
-    routes: [],
-    404: api404
-};
-
-const sendHead = status => headers => responseHook => passThrough(responseHook => responseHook.writeHead(status, headers))(responseHook);
-const sendContent = content => responseHook => responseHook.end(content);
+import {SyncEffect} from "@7urtle/lambda";
+import http from "http";
+import ResponseEffect from "./ResponseEffect";
+import Router from "./Router";
 
 const getRequest = requestHook => ({
-    path: requestHook.url,
-    method: requestHook.method
+  path: requestHook.url,
+  method: requestHook.method
 });
 
-const getResponse = request => api404.any(request).value;
+const getResponse = configuration => requestHook => Router.getResponse(configuration)(getRequest(requestHook));
 
-const getHeaders = response => ({
-  'content-type': response.contentType || 'text/plain'
-});
+const onRequest = configuration => (requestHook, responseHook) =>
+  ResponseEffect(responseHook)(getResponse(configuration)(requestHook))
+  .trigger();
 
-const respond = responseHook => response =>
+const requestListener = configuration => Server => Server.on('request', onRequest(configuration));
+
+const listen = configuration => Server => Server.listen(configuration.port);
+
+const Server = configuration =>
   SyncEffect
-      .wrap(responseHook)
-      .map(sendHead(response.status)(getHeaders(response)))
-      .map(sendContent(response.content + '\n'))
-      .trigger();
+  .of(http.createServer)
+  .map(requestListener(configuration))
+  .map(listen(configuration));
 
-const processRequest = configuration => routes => (requestHook, responseHook) =>
-  respond(responseHook)(getResponse(getRequest(requestHook)));
-
-const requestProcessing = configuration => routes => Server => Server.on('request', processRequest(configuration)(routes));
-
-const listen = port => Server => Server.listen(port);
-
-const Server = SyncEffect.of(http.createServer);
-
-const trigger = configuration => routes =>
-  Server
-    .map(requestProcessing(configuration)(routes))
-    .map(listen(configuration.port))
-    .trigger();
-
-const start = configuration => routes =>
-  trigger({
-    ...defaultConfiguration,
-    ...configuration
-  })({
-    ...defaultRoutes,
-    ...routes
-  });
-
-export default {start};
+export default Server;

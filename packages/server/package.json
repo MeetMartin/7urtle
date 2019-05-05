@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/MartinGentleman/7urtle/tree/master/packages/server",
   "devDependencies": {
-    "@7urtle/lambda": "^1.0.12",
+    "@7urtle/lambda": "^1.0.13",
     "@babel/core": "^7.4.4",
     "@babel/plugin-proposal-throw-expressions": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.4.4",
