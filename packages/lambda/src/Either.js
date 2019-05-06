@@ -70,14 +70,6 @@ class Right extends Either {
   ap(f) {
     return f.map(this.value);
   }
-
-  sequence(of) {
-    return this.traverse(of, identity);
-  }
-
-  traverse(of, fn) {
-    fn(this.value).map(Either.of);
-  }
 }
 
 class Left extends Either {
@@ -103,13 +95,5 @@ class Left extends Either {
 
   ap() {
     return this;
-  }
-
-  sequence(of) {
-    return of(this);
-  }
-
-  traverse(of, fn) {
-    return of(this);
   }
 }

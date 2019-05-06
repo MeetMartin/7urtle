@@ -1,6 +1,5 @@
 import {deepInspect} from "./utils";
 import {isNothing} from "./conditional";
-import {identity} from "./core";
 
 /**
  * Maybe.of() outputs instance of Maybe.
@@ -52,14 +51,6 @@ class Just extends Maybe {
   ap(f) {
     return f.map(this.value);
   }
-
-  sequence(of) {
-    this.traverse(of, identity);
-  }
-
-  traverse(of, fn) {
-    return fn(this.value).map(Maybe.of);
-  }
 }
 
 class Nothing extends Maybe {
@@ -85,13 +76,5 @@ class Nothing extends Maybe {
 
   ap(f) {
     return this;
-  }
-
-  sequence(of) {
-    return of(this);
-  }
-
-  traverse(of, fn) {
-    return of(this);
   }
 }
