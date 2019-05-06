@@ -21,10 +21,14 @@ export const testRegEx = regex => string => regex.test(string);
 
 /**
  * substr :: number -> number -> string -> string
+ * 
+ * substr outputs substring based on provided string, start and limit.
  */
 export const substr = limit => start => string => string.substr(start, limit);
 
 /**
  * startsWith :: string -> string -> boolean
+ * 
+ * startsWith outputs true if an input string starts with provided string.
  */
 export const startsWith = what => string => string.startsWith(what);

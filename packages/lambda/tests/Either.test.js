@@ -46,7 +46,9 @@ test('Either.try(a -> b) outputs Right(b) if no error is thrown.', () => {
 });
 
 test('Either.try(a -> b) outputs Left(e.message) if error is thrown.', () => {
-  const iThrowError = () => throw new Error('I am an error.');
+  const iThrowError = () => {
+    throw new Error('I am an error.');
+  };
   expect(λ.Either.try(iThrowError).inspect()).toBe('Left(\'I am an error.\')');
   expect(λ.Either.try(iThrowError).isLeft()).toBe(true);
   expect(λ.Either.try(iThrowError).isRight()).toBe(false);
