@@ -16,7 +16,7 @@ test('includes output is true if b includes a.', () => {
   expect(λ.includes('turtle')('7urtle')).toBe(false);
 });
 
-test('testRegEx ouputs true if string b passes regular expression a.', () => {
+test('testRegEx outputs true if string b passes regular expression a.', () => {
   expect(λ.testRegEx(/[a-z]/)('7urtle')).toBe(true);
   expect(λ.testRegEx(/[0-9]/)('1')).toBe(true);
   expect(λ.testRegEx(/[0-9]/)('abc')).toBe(false);
