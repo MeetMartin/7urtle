@@ -5,11 +5,6 @@ test('trim output is a string without white characters around it.', () => {
   expect(λ.trim(' a \n ')).toBe('a');
 });
 
-test('trim output is a string without white characters around it.', () => {
-  expect(λ.trim(' a ')).toBe('a');
-  expect(λ.trim(' a \n ')).toBe('a');
-});
-
 test('includes output is true if b includes a.', () => {
   expect(λ.includes('rt')('7urtle')).toBe(true);
   expect(λ.includes('7urtle')('7urtle')).toBe(true);
@@ -33,4 +28,28 @@ test('startsWith outputs true if an input string starts with provided string.', 
   expect(λ.startsWith('7')('7urtle')).toBe(true);
   expect(λ.startsWith('7urtl')('7urtle')).toBe(true);
   expect(λ.startsWith('8urtl')('7urtle')).toBe(false);
+});
+
+test('endsWith outputs true if an input string ends with provided string.', () => {
+  expect(λ.endsWith('e')('7urtle')).toBe(true);
+  expect(λ.endsWith('urtle')('7urtle')).toBe(true);
+  expect(λ.endsWith('urtls')('7urtle')).toBe(false);
+});
+
+test('indexOf outputs position of input substring withing input string or false.', () => {
+  expect(λ.indexOf('7')('7urtle')).toBe(0);
+  expect(λ.indexOf(7)('7urtle')).toBe(0);
+  expect(λ.indexOf('urtle')('7urtle')).toBe(1);
+  expect(λ.indexOf('rt')('7urtle')).toBe(2);
+  expect(λ.indexOf('8')('7urtle')).toBe(false);
+  expect(λ.indexOf('a')('aa')).toBe(0);
+});
+
+test('lastIndexOf outputs position of input substring withing input string looking from the end or it retuns false if it is not found.', () => {
+  expect(λ.lastIndexOf('7')('7urtle')).toBe(0);
+  expect(λ.lastIndexOf(7)('7urtle')).toBe(0);
+  expect(λ.lastIndexOf('urtle')('7urtle')).toBe(1);
+  expect(λ.lastIndexOf('rt')('7urtle')).toBe(2);
+  expect(λ.lastIndexOf('8')('7urtle')).toBe(false);
+  expect(λ.lastIndexOf('a')('aa')).toBe(1);
 });
