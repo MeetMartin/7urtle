@@ -57,3 +57,17 @@ export const indexOf = substring => string =>
  */
 export const lastIndexOf = substring => string =>
     (result => isEqual(result)(-1) ? false: result)(string.lastIndexOf(substring));
+
+/**
+ * repeat :: number -> string -> string
+ * 
+ * repeat outputs new string repeating inout string inputed count of times.
+ */
+export const repeat = count => string => string.repeat(count);
+
+/**
+ * replace :: string -> string -> string -> string
+ * 
+ * replace outputs new string replacing input substring with input replacement string in input string.
+ */
+export const replace = replacement => substring => string => string.replace(substring, replacement);

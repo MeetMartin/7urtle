@@ -53,3 +53,16 @@ test('lastIndexOf outputs position of input substring withing input string looki
   expect(λ.lastIndexOf('8')('7urtle')).toBe(false);
   expect(λ.lastIndexOf('a')('aa')).toBe(1);
 });
+
+test('repeat outputs new string repeating input string inputed count of times.', () => {
+  expect(λ.repeat(2)('7urtle')).toBe('7urtle7urtle');
+  expect(λ.repeat(1)('7urtle')).toBe('7urtle');
+  expect(λ.repeat(0)('7urtle')).toBe('');
+});
+
+test('replace outputs new string replacing input substring with input replacement string in input string.', () => {
+  expect(λ.replace('8')('7')('7urtle')).toBe('8urtle');
+  expect(λ.replace('7')('')('7urtle')).toBe('77urtle');
+  expect(λ.replace('')('7')('7urtle')).toBe('urtle');
+  expect(λ.replace('8')('9')('7urtle')).toBe('7urtle');
+});
