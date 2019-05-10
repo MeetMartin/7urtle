@@ -1,28 +1,68 @@
-import {isEqual, isFunction, isUndefined} from "@7urtle/lambda";
+import {isEqual, isFunction, isUndefined, maybe, Maybe, Either} from "@7urtle/lambda";
 
+/**
+ * checkRoute :: string -> object -> boolean
+ *
+ * checkRoute outputs true if inputs path and route.path match.
+ */
 const checkRoute = path => route => isEqual(route.path)(path);
 
-const findRoute = configuration => path => configuration.routes.find(checkRoute(path));
+/**
+ * findRoute :: object -> object -> (object|undefined)
+ *
+ * findRoute outputs route object found in input configuration.routes based on input request.path or undefined if no path matches.
+ */
+const findRoute = configuration => request =>
+  maybe(Either.Left(404))
+       (Either.Right)
+       (Maybe.of(configuration.routes.find(checkRoute(request.path))));
 
-const verifyRouteIsFound = configuration => route => isUndefined(route) ? configuration[404] : route;
+/**
+ * getApiResultForError :: object -> object -> Either -> Either
+ *
+ * getApiResultForError outputs Either of error api call result for the error status defaulting to general error api.
+ */
+const getApiResultForError = configuration => request => error =>
+  !isUndefined(configuration[error.value]) && isFunction(configuration[error.value].any) // is there an api for the error?
+    ? configuration[error.value].any(request) // call api for the error
+    : configuration.error.any(request); // call api for general error
 
-const getRoute = configuration => request => verifyRouteIsFound(configuration)(findRoute(configuration)(request.path));
+/**
+ * getApiResult :: object -> object -> Either -> Either
+ *
+ * getApiResult outputs Either of api call result.
+ * getApiResult outputs Either of api 404 error call if route is not found.
+ * getApiResult outputs Either of api any call if requested method call is not found.
+ * getApiResult outputs Either of 404 api call if both requested method call and any call are not found.
+ */
+const getApiResult = configuration => request => route =>
+  route.isLeft() // was route not found?
+    ? getApiResultForError(configuration)(request)(route)
+    : isFunction(route.value.api[request.method]) // is there api call for the request method?
+      ? route.value.api[request.method](request) // call api for the request method
+      : isFunction(route.value.api.any) // is there api any function?
+        ? route.value.api.any(request) // call api any function
+        : configuration[404].any(request); // call api for 404 error
 
-const anyOr404 = configuration => request => route =>
-  isFunction(route.any) ? route.any(request) : configuration[404].any(request);
+/**
+ * catchApiError :: object -> object -> Either -> Either
+ *
+ * catchApiError outputs Either of error api call result for the error status or original input result.
+ */
+const catchApiError = configuration => request => result =>
+  result.isLeft()
+    ? getApiResultForError(configuration)(request)(result)
+    : result;
 
-const getApi = configuration => request => route =>
-  isFunction(route[request.method]) ? route[request.method](request) : anyOr404(configuration)(request)(route);
-
-const getResponse = configuration => request => getApi(configuration)(request)(getRoute(configuration)(request)).value;
+const getResponse = configuration => request =>
+  catchApiError(configuration)(request)(getApiResult(configuration)(request)(findRoute(configuration)(request))).value;
 
 export default {getResponse};
 
 export {
   checkRoute,
   findRoute,
-  verifyRouteIsFound,
-  getRoute,
-  anyOr404,
-  getApi
+  getApiResultForError,
+  getApiResult,
+  catchApiError
 };
