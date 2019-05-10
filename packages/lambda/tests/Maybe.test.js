@@ -67,3 +67,8 @@ test('Maybe.of(Maybe -> Maybe -> c).ap(Maybe).ap(Maybe) provides applicative int
   expect(λ.Maybe.of(add).ap(λ.Maybe.of(null)).ap(λ.Maybe.of(2)).inspect()).toBe('Nothing');
   expect(λ.Maybe.of(null).ap(λ.Maybe.of(1)).ap(λ.Maybe.of(2)).inspect()).toBe('Nothing');
 });
+
+test('maybe outputs result of a function onJust if input Maybe is Just or outputs input error if input Maybe is Nothing.', () => {
+  expect(λ.maybe('error')(a => a)(λ.Maybe.of('abc'))).toBe('abc');
+  expect(λ.maybe('error')(a => a)(λ.Maybe.of(undefined))).toBe('error');
+});

@@ -78,3 +78,13 @@ class Nothing extends Maybe {
     return this;
   }
 }
+
+/**
+ * maybe :: a -> (b -> c) -> Maybe
+ *
+ * maybe outputs result of a function onJust if input Maybe is Just or outputs input error if input Maybe is Nothing.
+ */
+export const maybe = error => onJust => functorMaybe =>
+  functorMaybe.isNothing()
+    ? error
+    : onJust(functorMaybe.value);

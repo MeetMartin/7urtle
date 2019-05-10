@@ -97,3 +97,13 @@ class Left extends Either {
     return this;
   }
 }
+
+/**
+ * either :: (a -> b) -> (b -> c) -> Either
+ *
+ * either outputs result of a function onRight if input Either is Right or outputs result of a function onLeft if input Either is Left.
+ */
+export const either = onLeft => onRight => functorEither =>
+  functorEither.isLeft()
+    ? onLeft(functorEither.value)
+    : onRight(functorEither.value);
