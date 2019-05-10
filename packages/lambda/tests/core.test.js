@@ -97,3 +97,10 @@ test('liftA3 provides point-free way of writing calls over applicative functors 
   }
   expect(λ.liftA3(add3)(Applicative.of(1))(Applicative.of(2))(Applicative.of(3)).value).toBe(6);
 });
+
+test('contact outputs concatenated inputs of strings, arrays and objects or outputs false for other types.', () => {
+  expect(λ.concat('cd')('ab')).toBe('abcd');
+  expect(λ.deepInspect(λ.concat([3, 4])([1, 2]))).toBe('[1, 2, 3, 4]');
+  expect(λ.deepInspect(λ.concat({here: 'there'})({hi: 'hello'}))).toBe(`{hi: 'hello', here: 'there'}`);
+  expect(λ.deepInspect(λ.concat({here: {here: 'there'}})({hi: 'hello'}))).toBe(`{hi: 'hello', here: {here: 'there'}}`);
+});

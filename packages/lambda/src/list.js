@@ -22,3 +22,10 @@ export const reduceRight = initial => reducer => list => list.reduceRight(reduce
  * map executes input mapper over each member of input array [a] to output new array [b].
  */
 export const map = mapper => list => list.map(mapper);
+
+/**
+ * filter :: (a -> boolean) -> [a] -> [b]
+ *
+ * filter executes input checker over each member of input array [a] to filter and output filtered new array [b].
+ */
+export const filter = checker => list => list.filter(checker);

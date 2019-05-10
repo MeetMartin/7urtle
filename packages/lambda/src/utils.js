@@ -96,3 +96,15 @@ export const deepInspect = a =>
             : isString(a)
               ? inspectString(a)
               : String(a);
+
+/**
+ * concat :: a -> a|boolean
+ * 
+ * contact outputs concatenated inputs of strings, arrays and objects or outputs false for other types.
+ */
+export const concat = a => b =>
+  isString(b) || isArray(b)
+    ? b.concat(a)
+    : isObject(b)
+      ? {...b, ...a}
+      : false;

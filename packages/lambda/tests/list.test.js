@@ -24,3 +24,10 @@ test('map executes input mapper over each member of input array [a] to output ne
   const list = ['a', 'b', 'c'];
   expect(λ.map(mapper)(list)).toEqual(['am', 'bm', 'cm']);
 });
+
+test('filter executes input checker over each member of input array [a] to filter and output filtered new array [b].', () => {
+  const checker = a => a > 1;
+  const list = [0, 1, 2, 3];
+  expect(λ.filter(checker)(list)).toEqual([2, 3]);
+  expect(λ.filter(checker)(list)).not.toEqual([0, 1]);
+});
