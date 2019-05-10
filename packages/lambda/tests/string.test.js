@@ -36,7 +36,7 @@ test('endsWith outputs true if an input string ends with provided string.', () =
   expect(λ.endsWith('urtls')('7urtle')).toBe(false);
 });
 
-test('indexOf outputs position of input substring withing input string or false.', () => {
+test('indexOf outputs position of input substring withing input string or false if it is not found.', () => {
   expect(λ.indexOf('7')('7urtle')).toBe(0);
   expect(λ.indexOf(7)('7urtle')).toBe(0);
   expect(λ.indexOf('urtle')('7urtle')).toBe(1);
@@ -65,4 +65,30 @@ test('replace outputs new string replacing input substring with input replacemen
   expect(λ.replace('7')('')('7urtle')).toBe('77urtle');
   expect(λ.replace('')('7')('7urtle')).toBe('urtle');
   expect(λ.replace('8')('9')('7urtle')).toBe('7urtle');
+});
+
+test('search outputs position of input substring or regular expression withing input string or false if it is not found.', () => {
+  expect(λ.search('7')('7urtle')).toBe(0);
+  expect(λ.search('e')('7urtle')).toBe(5);
+  expect(λ.search('rt')('7urtle')).toBe(2);
+  expect(λ.search(/URT/i)('7urtle')).toBe(1);
+  expect(λ.search('8')('7urtle')).toBe(false);
+});
+
+test('split outputs and array of an input string split by the input substring.', () => {
+  const split = λ.split(' ')('7urtles are awesome');
+  expect(split[0]).toBe('7urtles');
+  expect(split.length).toBe(3);
+  expect(λ.split('/')('7urtles are awesome')[0]).toBe('7urtles are awesome');
+  expect(λ.split('')('7urtles').length).toBe(7);
+});
+
+test('lowerCaseOf ouputs the lower case version of input string.', () => {
+  expect(λ.lowerCaseOf('MaRTiN')).toBe('martin');
+  expect(λ.lowerCaseOf('PŘÍŠERNĚ ŽLUŤOUČKÝ KŮŇ ÚPĚL ĎÁBELSKÉ ÓDY')).toBe('příšerně žluťoučký kůň úpěl ďábelské ódy');
+});
+
+test('upperCaseOf ouputs the upper case version of input string.', () => {
+  expect(λ.upperCaseOf('MaRTiN')).toBe('MARTIN');
+  expect(λ.upperCaseOf('příšerně žluťoučký kůň úpěl ďábelské ódy')).toBe('PŘÍŠERNĚ ŽLUŤOUČKÝ KŮŇ ÚPĚL ĎÁBELSKÉ ÓDY');
 });

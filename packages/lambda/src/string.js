@@ -1,4 +1,5 @@
 import {isEqual} from './conditional';
+import {minusOneToFalse} from './utils';
 
 /**
  * trim :: string -> string
@@ -45,7 +46,7 @@ export const endsWith = substring => string => string.endsWith(substring);
 /**
  * indexOf :: string -> string -> number|boolean
  * 
- * indexOf outputs position of input substring withing input string or false.
+ * indexOf outputs position of input substring withing input string or false if it is not found.
  */
 export const indexOf = substring => string =>
     (result => isEqual(result)(-1) ? false: result)(string.indexOf(substring));
@@ -55,13 +56,12 @@ export const indexOf = substring => string =>
  * 
  * lastIndexOf outputs position of input substring withing input string looking from the end or it retuns false if it is not found.
  */
-export const lastIndexOf = substring => string =>
-    (result => isEqual(result)(-1) ? false: result)(string.lastIndexOf(substring));
+export const lastIndexOf = substring => string => minusOneToFalse(string.lastIndexOf(substring));
 
 /**
  * repeat :: number -> string -> string
  * 
- * repeat outputs new string repeating inout string inputed count of times.
+ * repeat outputs new string repeating input string inputed count of times.
  */
 export const repeat = count => string => string.repeat(count);
 
@@ -71,3 +71,31 @@ export const repeat = count => string => string.repeat(count);
  * replace outputs new string replacing input substring with input replacement string in input string.
  */
 export const replace = replacement => substring => string => string.replace(substring, replacement);
+
+/**
+ * search :: string/regex -> string -> number|boolean
+ * 
+ * search outputs position of input substring or regular expression withing input string or false if it is not found.
+ */
+export const search = substring => string => minusOneToFalse(string.search(substring));
+
+/**
+ * split :: string -> string -> array
+ * 
+ * split outputs and array of an input string split by the input substring.
+ */
+export const split = substring => string => string.split(substring);
+
+/**
+ * lowerCaseOf :: string -> string
+ * 
+ * lowerCaseOf ouputs the lower case version of input string.
+ */
+export const lowerCaseOf = string => string.toLowerCase();
+
+/**
+ * upperCaseOf :: string -> string
+ * 
+ * upperCaseOf ouputs the upper case version of input string.
+ */
+export const upperCaseOf = string => string.toUpperCase();

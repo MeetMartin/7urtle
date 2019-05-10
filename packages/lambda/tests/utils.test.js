@@ -12,6 +12,17 @@ test('log output is the same as input.', () => {
   expect(λ.log('a')).toBe('a');
 });
 
+test('spy output is the same as input.', () => {
+  expect(λ.spy('a')).toBe('a');
+});
+
+test('minusOneToFalse output is the same as input or false if input is -1.', () => {
+  expect(λ.minusOneToFalse(-1)).toBe(false);
+  expect(λ.minusOneToFalse(0)).toBe(0);
+  expect(λ.minusOneToFalse(1)).toBe(1);
+  expect(λ.minusOneToFalse('7urtle')).toBe('7urtle');
+});
+
 test('inspectFunction outputs name of named function or its conversion to string.', () => {
   function namedFunction() {
     return null;

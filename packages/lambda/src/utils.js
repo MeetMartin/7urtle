@@ -1,4 +1,4 @@
-import {isArray, isString, isObject, isFunction, isNull, isUndefined} from "./conditional";
+import {isArray, isEqual, isString, isObject, isFunction, isNull, isUndefined} from "./conditional";
 
 /**
  * typeOf :: a -> string
@@ -30,6 +30,21 @@ export const passThrough = f => a => {
  * log causes side effect of console.log.
  */
 export const log = passThrough(console.log);
+
+/**
+ * spy :: a -> a
+ *
+ * spy output is the same as input.
+ * spy causes side effect of console.log.
+ */
+export const spy = a => passThrough(a => console.log(deepInspect(a)))(a);
+
+/**
+ * minusOneToFalse :: a -> a|boolean
+ *
+ * minusOneToFalse output is the same as input or false if input is -1.
+ */
+export const minusOneToFalse = a => isEqual(a)(-1) ? false: a;
 
 /**
  * inspectFunction :: (a -> b) -> string
