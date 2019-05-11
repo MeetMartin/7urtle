@@ -28,12 +28,21 @@ const getApiResultForError = configuration => request => error =>
     : configuration.error.any(request); // call api for general error
 
 /**
+ * catchApiException :: object -> object -> Either -> Either
+ *
+ * catchApiException outputs the same Either or Either of 500 error call if input Either caught an exception.
+ */
+const catchApiException = configuration => request => tried =>
+  tried.isLeft() ? Either.Right(configuration.error.any(request)) : tried;
+
+/**
  * getApiResult :: object -> object -> Either -> Either
  *
  * getApiResult outputs Either of api call result.
  * getApiResult outputs Either of api 404 error call if route is not found.
  * getApiResult outputs Either of api any call if requested method call is not found.
  * getApiResult outputs Either of 404 api call if both requested method call and any call are not found.
+ * getApiResult outputs Left of error code if api call returns Left.
  */
 const getApiResult = configuration => request => route =>
   route.isLeft() // was route not found?
@@ -54,8 +63,24 @@ const catchApiError = configuration => request => result =>
     ? getApiResultForError(configuration)(request)(result)
     : result;
 
+/**
+ * getResponse :: object -> object -> object
+ *
+ * getResponse outputs response object.
+ * getResponse outputs response object for 404 api call if route is not found.
+ * getResponse outputs response object for error api call if api call returns an error.
+ * getResponse outputs response object for error api call if api call throws an exception.
+ */
 const getResponse = configuration => request =>
-  catchApiError(configuration)(request)(getApiResult(configuration)(request)(findRoute(configuration)(request))).value;
+  catchApiError(configuration)(request)(
+    catchApiException(configuration)(request)(
+      Either.try(
+        () => getApiResult(configuration)(request)(
+          findRoute(configuration)(request)
+        )
+      )
+    ).value
+  ).value;
 
 export default {getResponse};
 
@@ -63,6 +88,7 @@ export {
   checkRoute,
   findRoute,
   getApiResultForError,
+  catchApiException,
   getApiResult,
   catchApiError
 };
