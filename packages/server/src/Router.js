@@ -72,11 +72,11 @@ const catchApiError = configuration => request => result =>
  * getResponse outputs response object for error api call if api call throws an exception.
  */
 const getResponse = configuration => request =>
-  catchApiError(configuration)(request)(
-    catchApiException(configuration)(request)(
-      Either.try(
-        () => getApiResult(configuration)(request)(
-          findRoute(configuration)(request)
+  catchApiError(configuration)(request)( // we convert left api call result into error api call result
+    catchApiException(configuration)(request)( // we convert thrown exception into 500 error api call result
+      Either.try( // we use Either.try to catch thrown exceptions
+        () => getApiResult(configuration)(request)( // we call api associated with the found route
+          findRoute(configuration)(request) // first we find the right route or left 404
         )
       )
     ).value
