@@ -1,23 +1,10 @@
 import ResponseEffect, * as lib from '../src/ResponseEffect';
-import {deepInspect} from '@7urtle/lambda';
+import responseHook, {end, head, responseHookError} from './mocks/responseHook';
 
 const response = {
   status: 404,
   contentType: 'text/plain',
   content: 'Not Found'
-};
-let head = {};
-let end = '';
-const responseHook = {
-  writeHead(status, headers) {
-    head = {
-      status: status,
-      headers: headers
-    };
-  },
-  end(content) {
-    end = content;
-  }
 };
 
 test('getHeaders creates headers object out of response object.', () => {
@@ -37,7 +24,6 @@ test('getHeaders uses text/plain content type if content-type is not specified.'
 });
 
 test('sendHead triggers responseHook.writeHead side effect and outputs Right(responseHook) on success.', () => {
-  head = {};
   const result = lib.sendHead(response)(responseHook);
   expect(result.isRight()).toEqual(true);
   expect(result.value).toEqual(responseHook);
@@ -45,19 +31,12 @@ test('sendHead triggers responseHook.writeHead side effect and outputs Right(res
 });
 
 test('sendHead triggers responseHook.writeHead side effect and outputs Left(string) on fail.', () => {
-  head = {};
-  const responseHook = {
-    writeHead() {
-      throw Error('I failed :(');
-    }
-  };
-  const result = lib.sendHead(response)(responseHook);
+  const result = lib.sendHead(response)(responseHookError);
   expect(result.isLeft()).toEqual(true);
   expect(result.value).toEqual('I failed :(');
 });
 
 test('sendHead uses 200 as response status if no status is specified in the input response object.', () => {
-  head = {};
   const response = {
     contentType: 'text/plain',
     content: 'Not Found'
@@ -69,7 +48,6 @@ test('sendHead uses 200 as response status if no status is specified in the inpu
 });
 
 test('sendContent triggers responseHook.end side effect and outputs Right(responseHook) on success.', () => {
-  end = '';
   const result = lib.sendContent(response)(responseHook);
   expect(result.isRight()).toEqual(true);
   expect(result.value).toEqual(responseHook);
@@ -77,20 +55,12 @@ test('sendContent triggers responseHook.end side effect and outputs Right(respon
 });
 
 test('sendContent triggers responseHook.end side effect and outputs Left(string) on fail.', () => {
-  end = '';
-  const responseHook = {
-    end() {
-      throw Error('I failed :(');
-    }
-  };
-  const result = lib.sendContent(response)(responseHook);
+  const result = lib.sendContent(response)(responseHookError);
   expect(result.isLeft()).toEqual(true);
   expect(result.value).toEqual('I failed :(');
 });
 
 test('ResponseEffect outputs SyncEffect which can trigger side effects responseHook.writeHead and responseHook.end outputting Right(responseHook) on success.', () => {
-  head = {};
-  end = '';
   const result = ResponseEffect(responseHook)(response).trigger();
   expect(result.isRight()).toEqual(true);
   expect(result.value).toEqual(responseHook);
@@ -99,17 +69,7 @@ test('ResponseEffect outputs SyncEffect which can trigger side effects responseH
 });
 
 test('ResponseEffect outputs SyncEffect which can trigger side effects responseHook.writeHead and responseHook.end outputting Left(error) on fail.', () => {
-  head = {};
-  end = '';
-  const responseHook = {
-    writeHead() {
-      throw Error('I failed :(');
-    },
-    end(content) {
-      end = content;
-    }
-  };
-  const result = ResponseEffect(responseHook)(response).trigger();
+  const result = ResponseEffect(responseHookError)(response).trigger();
   expect(result.isLeft()).toEqual(true);
   expect(result.value).toEqual('I failed :(');
   expect(head).toEqual({});

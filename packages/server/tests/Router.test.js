@@ -1,79 +1,6 @@
 import Router, * as lib from '../src/Router';
 import {Either} from "@7urtle/lambda";
-
-const apiRoot = {
-  post() {
-    return Either.Left(500);
-  },
-  patch() {
-    throw Error('I am an error :(');
-  },
-  any() {
-    return Either.Right({
-      status: 200,
-      contentType: 'text/plain',
-      content: 'any root result'
-    });
-  }
-};
-
-const apiPost = {};
-
-const apiPath = {
-  get() {
-    return Either.Right({
-      status: 200,
-      contentType: 'text/plain',
-      content: 'get path result'
-    });
-  },
-  any() {
-    return Either.Right({
-      status: 200,
-      contentType: 'text/plain',
-      content: 'any path result'
-    });
-  }
-};
-
-const api404 = {
-  any() {
-    return Either.Right({
-      status: 404,
-      contentType: 'text/plain',
-      content: 'Not Found'
-    });
-  }
-};
-
-const apiError = {
-  any() {
-    return Either.Right({
-      status: 500,
-      contentType: 'text/plain',
-      content: 'Internal Server Error'
-    });
-  }
-};
-
-const configuration = {
-  routes: [
-    {
-      path: '/',
-      api: apiRoot
-    },
-    {
-      path: '/path',
-      api: apiPath
-    },
-    {
-      path: '/post',
-      api: apiPost
-    }
-  ],
-  404: api404,
-  error: apiError
-};
+import configuration from './mocks/configuration';
 
 const request = {
   path: '/path',
@@ -87,11 +14,15 @@ test('checkRoute outputs true if inputs path and route.path match.', () => {
 });
 
 test('findRoute outputs Either of route found in input configuration.routes based on input request.path or undefined if no path matches.', () => {
-  const rightRoute = lib.findRoute(configuration)(request);
+  const postRequest = {
+    path: '/post',
+    method: 'get'
+  };
+  const rightRoute = lib.findRoute(configuration)(postRequest);
   expect(rightRoute.isRight()).toEqual(true);
   expect(rightRoute.value).toEqual({
-    path: '/path',
-    api: apiPath
+    path: '/post',
+    api: {}
   });
   const leftRoute = lib.findRoute(configuration)('/404');
   expect(leftRoute.isLeft()).toEqual(true);

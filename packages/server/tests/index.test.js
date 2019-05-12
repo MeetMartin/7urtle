@@ -4,7 +4,8 @@ import server from '../src/index';
 let app;
 
 afterEach(() => {
-  app.close();
+  app.close ? app.close() : null;
+  app = null;
 });
 
 // TODO: test what happens if port is blocked
