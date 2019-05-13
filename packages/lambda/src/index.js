@@ -3,6 +3,7 @@ export * from './core';
 export * from './utils';
 export * from './conditional';
 export * from './string';
+export * from './Case';
 export * from './Maybe';
 export * from './Either';
 export * from './SyncEffect';
