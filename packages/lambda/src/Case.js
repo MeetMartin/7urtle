@@ -7,7 +7,7 @@ import {deepInspect} from "./utils";
  */
 export class Case {
   constructor(x) {
-    this.match = a => x[a] || x['_'] || null;
+    this.match = x;
   }
 
   inspect() {
@@ -15,7 +15,7 @@ export class Case {
   }
 
   static of(x) {
-    return new Case(x);
+    return new Case(a => x[a] || x['_'] || null);
   }
 
   map(fn) {
@@ -23,12 +23,6 @@ export class Case {
   }
 
   flatMap(fn) {
-    return new Case(() => {
-      return this.map(fn).match().match();
-    })
-  }
-
-  ap(f) {
-    return this.flatMap(fn => f.map(fn));
+    return new Case(a => this.map(fn).match(a).match(a));
   }
 }
