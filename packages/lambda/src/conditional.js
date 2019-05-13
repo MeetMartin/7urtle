@@ -1,5 +1,4 @@
 import {typeOf, lengthOf} from "./utils";
-import {compose} from "./core";
 
 /**
  * isEqual :: a -> b -> boolean

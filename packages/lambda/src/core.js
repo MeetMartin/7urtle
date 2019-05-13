@@ -1,4 +1,5 @@
 import {reduce, reduceRight} from "./list";
+import {isString, isArray, isObject} from './conditional';
 
 /**
  * identity :: a -> a
@@ -58,3 +59,15 @@ export const liftA2 = fn => ap1 => ap2 => ap1.map(fn).ap(ap2);
  * liftA3 provides point-free way of writing calls over applicative functors and functions with arity 3.
  */
 export const liftA3 = fn => ap1 => ap2 => ap3 => ap1.map(fn).ap(ap2).ap(ap3);
+
+/**
+ * concat :: a -> a|boolean
+ * 
+ * contact outputs concatenated inputs of strings, arrays and objects or outputs false for other types.
+ */
+export const concat = a => b =>
+  isString(b) || isArray(b)
+    ? b.concat(a)
+    : isObject(b)
+      ? {...b, ...a}
+      : false;
