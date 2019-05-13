@@ -32,13 +32,22 @@ const onRequest = configuration => (requestHook, responseHook) =>
 
 /**
  * requestListener :: object -> Server -> Server
+ *
+ * requestListener reqisters onRequest handler to request listener and outputs Server.'
  */
 const requestListener = configuration => Server => Server.on('request', onRequest(configuration));
 
+/**
+ * listen :: object -> Server -> Server
+ *
+ * listen calls input Server listen function passing it configuration.port and outputs Server.
+ */
 const listen = configuration => Server => Server.listen(configuration.port);
 
 /**
  * Server :: object -> SyncEffect(http.Server)
+ *
+ * Server outputs results based on configuration.
  */
 const Server = configuration =>
   SyncEffect

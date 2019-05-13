@@ -2,6 +2,8 @@ import Server, * as lib from '../src/Server';
 import requestHook, {requestHook404, requestHookError, requestHookException} from './mocks/requestHook';
 import responseHook, {head, end, responseHookError} from './mocks/responseHook';
 import configuration from './mocks/configuration';
+import request from 'supertest';
+import server from "../src";
 
 test('getRequest extracts request data from input requestHook and outputs request object.', () => {
   expect(lib.getRequest(requestHook)).toEqual({
@@ -55,4 +57,29 @@ test('onRequest outputs responseHook executing ResponseEffect side effect based 
   expect(result3.value).toEqual('I failed :(');
   expect(head).toEqual({});
   expect(end).toEqual('');
+});
+
+test('requestListener reqisters onRequest handler to request listener and outputs Server.', () => {
+  expect(
+    lib.requestListener(configuration)({on: (eventName, callback) => eventName + ': ' + callback.toString()})
+      .startsWith('request: function (requestHook, responseHook)')
+  ).toEqual(true);
+});
+
+test('listen calls input Server listen function passing it configuration.port and outputs Server.', () => {
+  expect(lib.listen(configuration)({listen: port => 'port: ' + port})).toEqual('port: 333');
+});
+
+test('Server outputs results based on configuration.', async () => {
+  const app = Server(configuration).trigger();
+
+  const response1 = await request(app).get('/');
+  expect(response1.status).toEqual(200);
+  expect(response1.headers['content-type']).toEqual('text/plain');
+  expect(response1.text).toEqual('any root result');
+
+  const response2 = await request(app).get('/anything');
+  expect(response2.status).toEqual(404);
+  expect(response1.headers['content-type']).toEqual('text/plain');
+  expect(response2.text).toEqual('Not Found');
 });
