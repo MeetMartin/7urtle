@@ -45,3 +45,31 @@ export const find = checker => list => list.find(checker);
  * findIndex executes input checker over each member of input array [a] and outputs the index of first array member that matches checker or undefined.
  */
 export const findIndex = checker => list => minusOneToUndefined(list.findIndex(checker));
+
+/**
+ * join :: string -> [a] -> string
+ *
+ * join outputs a string created by joining input array members with input separator.
+ */
+export const join = separator => list => list.join(separator);
+
+/**
+ * keysOf :: object -> [string]
+ *
+ * keysOf outputs array of string keys of input array or object.
+ */
+export const keysOf = a => Object.keys(a);
+
+/**
+ * entriesOf :: object -> [[string, a]]
+ *
+ * entriesOf outputs array of arrays of string keys and raw values of input array or object.
+ */
+export const entriesOf = a => Object.entries(a);
+
+/**
+ * everyOf :: (a -> boolean) -> [a] -> boolean
+ *
+ * everyOf outputs true if every element of input array passes input checker function as true.
+ */
+export const everyOf = checker => list => list.every(checker);

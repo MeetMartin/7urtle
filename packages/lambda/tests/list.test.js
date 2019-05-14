@@ -44,3 +44,26 @@ test('findIndex executes input checker over each member of input array [a] and o
   expect(λ.findIndex(a => a > 3)(list)).toBe(2);
   expect(λ.findIndex(a => a > 4)(list)).toBe(undefined);
 });
+
+test('join outputs a string created by joining input array members with input separator.', () => {
+  const list = [2, 3, 4];
+  expect(λ.join('')(list)).toBe('234');
+  expect(λ.join(' ')(list)).toBe('2 3 4');
+  expect(λ.join(' and ')(list)).toBe('2 and 3 and 4');
+  expect(λ.join()(list)).toBe('2,3,4');
+});
+
+test('keysOf outputs array of string keys of input array or object.', () => {
+  expect(λ.keysOf([2, 3, 4])).toEqual(['0', '1', '2']);
+  expect(λ.keysOf({1: 2, 2: 3})).toEqual(['1', '2']);
+});
+
+test('entriesOf outputs array of arrays of string keys and raw values of input array or object.', () => {
+  expect(λ.entriesOf([2, 3, 4])).toEqual([['0', 2], ['1', 3], ['2', 4]]);
+  expect(λ.entriesOf({1: 2, 2: 3})).toEqual([['1', 2],['2', 3]]);
+});
+
+test('everyOf outputs true if every element of input array passes input checker function as true.', () => {
+  expect(λ.everyOf(a => a > 1)([2, 3, 4])).toEqual(true);
+  expect(λ.everyOf(a => a > 5)([2, 3, 4])).toEqual(false);
+});
