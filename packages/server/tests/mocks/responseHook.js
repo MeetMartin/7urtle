@@ -10,7 +10,11 @@ const responseHook = {
   },
   end(content) {
     end = content;
-  }
+  },
+  on() {},
+  once() {},
+  emit() {},
+  write() {}
 };
 
 export const responseHookError = {

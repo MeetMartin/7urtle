@@ -1,5 +1,6 @@
 import Server from "./Server";
 import api404 from "./apis/api404";
+import apiFile from './apis/apiFile';
 
 const defaultConfiguration = {
   port: process.env.port || 3000,
@@ -15,3 +16,7 @@ const start = configuration =>
   .trigger();
 
 export default {start};
+
+export {
+  apiFile
+};

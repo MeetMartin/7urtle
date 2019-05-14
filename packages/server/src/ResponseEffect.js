@@ -1,4 +1,5 @@
-import {SyncEffect, Either, passThrough} from "@7urtle/lambda";
+import {SyncEffect, Either, passThrough, isJust} from "@7urtle/lambda";
+import fs from "fs";
 
 /**
  * getHeaders :: object -> object
@@ -8,7 +9,7 @@ import {SyncEffect, Either, passThrough} from "@7urtle/lambda";
  */
 const getHeaders = response => ({
   'content-type': response.contentType || 'text/plain',
-  'content-length': Buffer.byteLength(response.content)
+  'content-length': response.contentLength || Buffer.byteLength(response.content)
 });
 
 /**
@@ -39,6 +40,32 @@ const sendContent = response => responseHook =>
   );
 
 /**
+ * streamFile :: object -> object -> Either
+ *
+ * streamFile triggers read data stream side effect streaming response.file and outputs Right(responseHook) on success.
+ * streamFile triggers read data stream side effect streaming response.file and outputs Left(string) on fail.
+ */
+const streamFile = response => responseHook =>
+  fs.existsSync(response.file)
+    ? Either.Right(
+        passThrough(
+          responseHook => fs.createReadStream(response.file).pipe(responseHook)
+          // TODO: catch .on("error", handler) for pipe
+        )(responseHook)
+      )
+    : Either.Left('File does not exist.');
+
+/**
+ * sendOrStream :: object -> object -> Either
+ *
+ * sendOrStream outputs Either calling streamFile or sendContent depending on whether response.file is just.
+ */
+const sendOrStream = response => responseHook =>
+  isJust(response.file)
+    ? streamFile(response)(responseHook)
+    : sendContent(response)(responseHook);
+
+/**
  * ResponseEffect :: object -> object -> SyncEffect(() -> Either(object))
  *
  * ResponseEffect outputs SyncEffect which can trigger side effects responseHook.writeHead and responseHook.end outputting Right(responseHook) on success.
@@ -50,7 +77,7 @@ const ResponseEffect = responseHook => response =>
     Either
     .of(responseHook)
     .flatMap(sendHead(response))
-    .flatMap(sendContent(response))
+    .flatMap(sendOrStream(response))
   );
 
 export default ResponseEffect;
@@ -58,5 +85,7 @@ export default ResponseEffect;
 export {
   getHeaders,
   sendHead,
-  sendContent
+  sendContent,
+  streamFile,
+  sendOrStream
 }

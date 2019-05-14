@@ -55,6 +55,17 @@ const apiError = {
   }
 };
 
+const apiFile = path => ({
+  any() {
+    return Either.Right({
+      status: 200,
+      file: path,
+      contentType: 'text/html',
+      contentLength: 25
+    });
+  }
+});
+
 const configuration = {
   port: 333,
   routes: [
@@ -69,6 +80,10 @@ const configuration = {
     {
       path: '/post',
       api: apiPost
+    },
+    {
+      path: '/file',
+      api: apiFile('./tests/mocks/static.html')
     }
   ],
   404: api404,

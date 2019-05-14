@@ -1,20 +1,12 @@
 import request from 'supertest';
-import server from '../src/index';
-import Server from "../src/Server";
-import configuration from "./mocks/configuration";
-
-let app;
-
-afterEach(() => {
-  app.close ? app.close() : null;
-  app = null;
-});
+import server, {apiFile} from '../src/index';
+import configuration from './mocks/configuration';
 
 // TODO: test what happens if port is blocked
 // TODO: test content-length and other headers
 
 test('Server works even without passing configuration or routes.', async () => {
-  app = server.start();
+  const app = server.start();
 
   const response1 = await request(app).get('/');
   expect(response1.status).toEqual(404);
@@ -28,7 +20,12 @@ test('Server works even without passing configuration or routes.', async () => {
 });
 
 test('Server outputs results based on configuration.', async () => {
-  app = server.start(configuration);
+  configuration.port = 334;
+  configuration.routes.push({
+    path: '/static.html',
+    api: apiFile('./tests/mocks/static.html')
+  });
+  const app = server.start(configuration);
 
   const response1 = await request(app).get('/');
   expect(response1.status).toEqual(200);
@@ -49,4 +46,9 @@ test('Server outputs results based on configuration.', async () => {
   expect(response4.status).toEqual(500);
   expect(response4.headers['content-type']).toEqual('text/plain');
   expect(response4.text).toEqual('Internal Server Error');
+
+  const response5 = await request(app).get('/static.html');
+  expect(response5.status).toEqual(200);
+  expect(response5.headers['content-type']).toEqual('text/html');
+  expect(response5.text).toEqual('<html>hello world!</html>');
 });
