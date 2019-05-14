@@ -3,7 +3,6 @@ import requestHook, {requestHook404, requestHookError, requestHookException} fro
 import responseHook, {head, end, responseHookError} from './mocks/responseHook';
 import configuration from './mocks/configuration';
 import request from 'supertest';
-import server from "../src";
 
 test('getRequest extracts request data from input requestHook and outputs request object.', () => {
   expect(lib.getRequest(requestHook)).toEqual({
@@ -70,16 +69,35 @@ test('listen calls input Server listen function passing it configuration.port an
   expect(lib.listen(configuration)({listen: port => 'port: ' + port})).toEqual('port: 333');
 });
 
-test('Server outputs results based on configuration.', async () => {
-  const app = Server(configuration).trigger();
+describe('Server E2E test', () => {
+  let app;
 
-  const response1 = await request(app).get('/');
-  expect(response1.status).toEqual(200);
-  expect(response1.headers['content-type']).toEqual('text/plain');
-  expect(response1.text).toEqual('any root result');
+  afterEach(() => {
+    app.close ? app.close() : null;
+    app = null;
+  });
 
-  const response2 = await request(app).get('/anything');
-  expect(response2.status).toEqual(404);
-  expect(response1.headers['content-type']).toEqual('text/plain');
-  expect(response2.text).toEqual('Not Found');
+  test('Server outputs results based on configuration.', async () => {
+    app = Server(configuration).trigger();
+
+    const response1 = await request(app).get('/');
+    expect(response1.status).toEqual(200);
+    expect(response1.headers['content-type']).toEqual('text/plain');
+    expect(response1.text).toEqual('any root result');
+
+    const response2 = await request(app).get('/anything');
+    expect(response2.status).toEqual(404);
+    expect(response1.headers['content-type']).toEqual('text/plain');
+    expect(response2.text).toEqual('Not Found');
+
+    const response3 = await request(app).post('/');
+    expect(response3.status).toEqual(500);
+    expect(response3.headers['content-type']).toEqual('text/plain');
+    expect(response3.text).toEqual('Internal Server Error');
+
+    const response4 = await request(app).patch('/');
+    expect(response4.status).toEqual(500);
+    expect(response4.headers['content-type']).toEqual('text/plain');
+    expect(response4.text).toEqual('Internal Server Error');
+  });
 });

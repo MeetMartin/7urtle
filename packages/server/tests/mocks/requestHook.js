@@ -1,21 +1,21 @@
 const requestHook = {
   url: '/path',
-  method: 'get'
+  method: 'GET'
 };
 
 export const requestHook404 = {
   url: '/404',
-  method: 'post'
+  method: 'POST'
 };
 
 export const requestHookError = {
   url: '/',
-  method: 'post'
+  method: 'POST'
 };
 
 export const requestHookException = {
   url: '/',
-  method: 'patch'
+  method: 'PATCH'
 };
 
 export default requestHook;

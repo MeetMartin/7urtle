@@ -1,4 +1,4 @@
-import {SyncEffect} from "@7urtle/lambda";
+import {SyncEffect, lowerCaseOf} from "@7urtle/lambda";
 import http from "http";
 import Router from "./Router";
 import ResponseEffect from "./ResponseEffect";
@@ -10,7 +10,7 @@ import ResponseEffect from "./ResponseEffect";
  */
 const getRequest = requestHook => ({
   path: requestHook.url,
-  method: requestHook.method
+  method: lowerCaseOf(requestHook.method)
 });
 
 /**
