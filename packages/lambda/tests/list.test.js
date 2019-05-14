@@ -26,8 +26,21 @@ test('map executes input mapper over each member of input array [a] to output ne
 });
 
 test('filter executes input checker over each member of input array [a] to filter and output filtered new array [b].', () => {
-  const checker = a => a > 1;
   const list = [0, 1, 2, 3];
-  expect(λ.filter(checker)(list)).toEqual([2, 3]);
-  expect(λ.filter(checker)(list)).not.toEqual([0, 1]);
+  expect(λ.filter(a => a > 1)(list)).toEqual([2, 3]);
+  expect(λ.filter(a => a > 3)(list)).toEqual([]);
+});
+
+test('find executes input checker over each member of input array [a] and outputs the first array member that matches checker or undefined.', () => {
+  const list = [0, 1, 2, 3];
+  expect(λ.find(a => a > 1)(list)).toBe(2);
+  expect(λ.find(a => a > 3)(list)).toBe(undefined);
+});
+
+test('findIndex executes input checker over each member of input array [a] and outputs the index of first array member that matches checker or undefined.', () => {
+  const list = [2, 3, 4];
+  expect(λ.findIndex(a => a > 1)(list)).toBe(0);
+  expect(λ.findIndex(a => a > 2)(list)).toBe(1);
+  expect(λ.findIndex(a => a > 3)(list)).toBe(2);
+  expect(λ.findIndex(a => a > 4)(list)).toBe(undefined);
 });

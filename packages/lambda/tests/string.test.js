@@ -5,12 +5,6 @@ test('trim output is a string without white characters around it.', () => {
   expect(λ.trim(' a \n ')).toBe('a');
 });
 
-test('includes output is true if b includes a.', () => {
-  expect(λ.includes('rt')('7urtle')).toBe(true);
-  expect(λ.includes('7urtle')('7urtle')).toBe(true);
-  expect(λ.includes('turtle')('7urtle')).toBe(false);
-});
-
 test('testRegEx outputs true if string b passes regular expression a.', () => {
   expect(λ.testRegEx(/[a-z]/)('7urtle')).toBe(true);
   expect(λ.testRegEx(/[0-9]/)('1')).toBe(true);
@@ -36,24 +30,6 @@ test('endsWith outputs true if an input string ends with provided string.', () =
   expect(λ.endsWith('urtls')('7urtle')).toBe(false);
 });
 
-test('indexOf outputs position of input substring withing input string or false if it is not found.', () => {
-  expect(λ.indexOf('7')('7urtle')).toBe(0);
-  expect(λ.indexOf(7)('7urtle')).toBe(0);
-  expect(λ.indexOf('urtle')('7urtle')).toBe(1);
-  expect(λ.indexOf('rt')('7urtle')).toBe(2);
-  expect(λ.indexOf('8')('7urtle')).toBe(false);
-  expect(λ.indexOf('a')('aa')).toBe(0);
-});
-
-test('lastIndexOf outputs position of input substring withing input string looking from the end or it retuns false if it is not found.', () => {
-  expect(λ.lastIndexOf('7')('7urtle')).toBe(0);
-  expect(λ.lastIndexOf(7)('7urtle')).toBe(0);
-  expect(λ.lastIndexOf('urtle')('7urtle')).toBe(1);
-  expect(λ.lastIndexOf('rt')('7urtle')).toBe(2);
-  expect(λ.lastIndexOf('8')('7urtle')).toBe(false);
-  expect(λ.lastIndexOf('a')('aa')).toBe(1);
-});
-
 test('repeat outputs new string repeating input string inputed count of times.', () => {
   expect(λ.repeat(2)('7urtle')).toBe('7urtle7urtle');
   expect(λ.repeat(1)('7urtle')).toBe('7urtle');
@@ -67,12 +43,12 @@ test('replace outputs new string replacing input substring with input replacemen
   expect(λ.replace('8')('9')('7urtle')).toBe('7urtle');
 });
 
-test('search outputs position of input substring or regular expression withing input string or false if it is not found.', () => {
+test('search outputs position of input substring or regular expression withing input string or undefined if it is not found.', () => {
   expect(λ.search('7')('7urtle')).toBe(0);
   expect(λ.search('e')('7urtle')).toBe(5);
   expect(λ.search('rt')('7urtle')).toBe(2);
   expect(λ.search(/URT/i)('7urtle')).toBe(1);
-  expect(λ.search('8')('7urtle')).toBe(false);
+  expect(λ.search('8')('7urtle')).toBe(undefined);
 });
 
 test('split outputs and array of an input string split by the input substring.', () => {

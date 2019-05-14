@@ -1,3 +1,5 @@
+import {minusOneToUndefined} from './utils';
+
 /**
  * reduce :: a -> ((a, b) -> a) -> [b] -> a
  *
@@ -29,3 +31,17 @@ export const map = mapper => list => list.map(mapper);
  * filter executes input checker over each member of input array [a] to filter and output filtered new array [b].
  */
 export const filter = checker => list => list.filter(checker);
+
+/**
+ * find :: (a -> boolean) -> [a] -> [b]
+ *
+ * find executes input checker over each member of input array [a] and outputs the first array member that matches checker or undefined.
+ */
+export const find = checker => list => list.find(checker);
+
+/**
+ * findIndex :: (a -> boolean) -> [a] -> [b]
+ *
+ * findIndex executes input checker over each member of input array [a] and outputs the index of first array member that matches checker or undefined.
+ */
+export const findIndex = checker => list => minusOneToUndefined(list.findIndex(checker));

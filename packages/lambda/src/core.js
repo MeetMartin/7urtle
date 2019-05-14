@@ -1,5 +1,6 @@
 import {reduce, reduceRight} from "./list";
 import {isString, isArray, isObject} from './conditional';
+import {minusOneToUndefined} from './utils';
 
 /**
  * identity :: a -> a
@@ -63,11 +64,32 @@ export const liftA3 = fn => ap1 => ap2 => ap3 => ap1.map(fn).ap(ap2).ap(ap3);
 /**
  * concat :: a -> a|boolean
  * 
- * contact outputs concatenated inputs of strings, arrays and objects or outputs false for other types.
+ * contact outputs concatenated inputs of strings, arrays and objects or outputs undefined for other types.
  */
 export const concat = a => b =>
   isString(b) || isArray(b)
     ? b.concat(a)
     : isObject(b)
       ? {...b, ...a}
-      : false;
+      : undefined;
+
+/**
+ * includes :: a -> b -> boolean
+ *
+ * includes output is true if b includes a.
+ */
+export const includes = a => b => b.includes(a);
+
+/**
+ * indexOf :: a -> b -> number
+ * 
+ * indexOf outputs position of input a within input b or undefined if it is not found.
+ */
+export const indexOf = a => b => minusOneToUndefined(b.indexOf(a));
+
+/**
+ * lastIndexOf :: a -> b -> number
+ * 
+ * lastIndexOf outputs position of input a withing input b looking from the end or it retuns undefined if it is not found.
+ */
+export const lastIndexOf = a => b => minusOneToUndefined(b.lastIndexOf(a));

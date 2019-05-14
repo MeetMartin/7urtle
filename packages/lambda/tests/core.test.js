@@ -98,10 +98,40 @@ test('liftA3 provides point-free way of writing calls over applicative functors 
   expect(λ.liftA3(add3)(Applicative.of(1))(Applicative.of(2))(Applicative.of(3)).value).toBe(6);
 });
 
-test('contact outputs concatenated inputs of strings, arrays and objects or outputs false for other types.', () => {
+test('contact outputs concatenated inputs of strings, arrays and objects or outputs undefined for other types.', () => {
   expect(λ.concat('cd')('ab')).toBe('abcd');
   expect(λ.concat([3, 4])([1, 2])).toEqual([1, 2, 3, 4]);
   expect(λ.concat({here: 'there'})({hi: 'hello'})).toEqual({hi: 'hello', here: 'there'});
   expect(λ.concat({here: {here: 'there'}})({hi: 'hello'})).toEqual({hi: 'hello', here: {here: 'there'}});
-  expect(λ.concat('cd')(1)).toBe(false);
+  expect(λ.concat('cd')(1)).toBe(undefined);
+});
+
+test('includes output is true if b includes a.', () => {
+  expect(λ.includes('rt')('7urtle')).toBe(true);
+  expect(λ.includes('7urtle')('7urtle')).toBe(true);
+  expect(λ.includes('turtle')('7urtle')).toBe(false);
+  expect(λ.includes(1)([1, 2, 3])).toBe(true);
+  expect(λ.includes(4)([1, 2, 3])).toBe(false);
+});
+
+test('indexOf outputs position of input a withing input b or undefined if it is not found.', () => {
+  expect(λ.indexOf('7')('7urtle')).toBe(0);
+  expect(λ.indexOf(7)('7urtle')).toBe(0);
+  expect(λ.indexOf('urtle')('7urtle')).toBe(1);
+  expect(λ.indexOf('rt')('7urtle')).toBe(2);
+  expect(λ.indexOf(2)([1, 2, 3])).toBe(1);
+  expect(λ.indexOf('8')('7urtle')).toBe(undefined);
+  expect(λ.indexOf(4)([1, 2, 3])).toBe(undefined);
+  expect(λ.indexOf('a')('aa')).toBe(0);
+});
+
+test('lastIndexOf outputs position of input a withing input b looking from the end or it retuns undefined if it is not found.', () => {
+  expect(λ.lastIndexOf('7')('7urtle')).toBe(0);
+  expect(λ.lastIndexOf(7)('7urtle')).toBe(0);
+  expect(λ.lastIndexOf('urtle')('7urtle')).toBe(1);
+  expect(λ.lastIndexOf('rt')('7urtle')).toBe(2);
+  expect(λ.lastIndexOf('8')('7urtle')).toBe(undefined);
+  expect(λ.lastIndexOf(2)([1, 2, 3, 2])).toBe(3);
+  expect(λ.lastIndexOf(4)([1, 2, 3])).toBe(undefined);
+  expect(λ.lastIndexOf('a')('aa')).toBe(1);
 });

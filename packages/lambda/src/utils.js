@@ -40,11 +40,11 @@ export const log = passThrough(console.log);
 export const spy = a => passThrough(a => console.log(deepInspect(a)))(a);
 
 /**
- * minusOneToFalse :: a -> a|boolean
+ * minusOneToUndefined :: a -> a|boolean
  *
- * minusOneToFalse output is the same as input or false if input is -1.
+ * minusOneToUndefined output is the same as input or undefined if input is -1.
  */
-export const minusOneToFalse = a => isEqual(a)(-1) ? false: a;
+export const minusOneToUndefined = a => isEqual(a)(-1) ? undefined: a;
 
 /**
  * inspectFunction :: (a -> b) -> string
