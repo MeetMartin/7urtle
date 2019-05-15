@@ -36,9 +36,22 @@ const catchApiException = configuration => request => tried =>
   tried.isLeft() ? Either.Right(configuration.error.any(request)) : tried;
 
 /**
+ * emptyContent :: Either -> Either
+ *
+ * emptyContent outputs Either of result with empty file and content based on input Either.
+ */
+const emptyContent = resultEither => resultEither.map(result => ({
+  ...result,
+  contentLength: result.contentLength || Buffer.byteLength(result.content),
+  file: '',
+  content: ''
+}));
+
+/**
  * getApiResult :: object -> object -> Either -> Either
  *
  * getApiResult outputs Either of api call result.
+ * getApiResult if head is not api call it outputs Either of api call for get or any with empty file and content result or 404 result if neither are found.
  * getApiResult outputs Either of api 404 error call if route is not found.
  * getApiResult outputs Either of api any call if requested method call is not found.
  * getApiResult outputs Either of 404 api call if both requested method call and any call are not found.
@@ -46,12 +59,18 @@ const catchApiException = configuration => request => tried =>
  */
 const getApiResult = configuration => request => route =>
   route.isLeft() // was route not found?
-    ? getApiResultForError(configuration)(request)(route)
+    ? getApiResultForError(configuration)(request)(route) // get api result for error
     : isFunction(route.value.api[request.method]) // is there api call for the request method?
       ? route.value.api[request.method](request) // call api for the request method
-      : isFunction(route.value.api.any) // is there api any function?
-        ? route.value.api.any(request) // call api any function
-        : configuration[404].any(request); // call api for 404 error
+      : isEqual(request.method)('head') // is request method HEAD?
+        ? isFunction(route.value.api.get) // can I use get instead of head
+          ? emptyContent(route.value.api.get(request)) // use get instead of head
+          : isFunction(route.value.api.any) // can I used any instead of head
+            ? emptyContent(route.value.api.any(request)) // use any instead of head
+            : emptyContent(configuration[404].any(request)) // call api for 404 error
+        : isFunction(route.value.api.any) // is there api any function?
+          ? route.value.api.any(request) // call api any function
+          : configuration[404].any(request); // call api for 404 error
 
 /**
  * catchApiError :: object -> object -> Either -> Either
@@ -89,6 +108,7 @@ export {
   findRoute,
   getApiResultForError,
   catchApiException,
+  emptyContent,
   getApiResult,
   catchApiError
 };

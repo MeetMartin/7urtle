@@ -1,4 +1,4 @@
-import {Either} from '@7urtle/lambda';
+import {Either, isEqual} from '@7urtle/lambda';
 import fs from 'fs';
 import mimeTypes from 'mime-types';
 
@@ -17,7 +17,7 @@ const fileExists = path => request => fs.existsSync(path) ? Either.Right(request
  */
 const getResponse = path => request => ({
   status: 200,
-  file: path,
+  file: isEqual('get')(request.method) ? path : '',
   contentType: mimeTypes.lookup(path) || 'application/octet-stream',
   contentLength: fs.statSync(path).size
 });
@@ -25,18 +25,18 @@ const getResponse = path => request => ({
 /**
  * apiFile :: string -> object
  *
- * apiFile provide api object with get call that outputs response object based on input file path.
+ * apiFile outputs api object with get call that outputs response object based on input file path.
  */
 const apiFile = path => ({
-  get: request =>
-    Either
-    .of(request)
-    .flatMap(fileExists(path))
-    .map(getResponse(path))
+  get: request => Either
+  .of(request)
+  .flatMap(fileExists(path))
+  .map(getResponse(path))
 });
-
-// TODO: HTTP HEAD https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/HEAD
 
 export default apiFile;
 
-export {fileExists, getResponse}
+export {
+  fileExists,
+  getResponse
+};

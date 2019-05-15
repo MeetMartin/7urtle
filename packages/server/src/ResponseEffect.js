@@ -35,7 +35,7 @@ const sendHead = response => responseHook =>
 const sendContent = response => responseHook =>
   Either.try(() =>
     passThrough(
-      responseHook => responseHook.end(response.content)
+      responseHook => isJust(response.content) ? responseHook.end(response.content) : responseHook.end()
     )(responseHook)
   );
 

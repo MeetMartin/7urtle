@@ -59,6 +59,23 @@ test('catchApiException outputs the same Either or Either of 500 error call if i
   });
 });
 
+test('emptyContent outputs Either of result with empty file and content based on input Either.', () => {
+  const apiResult = lib.emptyContent(Either.Right({
+    status: 200,
+    contentType: 'text/plain',
+    file: './static.html',
+    content: 'Success'
+  }));
+  expect(apiResult.isRight()).toEqual(true);
+  expect(apiResult.value).toEqual({
+    status: 200,
+    contentType: 'text/plain',
+    contentLength: 7,
+    file: '',
+    content: ''
+  });
+});
+
 test('getApiResult outputs Either of api call result.', () => {
   const apiResult = lib.getApiResult(configuration)(request)(Either.Right(configuration.routes[1]));
   expect(apiResult.isRight()).toEqual(true);
@@ -66,6 +83,40 @@ test('getApiResult outputs Either of api call result.', () => {
     status: 200,
     contentType: 'text/plain',
     content: 'get path result'
+  });
+});
+
+test('getApiResult if head is not api call it outputs Either of api call for get or any with empty file and content result or 404 result if neither are found.', () => {
+  const request = {
+    path: '/path',
+    method: 'head'
+  };
+  const apiResult = lib.getApiResult(configuration)(request)(Either.Right(configuration.routes[1]));
+  expect(apiResult.isRight()).toEqual(true);
+  expect(apiResult.value).toEqual({
+    status: 200,
+    contentType: 'text/plain',
+    contentLength: 15,
+    file: '',
+    content: ''
+  });
+  const apiResult2 = lib.getApiResult(configuration)(request)(Either.Right(configuration.routes[0]));
+  expect(apiResult2.isRight()).toEqual(true);
+  expect(apiResult2.value).toEqual({
+    status: 200,
+    contentType: 'text/plain',
+    contentLength: 15,
+    file: '',
+    content: ''
+  });
+  const apiResult3 = lib.getApiResult(configuration)(request)(Either.Right(configuration.routes[2]));
+  expect(apiResult3.isRight()).toEqual(true);
+  expect(apiResult3.value).toEqual({
+    status: 404,
+    contentType: 'text/plain',
+    contentLength: 9,
+    file: '',
+    content: ''
   });
 });
 

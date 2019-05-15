@@ -51,4 +51,16 @@ test('Server outputs results based on configuration.', async () => {
   expect(response5.status).toEqual(200);
   expect(response5.headers['content-type']).toEqual('text/html');
   expect(response5.text).toEqual('<html>hello world!</html>');
+
+  const response6 = await request(app).head('/static.html');
+  expect(response6.status).toEqual(200);
+  expect(response6.headers['content-type']).toEqual('text/html');
+  expect(response6.headers['content-length']).toEqual('25');
+  expect(response6.text).toEqual(undefined);
+
+  const response7 = await request(app).head('/');
+  expect(response7.status).toEqual(200);
+  expect(response7.headers['content-type']).toEqual('text/plain');
+  expect(response7.headers['content-length']).toEqual('15');
+  expect(response7.text).toEqual(undefined);
 });

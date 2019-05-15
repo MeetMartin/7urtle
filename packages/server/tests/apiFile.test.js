@@ -13,6 +13,13 @@ test('getResponse outputs response object based on input file path.', () => {
     contentType: 'text/html',
     contentLength: 25
   });
+  expect(lib.getResponse('./tests/mocks/static.html')({method: 'head'}))
+  .toEqual({
+    status: 200,
+    file: '',
+    contentType: 'text/html',
+    contentLength: 25
+  });
   expect(lib.getResponse('./tests/mocks/nope')({method: 'get'}))
   .toEqual({
     status: 200,
@@ -22,7 +29,7 @@ test('getResponse outputs response object based on input file path.', () => {
   });
 });
 
-test('apiFile provide api object with get call that outputs response object based on input file path.', () => {
+test('apiFile outputs api object with get call that outputs response object based on input file path.', () => {
   expect(apiFile('./nope.html').get({method: 'get'}).value).toEqual(404);
   expect(apiFile('./tests/mocks/static.html').get({method: 'get'}).value)
   .toEqual({
