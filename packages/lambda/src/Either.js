@@ -1,5 +1,4 @@
 import {deepInspect} from "./utils";
-import {identity} from "./core";
 
 /**
  * Either.of() outputs instance of Either.

@@ -1,5 +1,4 @@
 import {deepInspect} from "./utils";
-import {compose} from "./core";
 
 /**
  * AsyncEffect.of() outputs instance of AsyncEffect.
@@ -37,7 +36,7 @@ export class AsyncEffect {
   }
 
   map(fn) {
-    return new AsyncEffect((reject, resolve) => this.trigger(reject, compose(resolve, fn)));
+    return new AsyncEffect((reject, resolve) => this.trigger(reject, a => resolve(fn(a))));
   }
 
   flatMap(fn) {

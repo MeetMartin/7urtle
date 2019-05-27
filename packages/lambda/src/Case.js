@@ -1,4 +1,3 @@
-import {compose} from "./core";
 import {deepInspect} from "./utils";
 
 /**
@@ -15,11 +14,13 @@ export class Case {
   }
 
   static of(x) {
-    return new Case(a => x[a] || x['_'] || null);
+    return new Case(
+      (x => a => x.get(a) || x.get('_') || undefined)(new Map(x))
+    );
   }
 
   map(fn) {
-    return new Case(compose(fn, this.match));
+    return new Case(a => fn(this.match(a)));
   }
 
   flatMap(fn) {

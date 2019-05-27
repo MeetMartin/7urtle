@@ -1,4 +1,3 @@
-import {compose} from "./core";
 import {deepInspect} from "./utils";
 
 /**
@@ -31,7 +30,7 @@ export class SyncEffect {
   }
 
   map(fn) {
-    return new SyncEffect(compose(fn, this.trigger));
+    return new SyncEffect(a => fn(this.trigger(a)));
   }
 
   flatMap(fn) {
