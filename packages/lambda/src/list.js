@@ -73,3 +73,17 @@ export const entriesOf = Object.entries;
  * everyOf outputs true if every element of input array passes input checker function as true.
  */
 export const everyOf = checker => list => list.every(checker);
+
+/**
+ * slice :: number -> number -> [a] -> [a]
+ *
+ * slice outputs selected array elements as an array based on input range.
+ */
+export const slice = end => start => list => list.slice(start, end);
+
+/**
+ * some :: (a -> boolean) -> [a] -> boolean
+ *
+ * some outputs true if any element of input array passes input checker function as true.
+ */
+export const someOf = checker => list => list.some(checker);

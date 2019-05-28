@@ -67,3 +67,15 @@ test('everyOf outputs true if every element of input array passes input checker 
   expect(λ.everyOf(a => a > 1)([2, 3, 4])).toEqual(true);
   expect(λ.everyOf(a => a > 5)([2, 3, 4])).toEqual(false);
 });
+
+test('slice outputs selected array elements as an array based on input range.', () => {
+  expect(λ.slice(2)(1)([1, 2, 3, 4, 5])).toEqual([2]);
+  expect(λ.slice(2)(0)([1, 2, 3, 4, 5])).toEqual([1, 2]);
+  expect(λ.slice(8)(4)([1, 2, 3, 4, 5])).toEqual([5]);
+  expect(λ.slice(8)(7)([1, 2, 3, 4, 5])).toEqual([]);
+});
+
+test('some outputs true if any element of input array passes input checker function as true.', () => {
+  expect(λ.someOf(a => a > 1)([2, 3, 4])).toEqual(true);
+  expect(λ.someOf(a => a > 5)([2, 3, 4])).toEqual(false);
+});

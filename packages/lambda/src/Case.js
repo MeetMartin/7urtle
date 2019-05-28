@@ -2,7 +2,12 @@ import {deepInspect} from "./utils";
 
 /**
  * Case.of() outputs instance of Case.
- * Case.of(a).inspect() outputs string Case(a).
+ * Case.of([]).inspect() outputs string Case(a -> b).
+ * Case.of([]).match(a) matches input a against map provided as input of Case.
+ * Case.of([]).match(a) outputs undefined if no matching case is found.
+ * Case.of([]).map(a -> b) composes function over Case match function.
+ * Case.of([]).map(a -> Case) outputs Case(Case).
+ * Case.of([]).flatMap(a -> Case) outputs Case.
  */
 export class Case {
   constructor(x) {
