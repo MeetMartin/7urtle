@@ -58,14 +58,14 @@ export const join = separator => list => list.join(separator);
  *
  * keysOf outputs array of string keys of input array or object.
  */
-export const keysOf = a => Object.keys(a);
+export const keysOf = Object.keys;
 
 /**
  * entriesOf :: object -> [[string, a]]
  *
  * entriesOf outputs array of arrays of string keys and raw values of input array or object.
  */
-export const entriesOf = a => Object.entries(a);
+export const entriesOf = Object.entries;
 
 /**
  * everyOf :: (a -> boolean) -> [a] -> boolean
