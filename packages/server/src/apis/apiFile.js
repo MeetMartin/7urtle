@@ -9,7 +9,6 @@ import mimeTypes from 'mime-types';
  */
 const fileExists = path => request => fs.existsSync(path) ? Either.Right(request) : Either.Left(404);
 
-
 /**
  * getResponse :: string -> object -> object
  *
@@ -28,10 +27,11 @@ const getResponse = path => request => ({
  * apiFile outputs api object with get call that outputs response object based on input file path.
  */
 const apiFile = path => ({
-  get: request => Either
-  .of(request)
-  .flatMap(fileExists(path))
-  .map(getResponse(path))
+  get: request =>
+    Either
+    .of(request)
+    .flatMap(fileExists(path))
+    .map(getResponse(path))
 });
 
 export default apiFile;

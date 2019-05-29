@@ -1,11 +1,15 @@
-import {isEqual, isFunction, isUndefined, maybe, Maybe, Either} from "@7urtle/lambda";
+import {isEqual, isFunction, isUndefined, maybe, Maybe, Either, endsWith, startsWith, substr, lengthOf} from "@7urtle/lambda";
 
 /**
  * checkRoute :: string -> object -> boolean
  *
  * checkRoute outputs true if inputs path and route.path match.
+ * checkRoute supports /* routes.
  */
-const checkRoute = path => route => isEqual(route.path)(path);
+const checkRoute = path => route =>
+  endsWith('/*')(route.path)
+    ? startsWith(substr(lengthOf(route.path) -2)(0)(route.path))(path)
+    : isEqual(route.path)(path);
 
 /**
  * findRoute :: object -> object -> (object|undefined)

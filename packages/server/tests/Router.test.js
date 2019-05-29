@@ -13,6 +13,10 @@ test('checkRoute outputs true if inputs path and route.path match.', () => {
   expect(lib.checkRoute('/')({path: '/paths'})).toEqual(false);
 });
 
+test('checkRoute supports /* routes.', () => {
+  expect(lib.checkRoute('/star/something')({path: '/star/*'})).toEqual(true);
+});
+
 test('findRoute outputs Either of route found in input configuration.routes based on input request.path or undefined if no path matches.', () => {
   const postRequest = {
     path: '/post',
@@ -24,9 +28,22 @@ test('findRoute outputs Either of route found in input configuration.routes base
     path: '/post',
     api: {}
   });
-  const leftRoute = lib.findRoute(configuration)('/404');
+
+  const request404 = {
+    path: '/404',
+    method: 'get'
+  };
+  const leftRoute = lib.findRoute(configuration)(request404);
   expect(leftRoute.isLeft()).toEqual(true);
   expect(leftRoute.value).toEqual(404);
+
+  const starRequest = {
+    path: '/star/something',
+    method: 'get'
+  };
+  const starRoute = lib.findRoute(configuration)(starRequest);
+  expect(starRoute.isRight()).toEqual(true);
+  expect(starRoute.value.path).toEqual('/star/*');
 });
 
 test('getApiResultForError outputs Either of error api call result for the error status defaulting to general error api.', () => {

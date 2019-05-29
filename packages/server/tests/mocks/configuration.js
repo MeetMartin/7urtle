@@ -66,6 +66,16 @@ const apiFile = path => ({
   }
 });
 
+const apiStar = {
+  any() {
+    return Either.Right({
+      status: 200,
+      contentType: 'text/plain',
+      content: 'I am a star'
+    });
+  }
+};
+
 const configuration = {
   port: 333,
   routes: [
@@ -84,6 +94,10 @@ const configuration = {
     {
       path: '/file',
       api: apiFile('./tests/mocks/static.html')
+    },
+    {
+      path: '/star/*',
+      api: apiStar
     }
   ],
   404: api404,

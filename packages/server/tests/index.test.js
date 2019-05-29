@@ -63,4 +63,9 @@ test('Server outputs results based on configuration.', async () => {
   expect(response7.headers['content-type']).toEqual('text/plain');
   expect(response7.headers['content-length']).toEqual('15');
   expect(response7.text).toEqual(undefined);
+
+  const response8 = await request(app).get('/star/anything');
+  expect(response8.status).toEqual(200);
+  expect(response8.headers['content-type']).toEqual('text/plain');
+  expect(response8.text).toEqual('I am a star');
 });
