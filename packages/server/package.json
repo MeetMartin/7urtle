@@ -2,7 +2,7 @@
   "name": "@7urtle/server",
   "version": "1.0.0",
   "description": "Functional server",
-  "main": "dist/lambda.min.js",
+  "main": "dist/server.min.js",
   "module": "src/index.js",
   "files": [
     "dist/*",
