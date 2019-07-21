@@ -16,7 +16,15 @@ const apiRoot = {
   }
 };
 
-const apiPost = {};
+const apiPost = {
+  post(request) {
+    return Either.Right({
+      status: 200,
+      contentType: 'application/json',
+      content: JSON.stringify(request.data)
+    });
+  }
+};
 
 const apiPath = {
   get() {

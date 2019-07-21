@@ -20,14 +20,11 @@ test('checkRoute supports /* routes.', () => {
 test('findRoute outputs Either of route found in input configuration.routes based on input request.path or undefined if no path matches.', () => {
   const postRequest = {
     path: '/post',
-    method: 'get'
+    method: 'post'
   };
   const rightRoute = lib.findRoute(configuration)(postRequest);
   expect(rightRoute.isRight()).toEqual(true);
-  expect(rightRoute.value).toEqual({
-    path: '/post',
-    api: {}
-  });
+  expect(rightRoute.value.api).not.toBeUndefined();
 
   const request404 = {
     path: '/404',
