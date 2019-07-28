@@ -1,6 +1,6 @@
 {
   "name": "@7urtle/server",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Functional server",
   "main": "dist/server.min.js",
   "module": "src/index.js",
