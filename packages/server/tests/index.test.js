@@ -73,4 +73,9 @@ test('Server outputs results based on configuration.', async () => {
   expect(response9.status).toEqual(200);
   expect(response9.headers['content-type']).toEqual('application/json');
   expect(response9.text).toEqual('{"animal1":"turtle","animal2":"tortoise"}');
+
+  const response10 = await request(app).post('/post').send('{"animal1":"turtle","animal2":"tortoise"}');
+  expect(response10.status).toEqual(200);
+  expect(response10.headers['content-type']).toEqual('application/json');
+  expect(response10.text).toEqual('{"animal1":"turtle","animal2":"tortoise"}');
 });

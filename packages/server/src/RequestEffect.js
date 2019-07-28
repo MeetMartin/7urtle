@@ -1,5 +1,12 @@
-import {AsyncEffect, lowerCaseOf, isNothing} from "@7urtle/lambda";
+import {AsyncEffect, Either, lowerCaseOf, isNothing} from "@7urtle/lambda";
 import * as queryString from 'query-string';
+
+/**
+ * parseJSON :: String -> Either
+ *
+ * parseJSON parses into String to JSON returning Either functor with the result
+ */
+const parseJSON = data => Either.try(() => JSON.parse(data));
 
 /**
  * getRequestObject :: object -> object
@@ -9,7 +16,13 @@ import * as queryString from 'query-string';
 const getRequestObject = requestHook => ({
   path: requestHook.url,
   method: lowerCaseOf(requestHook.method),
-  data: isNothing(requestHook.data) ? undefined : queryString.parse(requestHook.data)
+  data: isNothing(requestHook.data)
+    ? undefined
+    : (json =>
+        json.isLeft()
+          ? queryString.parse(requestHook.data)
+          : json.value
+    )(parseJSON(requestHook.data))
 });
 
 /**

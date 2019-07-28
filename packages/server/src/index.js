@@ -3,8 +3,15 @@ import api404 from "./apis/api404";
 import apiError from "./apis/apiError";
 import apiFile from './apis/apiFile';
 
+const logger = {
+  log: message => console.log(message) || true,
+  info: message => console.log(message) || true,
+  error: message => console.log(message) || true
+};
+
 const defaultConfiguration = {
   port: process.env.port || 3000,
+  logger: logger,
   routes: [],
   404: api404,
   error: apiError

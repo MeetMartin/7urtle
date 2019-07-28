@@ -36,8 +36,10 @@ const getApiResultForError = configuration => request => error =>
  *
  * catchApiException outputs the same Either or Either of 500 error call if input Either caught an exception.
  */
-const catchApiException = configuration => request => tried =>
-  tried.isLeft() ? Either.Right(configuration.error.any(request)) : tried;
+const catchApiException = configuration => request => result =>
+  result.isLeft()
+    ? configuration.logger.error(result.value) && Either.Right(configuration.error.any(request))
+    : result;
 
 /**
  * emptyContent :: Either -> Either
@@ -83,7 +85,7 @@ const getApiResult = configuration => request => route =>
  */
 const catchApiError = configuration => request => result =>
   result.isLeft()
-    ? getApiResultForError(configuration)(request)(result)
+    ? configuration.logger.error(result.value) && getApiResultForError(configuration)(request)(result)
     : result;
 
 /**

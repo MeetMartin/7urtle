@@ -86,6 +86,11 @@ const apiStar = {
 
 const configuration = {
   port: 333,
+  logger: {
+    log: () => true,
+    info: () => true,
+    error: () => true
+  },
   routes: [
     {
       path: '/',
