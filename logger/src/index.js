@@ -9,7 +9,7 @@ const defaultDecorator = level => input =>
   new Date().toLocaleString() + '; ' + upperCaseOf(level) + ': ' + input;
 
 const defaultConfiguration = {
-  level: {
+  levels: {
     log: true,
     debug: true,
     info: true,
@@ -29,7 +29,7 @@ const getLogger = configuration => ({
 });
 
 const log = configuration => level =>
-  isTrue(configuration.level[level])
+  isTrue(configuration.levels[level])
     ? passThrough(compose(configuration.library[level], configuration.decorator(level)))
     : getNull;
 

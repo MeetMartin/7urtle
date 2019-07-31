@@ -1,6 +1,6 @@
 {
   "name": "@7urtle/logger",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Functional programming logger.",
   "main": "dist/logger.min.js",
   "module": "src/index.js",
