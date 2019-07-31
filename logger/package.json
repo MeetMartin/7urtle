@@ -1,0 +1,49 @@
+{
+  "name": "@7urtle/logger",
+  "version": "1.0.0",
+  "description": "Functional programming logger.",
+  "main": "dist/logger.min.js",
+  "module": "src/index.js",
+  "files": [
+    "dist/*",
+    "src/*",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "webpack --progress --mode production",
+    "update": "npm outdated --depth=0 | grep -v Package | awk '{print $1}' | xargs -I% npm install %@latest --save",
+    "test": "jest --silent"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MartinGentleman/7urtle.git"
+  },
+  "keywords": [
+    "JavaScript",
+    "functional",
+    "lambda",
+    "functor",
+    "monad"
+  ],
+  "author": "Martin Novak <ragnarecek@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MartinGentleman/7urtle/issues"
+  },
+  "homepage": "https://github.com/MartinGentleman/7urtle/tree/master/packages/lambda",
+  "devDependencies": {
+    "@7urtle/lambda": "^1.0.19",
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-throw-expressions": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/runtime": "^7.5.5",
+    "babel-jest": "^24.8.0",
+    "babel-loader": "^8.0.6",
+    "jest": "^24.8.0",
+    "webpack": "^4.38.0",
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.7.2"
+  }
+}
