@@ -1,6 +1,6 @@
 {
   "name": "@7urtle/lambda",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "Functional programming library in JavaScript.",
   "main": "dist/lambda.min.js",
   "module": "src/index.js",
@@ -33,15 +33,15 @@
   },
   "homepage": "https://github.com/MartinGentleman/7urtle/tree/master/packages/lambda",
   "devDependencies": {
-    "@babel/core": "^7.5.4",
+    "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-throw-expressions": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.5.0",
-    "@babel/preset-env": "^7.5.4",
-    "@babel/runtime": "^7.5.4",
+    "@babel/plugin-transform-runtime": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/runtime": "^7.5.5",
     "babel-jest": "^24.8.0",
     "babel-loader": "^8.0.6",
     "jest": "^24.8.0",
-    "webpack": "^4.35.3",
+    "webpack": "^4.38.0",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.7.2"
   }
