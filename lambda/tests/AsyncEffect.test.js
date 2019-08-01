@@ -84,11 +84,11 @@ test('AsyncEffect.of(AsyncEffect -> AsyncEffect -> c).ap(AsyncEffect).ap(AsyncEf
 test('No input function is executed until trigger is called.', done => {
   let some = 1;
   const resolving = async (reject, resolve) => setTimeout(() => resolve(++some), 10);
-  λ.AsyncEffect.of(resolving);
-  expect(some).toBe(1);
-  λ.AsyncEffect.of(resolving).trigger(error => error, result => {
-      expect(some).toBe(2);
-      expect(result).toBe(2);
-      done();
-    });
+  λ.AsyncEffect.of(resolving).flatMap(() => λ.AsyncEffect.of(resolving));
+  setTimeout(() => expect(some).toBe(1), 30);
+  λ.AsyncEffect.of(resolving).flatMap(() => λ.AsyncEffect.of(resolving)).trigger(error => error, result => {
+    expect(some).toBe(3);
+    expect(result).toBe(3);
+    done();
+  });
 });
