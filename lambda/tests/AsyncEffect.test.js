@@ -63,6 +63,17 @@ test('AsyncEffect.of((a, b) -> c).flatMap(b -> AsyncEffect) outputs AsyncEffect.
   });
 });
 
+test('AsyncEffect.of((a, b) -> c).flatMap(b -> AsyncEffect) handles reject states correctly passing along the initial error.', done => {
+  let some = 1;
+  const resolving = async (reject, resolve) => setTimeout(() => resolve(++some), 10);
+  const rejecting = async (reject, resolve) => setTimeout(() => reject('I am an error.'), 10);
+  λ.AsyncEffect.of(rejecting).flatMap(() => λ.AsyncEffect.of(resolving)).trigger(error => {
+    expect(error).toBe('I am an error.');
+    expect(some).toBe(1);
+    done();
+  }, result => result);
+});
+
 test('AsyncEffect.of((a, b) -> c).map(a -> b).ap(AsyncEffect) provides applicative ability to apply functors to each other.', done => {
   const add = a => b => a + b;
   const resolving = async (reject, resolve) => setTimeout(() => resolve(1), 10);
@@ -85,10 +96,12 @@ test('No input function is executed until trigger is called.', done => {
   let some = 1;
   const resolving = async (reject, resolve) => setTimeout(() => resolve(++some), 10);
   λ.AsyncEffect.of(resolving).flatMap(() => λ.AsyncEffect.of(resolving));
-  setTimeout(() => expect(some).toBe(1), 30);
+  setTimeout(() => {
+    expect(some).toBe(3);
+    done();
+  }, 30);
   λ.AsyncEffect.of(resolving).flatMap(() => λ.AsyncEffect.of(resolving)).trigger(error => error, result => {
     expect(some).toBe(3);
     expect(result).toBe(3);
-    done();
   });
 });

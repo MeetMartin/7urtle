@@ -10,6 +10,7 @@ import {deepInspect} from "./utils";
  * AsyncEffect.of((a, b) -> c).map(b -> c) composes function over AsyncEffect input function.
  * AsyncEffect.of((a, b) -> c).map(b -> AsyncEffect) outputs AsyncEffect(AsyncEffect).
  * AsyncEffect.of((a, b) -> c).flatMap(b -> AsyncEffect) outputs AsyncEffect.
+ * AsyncEffect.of((a, b) -> c).flatMap(b -> AsyncEffect) handles reject states correctly passing along the initial error.
  * AsyncEffect.of((a, b) -> c).map(a -> b).ap(AsyncEffect) provides applicative ability to apply functors to each other.
  * AsyncEffect.of(AsyncEffect -> AsyncEffect -> c).ap(AsyncEffect).ap(AsyncEffect) provides applicative interface for a functor of a function.
  * No input function is executed until trigger is called.
