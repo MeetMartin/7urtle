@@ -31,15 +31,12 @@ const getLogger = configuration => ({
 const log = configuration => level =>
   isTrue(configuration.levels[level])
     ? passThrough(compose(configuration.library[level], configuration.decorator(level)))
-    : getNull;
-
-const getNull = () => null;
+    : () => null;
 
 export default createLogger;
 
 export {
   defaultDecorator,
   getLogger,
-  log,
-  getNull
+  log
 };
