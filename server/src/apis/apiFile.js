@@ -1,25 +1,6 @@
-import {Either, isEqual} from '@7urtle/lambda';
-import fs from 'fs';
-import mimeTypes from 'mime-types';
-
-/**
- * fileExists :: string -> object -> Either
- *
- * fileExists outputs Either of input request if file exists on input path or Either.Left of 404 if it does not.
- */
-const fileExists = path => request => fs.existsSync(path) ? Either.Right(request) : Either.Left(404);
-
-/**
- * getResponse :: string -> object -> object
- *
- * getResponse outputs response object based on input file path.
- */
-const getResponse = path => request => ({
-  status: 200,
-  file: isEqual('get')(request.method) ? path : '',
-  contentType: mimeTypes.lookup(path) || 'application/octet-stream',
-  contentLength: fs.statSync(path).size
-});
+import {AsyncEffect, isEqual} from '@7urtle/lambda';
+import fs from "fs";
+import mimeTypes from "mime-types";
 
 /**
  * apiFile :: string -> object
@@ -28,15 +9,18 @@ const getResponse = path => request => ({
  */
 const apiFile = path => ({
   get: request =>
-    Either
-    .of(request)
-    .flatMap(fileExists(path))
-    .map(getResponse(path))
+    AsyncEffect.of(
+      async (reject, resolve) =>
+        fs.existsSync(path)
+          ? resolve({
+            ...request,
+            status: 200,
+            file: isEqual('get')(request.method) ? path : '',
+            contentType: mimeTypes.lookup(path) || 'application/octet-stream',
+            contentLength: fs.statSync(path).size
+          })
+          : reject(404)
+    )
 });
 
 export default apiFile;
-
-export {
-  fileExists,
-  getResponse
-};

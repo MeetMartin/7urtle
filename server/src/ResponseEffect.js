@@ -1,4 +1,4 @@
-import {SyncEffect, Either, passThrough, isJust} from "@7urtle/lambda";
+import {passThrough, isJust, Either, either, identity, AsyncEffect} from "@7urtle/lambda";
 import fs from "fs";
 
 /**
@@ -14,17 +14,16 @@ const getHeaders = response => ({
 
 /**
  * sendHead :: object -> object -> Either
- *
- * sendHead triggers responseHook.writeHead side effect and outputs Right(responseHook) on success.
- * sendHead triggers responseHook.writeHead side effect and outputs Left(string) on fail.
- * sendHead uses 200 as response status if no status is specified in the input response object.
  */
-const sendHead = response => responseHook =>
-  Either.try(() =>
+const sendHead = responseHook => response =>
+  either
+  (error => passThrough(response => response.configuration.logger.error(error))(response))
+  (identity)
+  (Either.try(() =>
     passThrough(
-      responseHook => responseHook.writeHead(response.status || 200, getHeaders(response))
-    )(responseHook)
-  );
+      response => responseHook.writeHead(response.status || 200, getHeaders(response))
+    )(response)
+  ));
 
 /**
  * sendContent :: object -> object -> Either
@@ -32,53 +31,49 @@ const sendHead = response => responseHook =>
  * sendContent triggers responseHook.end side effect and outputs Right(responseHook) on success.
  * sendContent triggers responseHook.end side effect and outputs Left(string) on fail.
  */
-const sendContent = response => responseHook =>
+const sendContent = responseHook => response =>
   Either.try(() =>
     passThrough(
-      responseHook => isJust(response.content) ? responseHook.end(response.content) : responseHook.end()
-    )(responseHook)
+      response => isJust(response.content) ? responseHook.end(response.content) : responseHook.end()
+    )(response)
   );
 
 /**
- * streamFile :: object -> object -> Either
+ * streamFile :: object -> object -> (a -> b, c -> d) -> {}
  *
  * streamFile triggers read data stream side effect streaming response.file and outputs Right(responseHook) on success.
  * streamFile triggers read data stream side effect streaming response.file and outputs Left(string) on fail.
  */
-const streamFile = response => responseHook =>
+const streamFile = responseHook => response => (reject, resolve) =>
   fs.existsSync(response.file)
-    ? Either.Right(
-        passThrough(
-          responseHook => fs.createReadStream(response.file).pipe(responseHook)
-          // TODO: catch .on("error", handler) for pipe
-        )(responseHook)
-      )
-    : Either.Left('File does not exist.');
+    ?
+    fs
+    .createReadStream(response.file)
+    .on('error', reject)
+    .on('close', () => resolve(response))
+    .pipe(responseHook)
+    : reject(new Error('Response file does not exist.'));
 
 /**
- * sendOrStream :: object -> object -> Either
+ * sendOrStream :: object -> object -> object
  *
  * sendOrStream outputs Either calling streamFile or sendContent depending on whether response.file is just.
  */
-const sendOrStream = response => responseHook =>
-  isJust(response.file)
-    ? streamFile(response)(responseHook)
-    : sendContent(response)(responseHook);
+const sendOrStream = responseHook => response =>
+  AsyncEffect.of(
+    async (reject, resolve) =>
+      isJust(response.file)
+        ? streamFile(responseHook)(response)(reject, resolve)
+        : either(reject)(resolve)(sendContent(responseHook)(response))
+  );
 
 /**
- * ResponseEffect :: object -> object -> SyncEffect(() -> Either(object))
- *
- * ResponseEffect outputs SyncEffect which can trigger side effects responseHook.writeHead and responseHook.end outputting Right(responseHook) on success.
- * ResponseEffect outputs SyncEffect which can trigger side effects responseHook.writeHead and responseHook.end outputting Left(error) on fail.
+ * ResponseEffect :: object -> object -> AsyncEffect
  */
-const ResponseEffect = responseHook => response =>
-  SyncEffect
-  .of(() =>
-    Either
-    .of(responseHook)
-    .flatMap(sendHead(response))
-    .flatMap(sendOrStream(response))
-  );
+const ResponseEffect = responseHook => response => {
+  sendHead(responseHook)(response);
+  return sendOrStream(responseHook)(response);
+};
 
 export default ResponseEffect;
 
@@ -88,4 +83,4 @@ export {
   sendContent,
   streamFile,
   sendOrStream
-}
+};

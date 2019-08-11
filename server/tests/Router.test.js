@@ -1,11 +1,6 @@
-import Router, * as lib from '../src/Router';
-import {Either} from "@7urtle/lambda";
-import configuration from './mocks/configuration';
-
-const request = {
-  path: '/path',
-  method: 'get'
-};
+import {AsyncEffect, identity} from "@7urtle/lambda";
+import Router, * as lib from "../src/Router";
+import {configuration, request} from "./mocks/configuration";
 
 test('checkRoute outputs true if inputs path and route.path match.', () => {
   expect(lib.checkRoute('/path')(configuration.routes[1])).toEqual(true);
@@ -17,228 +12,144 @@ test('checkRoute supports /* routes.', () => {
   expect(lib.checkRoute('/star/something')({path: '/star/*'})).toEqual(true);
 });
 
-test('findRoute outputs Either of route found in input configuration.routes based on input request.path or undefined if no path matches.', () => {
-  const postRequest = {
-    path: '/post',
-    method: 'post'
-  };
-  const rightRoute = lib.findRoute(configuration)(postRequest);
-  expect(rightRoute.isRight()).toEqual(true);
-  expect(rightRoute.value.api).not.toBeUndefined();
+test('MaybeRoute outputs Maybe of route found in input request or Maybe of Nothing if route is not found.', () => {
+  const MaybeRouteJust = lib.MaybeRoute({
+    ...request,
+    path: '/path'
+  });
+  expect(MaybeRouteJust.isJust()).toBe(true);
+  expect(MaybeRouteJust.value.api).toBeTruthy();
+  expect(MaybeRouteJust.value.path).toBe('/path');
 
-  const request404 = {
-    path: '/404',
+  const MaybeRouteNothing = lib.MaybeRoute({
+    ...request,
+    path: '/404'
+  });
+  expect(MaybeRouteNothing.isNothing()).toBe(true);
+
+  const MaybeRouteStar = lib.MaybeRoute({
+    ...request,
+    path: '/star/something'
+  });
+  expect(MaybeRouteStar.isJust()).toBe(true);
+  expect(MaybeRouteStar.value.api).toBeTruthy();
+  expect(MaybeRouteStar.value.path).toBe('/star/*');
+});
+
+test('emptyContent maps AsyncEffect evaluating contentLength and making file and content values empty.', done => {
+  const ApiEffect =
+    AsyncEffect.of((_, resolve) => resolve({
+      configuration: 'configuration',
+      status: 200,
+      file: 'file',
+      content: 'content'
+    }));
+  lib.emptyContent(ApiEffect).trigger(identity, response => {
+    expect(response).toEqual({
+      configuration: 'configuration',
+      contentLength: 7,
+      status: 200,
+      file: '',
+      content: ''
+    });
+    done();
+  });
+});
+
+test('getApiEffect outputs AsyncEffect with the response to a request based on a route.', done => {
+  Router.getApiEffect({
+    ...request,
+    path: '/path',
     method: 'get'
-  };
-  const leftRoute = lib.findRoute(configuration)(request404);
-  expect(leftRoute.isLeft()).toEqual(true);
-  expect(leftRoute.value).toEqual(404);
+  }).trigger(identity, response => {
+    expect(response.content).toEqual('get path result');
+    done();
+  });
+});
 
-  const starRequest = {
-    path: '/star/something',
+test('getApiEffect outputs AsyncEffect with the response to a request for root route.', done => {
+  Router.getApiEffect({
+    ...request,
+    path: '/',
     method: 'get'
-  };
-  const starRoute = lib.findRoute(configuration)(starRequest);
-  expect(starRoute.isRight()).toEqual(true);
-  expect(starRoute.value.path).toEqual('/star/*');
-});
-
-test('getApiResultForError outputs Either of error api call result for the error status defaulting to general error api.', () => {
-  const apiResult1 = lib.getApiResultForError(configuration)(request)(Either.Left(404));
-  expect(apiResult1.isRight()).toEqual(true);
-  expect(apiResult1.value).toEqual({
-    status: 404,
-    contentType: 'text/plain',
-    content: 'Not Found'
-  });
-  const apiResult2 = lib.getApiResultForError(configuration)(request)(Either.Left(500));
-  expect(apiResult2.isRight()).toEqual(true);
-  expect(apiResult2.value).toEqual({
-    status: 500,
-    contentType: 'text/plain',
-    content: 'Internal Server Error'
+  }).trigger(identity, response => {
+    expect(response.content).toEqual('any root result');
+    done();
   });
 });
 
-test('catchApiException outputs the same Either or Either of 500 error call if input Either caught an exception.', () => {
-  const apiResult = lib.catchApiException(configuration)(request)(Either.Right('7urtle'));
-  expect(apiResult.isRight()).toEqual(true);
-  expect(apiResult.value).toEqual('7urtle');
-  const errorApiResult = lib.catchApiException(configuration)(request)(Either.Left('I am error :('));
-  expect(errorApiResult.isRight()).toEqual(true);
-  expect(errorApiResult.value.value).toEqual({
-    status: 500,
-    contentType: 'text/plain',
-    content: 'Internal Server Error'
-  });
-});
-
-test('emptyContent outputs Either of result with empty file and content based on input Either.', () => {
-  const apiResult = lib.emptyContent(Either.Right({
-    status: 200,
-    contentType: 'text/plain',
-    file: './static.html',
-    content: 'Success'
-  }));
-  expect(apiResult.isRight()).toEqual(true);
-  expect(apiResult.value).toEqual({
-    status: 200,
-    contentType: 'text/plain',
-    contentLength: 7,
-    file: '',
-    content: ''
-  });
-});
-
-test('getApiResult outputs Either of api call result.', () => {
-  const apiResult = lib.getApiResult(configuration)(request)(Either.Right(configuration.routes[1]));
-  expect(apiResult.isRight()).toEqual(true);
-  expect(apiResult.value).toEqual({
-    status: 200,
-    contentType: 'text/plain',
-    content: 'get path result'
-  });
-});
-
-test('getApiResult if head is not api call it outputs Either of api call for get or any with empty file and content result or 404 result if neither are found.', () => {
-  const request = {
+test('getApiEffect if head is not api call it outputs AsyncEffect of api call for get with empty file and content result if get is defined.', done => {
+  Router.getApiEffect({
+    ...request,
     path: '/path',
     method: 'head'
-  };
-  const apiResult = lib.getApiResult(configuration)(request)(Either.Right(configuration.routes[1]));
-  expect(apiResult.isRight()).toEqual(true);
-  expect(apiResult.value).toEqual({
-    status: 200,
-    contentType: 'text/plain',
-    contentLength: 15,
-    file: '',
-    content: ''
-  });
-  const apiResult2 = lib.getApiResult(configuration)(request)(Either.Right(configuration.routes[0]));
-  expect(apiResult2.isRight()).toEqual(true);
-  expect(apiResult2.value).toEqual({
-    status: 200,
-    contentType: 'text/plain',
-    contentLength: 15,
-    file: '',
-    content: ''
-  });
-  const apiResult3 = lib.getApiResult(configuration)(request)(Either.Right(configuration.routes[2]));
-  expect(apiResult3.isRight()).toEqual(true);
-  expect(apiResult3.value).toEqual({
-    status: 404,
-    contentType: 'text/plain',
-    contentLength: 9,
-    file: '',
-    content: ''
+  }).trigger(identity, response => {
+    expect(response.status).toEqual(200);
+    expect(response.content).toEqual('');
+    expect(response.file).toEqual('');
+    expect(response.contentLength).toEqual(15);
+    done();
   });
 });
 
-test('getApiResult outputs Either of api 404 error call if route is not found.', () => {
-  const apiResult = lib.getApiResult(configuration)(request)(Either.Left(404));
-  expect(apiResult.isRight()).toEqual(true);
-  expect(apiResult.value).toEqual({
-    status: 404,
-    contentType: 'text/plain',
-    content: 'Not Found'
+test('getApiEffect if head is not api call it outputs AsyncEffect of api call for any with empty file and content result if get is not defined.', done => {
+  Router.getApiEffect({
+    ...request,
+    path: '/star/something',
+    method: 'head'
+  }).trigger(identity, response => {
+    expect(response.status).toEqual(200);
+    expect(response.content).toEqual('');
+    expect(response.file).toEqual('');
+    expect(response.contentLength).toEqual(11);
+    done();
   });
 });
 
-test('getApiResult outputs Either of api any call if requested method call is not found.', () => {
-  const apiResult = lib.getApiResult(configuration)(request)(Either.Right(configuration.routes[0]));
-  expect(apiResult.isRight()).toEqual(true);
-  expect(apiResult.value).toEqual({
-    status: 200,
-    contentType: 'text/plain',
-    content: 'any root result'
+test('getApiEffect outputs AsyncEffect of api 404 error for head call if head, get and any are not found.', done => {
+  Router.getApiEffect({
+    ...request,
+    path: '/post',
+    method: 'head'
+  }).trigger(identity, response => {
+    expect(response.status).toEqual(404);
+    expect(response.content).toEqual('');
+    done();
   });
 });
 
-test('getApiResult outputs Either of 404 api call if both requested method call and any call are not found.', () => {
-  const apiResult = lib.getApiResult(configuration)(request)(Either.Right(configuration.routes[2]));
-  expect(apiResult.isRight()).toEqual(true);
-  expect(apiResult.value).toEqual({
-    status: 404,
-    contentType: 'text/plain',
-    content: 'Not Found'
-  });
-});
-
-test('getApiResult outputs Left of error code if api call returns Left.', () => {
-  const errorRequest = {
-    path: '/',
-    method: 'post'
-  };
-  const apiResult = lib.getApiResult(configuration)(errorRequest)(Either.Right(configuration.routes[0]));
-  expect(apiResult.isLeft()).toEqual(true);
-  expect(apiResult.value).toEqual(500);
-});
-
-test('catchApiError outputs Either of error api call result for the error status or original input result.', () => {
-  const apiResult = lib.catchApiError(configuration)(request)(Either.Left(500));
-  expect(apiResult.isRight()).toEqual(true);
-  expect(apiResult.value).toEqual({
-    status: 500,
-    contentType: 'text/plain',
-    content: 'Internal Server Error'
-  });
-  const apiResult2 = lib.catchApiError(configuration)(request)(Either.Right({
-    status: 200,
-    contentType: 'text/plain',
-    content: 'any root result'
-  }));
-  expect(apiResult2.isRight()).toEqual(true);
-  expect(apiResult2.value).toEqual({
-    status: 200,
-    contentType: 'text/plain',
-    content: 'any root result'
-  });
-});
-
-test('getResponse outputs response object.', () => {
-  const response = Router.getResponse(configuration)(request);
-  expect(response).toEqual({
-    status: 200,
-    contentType: 'text/plain',
-    content: 'get path result'
-  });
-});
-
-test('getResponse outputs response object for 404 api call if route is not found.', () => {
-  const request404 = {
-    path: '/nothing',
+test('getApiEffect outputs AsyncEffect of api 404 error call if route is not found.', done => {
+  Router.getApiEffect({
+    ...request,
+    path: '/404',
     method: 'get'
-  };
-  const response = Router.getResponse(configuration)(request404);
-  expect(response).toEqual({
-    status: 404,
-    contentType: 'text/plain',
-    content: 'Not Found'
+  }).trigger(identity, response => {
+    expect(response.status).toEqual(404);
+    expect(response.content).toEqual('Not Found');
+    done();
   });
 });
 
-test('getResponse outputs response object for error api call if api call returns an error.', () => {
-  const errorRequest = {
-    path: '/',
+test('getApiEffect outputs AsyncEffect of api any call if requested method call is not found.', done => {
+  Router.getApiEffect({
+    ...request,
+    path: '/path',
     method: 'post'
-  };
-  const response = Router.getResponse(configuration)(errorRequest);
-  expect(response).toEqual({
-    status: 500,
-    contentType: 'text/plain',
-    content: 'Internal Server Error'
+  }).trigger(identity, response => {
+    expect(response.status).toEqual(200);
+    expect(response.content).toEqual('any path result');
+    done();
   });
 });
 
-test('getResponse outputs response object for error api call if api call throws an exception.', () => {
-  const exceptionRequest = {
-    path: '/',
-    method: 'patch'
-  };
-  const response = Router.getResponse(configuration)(exceptionRequest);
-  expect(response).toEqual({
-    status: 500,
-    contentType: 'text/plain',
-    content: 'Internal Server Error'
+test('getApiEffect outputs AsyncEffect of 404 api call if both requested method call and any call are not found.', done => {
+  Router.getApiEffect({
+    ...request,
+    path: '/post',
+    method: 'get'
+  }).trigger(identity, response => {
+    expect(response.status).toEqual(404);
+    expect(response.content).toEqual('Not Found');
+    done();
   });
 });

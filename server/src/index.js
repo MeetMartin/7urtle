@@ -1,31 +1,23 @@
+import createLogger from "@7urtle/logger";
 import Server from "./Server";
-import api404 from "./apis/api404";
 import apiError from "./apis/apiError";
-import apiFile from './apis/apiFile';
-
-const logger = {
-  log: message => console.log(message) || true,
-  info: message => console.log(message) || true,
-  error: message => console.log(message) || true
-};
+import apiFile from "./apis/apiFile";
 
 const defaultConfiguration = {
-  port: process.env.port || 3000,
-  logger: logger,
+  options: {
+    port: process.env.port || 3000
+  },
+  logger: createLogger(),
   routes: [],
-  404: api404,
-  error: apiError
+  apiError: apiError,
 };
 
 const start = configuration =>
-  Server({
+  Server.create({
     ...defaultConfiguration,
     ...configuration
-  })
-  .trigger();
+  });
 
 export default {start};
 
-export {
-  apiFile
-};
+export {apiFile};

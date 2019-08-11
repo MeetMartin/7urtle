@@ -1,4 +1,4 @@
-import {AsyncEffect, Either, lowerCaseOf, isNothing} from "@7urtle/lambda";
+import {AsyncEffect, Either, lowerCaseOf, isNothing, upperCaseOf} from "@7urtle/lambda";
 import * as queryString from 'query-string';
 
 /**
@@ -13,7 +13,8 @@ const parseJSON = data => Either.try(() => JSON.parse(data));
  *
  * getRequestObject extracts request data from input requestHook and outputs request object.
  */
-const getRequestObject = requestHook => ({
+const getRequestObject = configuration => requestHook => ({
+  configuration: configuration,
   path: requestHook.url,
   method: lowerCaseOf(requestHook.method),
   data: isNothing(requestHook.data)
@@ -26,17 +27,31 @@ const getRequestObject = requestHook => ({
 });
 
 /**
- * RequestEffect :: object -> AsyncEffect(() -> object)
+ * logRequest :: object -> object -> object
  *
- * RequestEffect(object).trigger(d -> e, f -> g) for GET requestHook returns correct request object.
- * RequestEffect(object).trigger(d -> e, f -> g) for POST requestHook returns correct request object including data.
+ * logRequest uses logger for debug log of request method and url.
  */
-const RequestEffect = requestHook =>
+const logRequest = request => {
+  request.configuration.logger.debug(`Request received for ${upperCaseOf(request.method)} ${request.path}.`);
+  return request;
+};
+
+
+/**
+ * RequestEffect :: object -> object -> AsyncEffect
+ *
+ * RequestEffect(object)(object).trigger(d -> e, f -> g) for GET requestHook returns correct request object.
+ * RequestEffect(object)(object).trigger(d -> e, f -> g) for POST requestHook returns correct request object including data.
+ */
+const RequestEffect = requestHook => configuration =>
   AsyncEffect.of(
-    (reject, resolve) => {
+    async (reject, resolve) => {
       requestHook.data = '';
       requestHook.on('data',
-        input => requestHook.data += input
+        input => {
+          configuration.logger.debug('Receiving data on request.');
+          requestHook.data += input;
+        }
         // consider using stream-meter https://stackoverflow.com/questions/4295782/how-to-process-post-data-in-node-js
       );
       requestHook.on('end',
@@ -44,10 +59,13 @@ const RequestEffect = requestHook =>
       );
     }
   )
-  .map(getRequestObject);
+  .map(getRequestObject(configuration))
+  .map(logRequest);
 
 export default RequestEffect;
 
 export {
-  getRequestObject
+  getRequestObject,
+  logRequest,
+  parseJSON
 };

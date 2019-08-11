@@ -1,62 +1,111 @@
-import {SyncEffect} from "@7urtle/lambda";
 import http from "http";
-import Router from "./Router";
+import {compose, isEqual, isNumber, identity} from "@7urtle/lambda";
 import RequestEffect from "./RequestEffect";
 import ResponseEffect from "./ResponseEffect";
+import Router from "./Router";
 
 /**
- * resolveResponse :: object -> object -> object
+ * getServer :: object -> http.Server
  *
- * resolveResponse creates and triggers ResponseEffect
+ * getServer uses configuration object to start server with listeners for request and error
  */
-const resolveResponse = configuration => responseHook => request =>
-  ResponseEffect(responseHook)(Router.getResponse(configuration)(request))
-  .trigger();
+const getServer = configuration =>
+  http
+  .createServer()
+  .on('request', configuration.listeners.request)
+  .on('error', configuration.listeners.error)
+  .listen(configuration.options.port, configuration.listeners.listening);
 
 /**
- * onRequest :: object -> (object, object) -> Either
+ * addListeners :: object -> object
  *
- * onRequest outputs responseHook executing ResponseEffect side effect based on input configuration, requestHook and responseHook.
+ * addListeners adds listener functions for request, error, and listening to provided configuration if not predefined.
  */
-const onRequest = configuration => (reject, resolve) => (requestHook, responseHook) =>
-  RequestEffect(requestHook)
+const addListeners = configuration => ({
+  listeners: {
+    request: requestListener(configuration),
+    error: errorListener(configuration),
+    listening: listeningListener(configuration),
+    ...configuration.listeners
+  },
+  ...configuration
+});
+
+/**
+ * listeningListener :: object -> () -> string
+ *
+ * listeningListener uses logger provided in input configuration object to log listening event.
+ */
+const listeningListener = configuration => () =>
+  configuration.logger.info(`Server is listening on port ${configuration.options.port}.`);
+
+/**
+ * errorListener :: object -> object|string -> string
+ *
+ * errorListener uses logger provided in input configuration object to log error listening event error object.
+ */
+const errorListener = configuration => error =>
+  isEqual(error.code)('EADDRINUSE')
+    ? configuration.logger.error(`Port ${configuration.options.port} is already in use. Server cannot start.`)
+    : configuration.logger.error(error.message || error.code || error);
+
+/**
+ * respondToError :: object -> object -> number|any -> {}
+ *
+ * respondToError responds using ResponseHook to errors rejected during request processing.
+ */
+const respondToError = responseHook => configuration => error =>
+  isNumber(error)
+    ? configuration.logger.error(`Server request API processing failed with status: ${error}.`)
+    && respondWithApiError(configuration)(responseHook)(error)
+    : configuration.logger.error(`Server request processing failed with error: '${error}'.`)
+    && respondWithApiError(configuration)(responseHook)(500);
+
+/**
+ * respondWithApiError :: object -> object -> number -> {}
+ *
+ * respondWithApiError triggers AsyncEffect of apiError for input status and logs potential error.
+ */
+const respondWithApiError = configuration => responseHook => status =>
+  configuration.apiError.any({
+    configuration: configuration,
+    status: status
+  })
+  .flatMap(ResponseEffect(responseHook))
   .trigger(
-    error => reject(error),
-    request => resolve(configuration)(responseHook)(request)
-
+    error => configuration.logger.error(error),
+    identity
   );
 
 /**
- * requestListener :: object -> Server -> Server
+ * requestListener :: object -> (object, object) -> {}
  *
- * requestListener reqisters onRequest handler to request listener and outputs Server.'
+ * requestListener uses configuration to resolve request from requestHook by sending response using responseHook.
  */
-const requestListener = configuration => Server =>
-  Server.on('request', onRequest(configuration)(() => null, resolveResponse));
-// TODO: I am not really processing what happens if onRequest fails... probably log it...
+const requestListener = configuration => (requestHook, responseHook) =>
+  RequestEffect(requestHook)(configuration)
+  .flatMap(Router.getApiEffect)
+  .flatMap(ResponseEffect(responseHook))
+  .trigger(
+    respondToError(responseHook)(configuration),
+    identity
+  );
 
 /**
- * listen :: object -> Server -> Server
+ * create :: object -> http.Server
  *
- * listen calls input Server listen function passing it configuration.port and outputs Server.
+ * create adds listeners to configuration and creates a listening http.Server.
  */
-const listen = configuration => Server => Server.listen(configuration.port);
+const create = compose(getServer, addListeners);
 
-/**
- * Server :: object -> SyncEffect(http.Server)
- *
- * Server outputs results based on configuration.
- */
-const Server = configuration =>
-  SyncEffect
-  .of(http.createServer)
-  .map(requestListener(configuration))
-  .map(listen(configuration));
-
-export default Server;
+export default {create};
 
 export {
-  onRequest,
-  requestListener,
-  listen
-};
+  getServer,
+  addListeners,
+  listeningListener,
+  errorListener,
+  respondToError,
+  respondWithApiError,
+  requestListener
+}

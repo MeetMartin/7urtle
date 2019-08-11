@@ -1,12 +1,21 @@
 import request from 'supertest';
-import server, {apiFile} from '../src/index';
-import configuration from './mocks/configuration';
+import Server, {apiFile} from '../src/index';
+import {configuration} from './mocks/configuration';
+import http from "http";
 
-// TODO: test what happens if port is blocked
 // TODO: test content-length and other headers
 
+let app = null;
+
+afterEach(() => {
+  if(app instanceof http.Server) {
+    app.close();
+    app = null;
+  }
+});
+
 test('Server works even without passing configuration or routes.', async () => {
-  const app = server.start();
+  app = Server.start();
 
   const response1 = await request(app).get('/');
   expect(response1.status).toEqual(404);
@@ -20,62 +29,107 @@ test('Server works even without passing configuration or routes.', async () => {
 });
 
 test('Server outputs results based on configuration.', async () => {
-  configuration.port = 334;
-  configuration.routes.push({
+  app = Server.start(configuration);
+
+  const response = await request(app).get('/');
+  expect(response.status).toEqual(200);
+  expect(response.headers['content-type']).toEqual('text/plain');
+  expect(response.text).toEqual('any root result');
+});
+
+test('Server outputs not found based on routing.', async () => {
+  app = Server.start(configuration);
+
+  const response = await request(app).get('/anything');
+  expect(response.status).toEqual(404);
+  expect(response.headers['content-type']).toEqual('text/plain');
+  expect(response.text).toEqual('Not Found');
+});
+
+test('Server outputs result for post based on routing.', async () => {
+  app = Server.start(configuration);
+
+  const response = await request(app).post('/');
+  expect(response.status).toEqual(501);
+  expect(response.headers['content-type']).toEqual('text/plain');
+  expect(response.text).toEqual('Not Implemented');
+});
+
+test('Server outputs result for file request based on routing.', async () => {
+  const configuration2 = configuration;
+  configuration2.routes.push({
     path: '/static.html',
     api: apiFile('./tests/mocks/static.html')
   });
-  const app = server.start(configuration);
 
-  const response1 = await request(app).get('/');
-  expect(response1.status).toEqual(200);
-  expect(response1.headers['content-type']).toEqual('text/plain');
-  expect(response1.text).toEqual('any root result');
+  app = Server.start(configuration2);
 
-  const response2 = await request(app).get('/anything');
-  expect(response2.status).toEqual(404);
-  expect(response1.headers['content-type']).toEqual('text/plain');
-  expect(response2.text).toEqual('Not Found');
+  const response = await request(app).get('/static.html');
+  expect(response.status).toEqual(200);
+  expect(response.headers['content-type']).toEqual('text/html');
+  expect(response.text).toEqual('<html>hello world!</html>');
+});
 
-  const response3 = await request(app).post('/');
-  expect(response3.status).toEqual(500);
-  expect(response3.headers['content-type']).toEqual('text/plain');
-  expect(response3.text).toEqual('Internal Server Error');
+test('Server outputs result for file head request based on routing.', async () => {
+  const configuration2 = configuration;
+  configuration2.routes.push({
+    path: '/static.html',
+    api: apiFile('./tests/mocks/static.html')
+  });
 
-  const response4 = await request(app).patch('/');
-  expect(response4.status).toEqual(500);
-  expect(response4.headers['content-type']).toEqual('text/plain');
-  expect(response4.text).toEqual('Internal Server Error');
+  app = Server.start(configuration2);
 
-  const response5 = await request(app).get('/static.html');
-  expect(response5.status).toEqual(200);
-  expect(response5.headers['content-type']).toEqual('text/html');
-  expect(response5.text).toEqual('<html>hello world!</html>');
+  const response = await request(app).head('/static.html');
+  expect(response.status).toEqual(200);
+  expect(response.headers['content-type']).toEqual('text/html');
+  expect(response.headers['content-length']).toEqual('25');
+  expect(response.text).toEqual(undefined);
+});
 
-  const response6 = await request(app).head('/static.html');
-  expect(response6.status).toEqual(200);
-  expect(response6.headers['content-type']).toEqual('text/html');
-  expect(response6.headers['content-length']).toEqual('25');
-  expect(response6.text).toEqual(undefined);
+test('Server outputs result for head based on routing.', async () => {
+  app = Server.start(configuration);
 
-  const response7 = await request(app).head('/');
-  expect(response7.status).toEqual(200);
-  expect(response7.headers['content-type']).toEqual('text/plain');
-  expect(response7.headers['content-length']).toEqual('15');
-  expect(response7.text).toEqual(undefined);
+  const response = await request(app).head('/');
+  expect(response.status).toEqual(200);
+  expect(response.headers['content-type']).toEqual('text/plain');
+  expect(response.headers['content-length']).toEqual('15');
+  expect(response.text).toEqual(undefined);
+});
 
-  const response8 = await request(app).get('/star/anything');
-  expect(response8.status).toEqual(200);
-  expect(response8.headers['content-type']).toEqual('text/plain');
-  expect(response8.text).toEqual('I am a star');
+test('Server outputs result based on star routing.', async () => {
+  app = Server.start(configuration);
 
-  const response9 = await request(app).post('/post').send('animal1=turtle&animal2=tortoise');
-  expect(response9.status).toEqual(200);
-  expect(response9.headers['content-type']).toEqual('application/json');
-  expect(response9.text).toEqual('{"animal1":"turtle","animal2":"tortoise"}');
+  const response = await request(app).get('/star/anything');
+  expect(response.status).toEqual(200);
+  expect(response.headers['content-type']).toEqual('text/plain');
+  expect(response.text).toEqual('I am a star');
+});
 
-  const response10 = await request(app).post('/post').send('{"animal1":"turtle","animal2":"tortoise"}');
-  expect(response10.status).toEqual(200);
-  expect(response10.headers['content-type']).toEqual('application/json');
-  expect(response10.text).toEqual('{"animal1":"turtle","animal2":"tortoise"}');
+test('Server outputs result for post form request based on routing.', async () => {
+  app = Server.start(configuration);
+
+  const response = await request(app).post('/post').send('animal1=turtle&animal2=tortoise');
+  expect(response.status).toEqual(200);
+  expect(response.headers['content-type']).toEqual('application/json');
+  expect(response.text).toEqual('{"animal1":"turtle","animal2":"tortoise"}');
+});
+
+test('Server outputs result for post json request based on routing.', async () => {
+  app = Server.start(configuration);
+
+  const response = await request(app).post('/post').send('{"animal1":"turtle","animal2":"tortoise"}');
+  expect(response.status).toEqual(200);
+  expect(response.headers['content-type']).toEqual('application/json');
+  expect(response.text).toEqual('{"animal1":"turtle","animal2":"tortoise"}');
+});
+
+test('Server outputs result for error api if error is thrown unexpectedly in async api.', async () => {
+  app = Server.start(configuration);
+
+  /*const response = await request(app).patch('/');
+  expect(response.status).toEqual(500);
+  expect(response.headers['content-type']).toEqual('text/plain');
+  expect(response.text).toEqual('Internal Server Error');
+
+  */
 });
