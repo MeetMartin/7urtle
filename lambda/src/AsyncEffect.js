@@ -7,6 +7,7 @@ import {deepInspect} from "./utils";
  * AsyncEffect.of((a, b) -> c).promise() outputs JavaScript promise.
  * AsyncEffect.of((a, b) -> c).trigger(d -> e, f -> g) for resolving async function resolves.
  * AsyncEffect.of((a, b) -> c).trigger(d -> e, f -> g) for rejecting async function rejects.
+ * AsyncEffect.of((a, b) -> c).trigger(d -> e, f -> g) for synchronous exceptions rejects.
  * AsyncEffect.of((a, b) -> c).map(b -> c) composes function over AsyncEffect input function.
  * AsyncEffect.of((a, b) -> c).map(b -> AsyncEffect) outputs AsyncEffect(AsyncEffect).
  * AsyncEffect.of((a, b) -> c).flatMap(b -> AsyncEffect) outputs AsyncEffect.
@@ -17,7 +18,13 @@ import {deepInspect} from "./utils";
  */
 export class AsyncEffect {
   constructor(fn) {
-    this.trigger = fn;
+    this.trigger = (reject, resolve) => {
+      try { 
+        return fn(reject, resolve);
+      } catch(error) {
+        reject(error);
+      }
+    }
   }
 
   inspect() {

@@ -2,6 +2,9 @@ import * as λ from '../src';
 
 const resolving = async (reject, resolve) => setTimeout(() => resolve('7urtle'), 10);
 const rejecting = async (reject, resolve) => setTimeout(() => reject('I am an error.'), 10);
+const throwing = () => {
+  throw 'I am a thrown error.';
+};
 
 test('AsyncEffect.of() outputs instance of AsyncEffect.', () => {
   expect(λ.AsyncEffect.of() instanceof λ.AsyncEffect).toBe(true);
@@ -38,6 +41,13 @@ test('AsyncEffect.of((a, b) -> c).trigger(d -> e, f -> g) for resolving async fu
 test('AsyncEffect.of((a, b) -> c).trigger(d -> e, f -> g) for rejecting async function rejects.', done => {
   λ.AsyncEffect.of(rejecting).trigger(error => {
     expect(error).toBe('I am an error.');
+    done();
+  }, result => result);
+});
+
+test('AsyncEffect.of((a, b) -> c).trigger(d -> e, f -> g) for synchronous exceptions rejects.', done => {
+  λ.AsyncEffect.of(throwing).trigger(error => {
+    expect(error).toBe('I am a thrown error.');
     done();
   }, result => result);
 });
