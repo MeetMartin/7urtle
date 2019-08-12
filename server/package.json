@@ -1,6 +1,6 @@
 {
   "name": "@7urtle/server",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Functional server",
   "main": "dist/server.min.js",
   "module": "src/index.js",
@@ -13,7 +13,7 @@
   "scripts": {
     "build": "webpack --progress --mode production",
     "update": "npm outdated --depth=0 | grep -v Package | awk '{print $1}' | xargs -I% npm install %@latest --save",
-    "test": "jest"
+    "test": "jest --silent"
   },
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/MartinGentleman/7urtle/tree/master/packages/server",
   "devDependencies": {
-    "@7urtle/lambda": "^1.0.19",
+    "@7urtle/lambda": "^1.0.20",
     "@7urtle/logger": "^1.0.1",
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-throw-expressions": "^7.2.0",
@@ -44,7 +44,7 @@
     "supertest": "^4.0.2",
     "webpack": "^4.39.1",
     "webpack-cli": "^3.3.6",
-    "webpack-dev-server": "^3.7.2"
+    "webpack-dev-server": "^3.8.0"
   },
   "dependencies": {
     "mime-types": "^2.1.24",

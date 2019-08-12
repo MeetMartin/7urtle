@@ -126,10 +126,8 @@ test('Server outputs result for post json request based on routing.', async () =
 test('Server outputs result for error api if error is thrown unexpectedly in async api.', async () => {
   app = Server.start(configuration);
 
-  /*const response = await request(app).patch('/');
+  const response = await request(app).patch('/');
   expect(response.status).toEqual(500);
   expect(response.headers['content-type']).toEqual('text/plain');
   expect(response.text).toEqual('Internal Server Error');
-
-  */
 });
