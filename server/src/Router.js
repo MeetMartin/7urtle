@@ -1,4 +1,4 @@
-import {endsWith, startsWith, substr, lengthOf, isEqual, Maybe, maybe, isFunction} from '@7urtle/lambda';
+import {endsWith, startsWith, substr, lengthOf, isEqual, Maybe, maybe, isFunction, passThrough} from '@7urtle/lambda';
 
 /**
  * checkRoute :: string -> object -> boolean
@@ -34,17 +34,17 @@ const emptyContent = ApiEffect =>
   }));
 
 /**
- * getApiEffect :: object -> AsyncEffect
+ * rawGetApiEffect :: object -> AsyncEffect
  *
- * getApiEffect outputs AsyncEffect with the response to a request based on a route.
- * getApiEffect if head is not api call it outputs AsyncEffect of api call for get with empty file and content result if get is defined.
- * getApiEffect if head is not api call it outputs AsyncEffect of api call for any with empty file and content result if get is not defined.
- * getApiEffect outputs AsyncEffect of api 404 error for head call if head, get and any are not found.
- * getApiEffect outputs AsyncEffect of api 404 error call if route is not found.
- * getApiEffect outputs AsyncEffect of api any call if requested method call is not found.
- * getApiEffect outputs AsyncEffect of 404 api call if both requested method call and any call are not found.
+ * rawGetApiEffect outputs AsyncEffect with the response to a request based on a route.
+ * rawGetApiEffect if head is not api call it outputs AsyncEffect of api call for get with empty file and content result if get is defined.
+ * rawGetApiEffect if head is not api call it outputs AsyncEffect of api call for any with empty file and content result if get is not defined.
+ * rawGetApiEffect outputs AsyncEffect of api 404 error for head call if head, get and any are not found.
+ * rawGetApiEffect outputs AsyncEffect of api 404 error call if route is not found.
+ * rawGetApiEffect outputs AsyncEffect of api any call if requested method call is not found.
+ * rawGetApiEffect outputs AsyncEffect of 404 api call if both requested method call and any call are not found.
  */
-const getApiEffect = request =>
+const rawGetApiEffect = request =>
   maybe
   (request.configuration.apiError.any({...request, status: 404}))
   (route =>
@@ -62,10 +62,39 @@ const getApiEffect = request =>
   )
   (MaybeRoute(request));
 
+/**
+ * memory :: object
+ *
+ * memory used for default function memoization
+ */
+let memory = {};
+
+/**
+ * memoizedGetApiEffect :: object -> object -> AsyncEffect
+ */
+const memoizedGetApiEffect = memory => request =>
+  (key =>
+    key in memory
+      ? memory[key]
+      : (passThrough(result => memory[key] = result))
+        (rawGetApiEffect(request))
+  )
+  (request.path + ' ' + request.method);
+
+/**
+ * getApiEffect :: object -> AsyncEffect
+ *
+ * getApiEffect is memoized version of rawGetApiEffect
+ */
+const getApiEffect = memoizedGetApiEffect(memory);
+
 export default {getApiEffect};
 
 export {
   checkRoute,
   MaybeRoute,
-  emptyContent
+  emptyContent,
+  rawGetApiEffect,
+  memoizedGetApiEffect,
+  memory
 };

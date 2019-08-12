@@ -2,6 +2,8 @@ import request from 'supertest';
 import Server, {apiFile} from '../src/index';
 import {configuration} from './mocks/configuration';
 import http from "http";
+import {memory} from '../src/Router';
+import {deepInspect} from "@7urtle/lambda";
 
 // TODO: test content-length and other headers
 
@@ -17,15 +19,10 @@ afterEach(() => {
 test('Server works even without passing configuration or routes.', async () => {
   app = Server.start();
 
-  const response1 = await request(app).get('/');
-  expect(response1.status).toEqual(404);
-  expect(response1.headers['content-type']).toEqual('text/plain');
-  expect(response1.text).toEqual('Not Found');
-
-  const response2 = await request(app).get('/anything');
-  expect(response2.status).toEqual(404);
-  expect(response1.headers['content-type']).toEqual('text/plain');
-  expect(response2.text).toEqual('Not Found');
+  const response = await request(app).get('/no-config');
+  expect(response.status).toEqual(404);
+  expect(response.headers['content-type']).toEqual('text/plain');
+  expect(response.text).toEqual('Not Found');
 });
 
 test('Server outputs results based on configuration.', async () => {
