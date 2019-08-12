@@ -1,4 +1,5 @@
 import * as λ from '../src';
+import {memoize} from "../src";
 
 test('identity output is the same as input.', () => {
   expect(λ.identity('a')).toBe('a');
@@ -134,4 +135,13 @@ test('lastIndexOf outputs position of input a withing input b looking from the e
   expect(λ.lastIndexOf(2)([1, 2, 3, 2])).toBe(3);
   expect(λ.lastIndexOf(4)([1, 2, 3])).toBe(undefined);
   expect(λ.lastIndexOf('a')('aa')).toBe(1);
+});
+
+test('memoize uses input memory to save output of input function and then uses it to lookup result on a repeated run.', () => {
+  const addTwo = a => a + 2;
+  let memory = {};
+  const memoizedAddTwo = memoize(memory)(addTwo);
+  expect(memoizedAddTwo(1)).toBe(3);
+  expect(memoizedAddTwo(1)).toBe(3);
+  expect(memory[1]).toBe(3);
 });

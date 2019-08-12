@@ -1,6 +1,6 @@
 import {reduce, reduceRight} from "./list";
 import {isString, isArray, isObject} from './conditional';
-import {minusOneToUndefined} from './utils';
+import {minusOneToUndefined, passThrough} from './utils';
 
 /**
  * identity :: a -> a
@@ -93,3 +93,11 @@ export const indexOf = a => b => minusOneToUndefined(b.indexOf(a));
  * lastIndexOf outputs position of input a withing input b looking from the end or it retuns undefined if it is not found.
  */
 export const lastIndexOf = a => b => minusOneToUndefined(b.lastIndexOf(a));
+
+/**
+ * memoize :: object -> (a -> b) -> a -> b
+ *
+ * memoize uses input memory to save output of input function and then uses it to lookup result on a repeated run
+ */
+export const memoize = memory => fn => a =>
+  a in memory ? memory[a] : (passThrough(b => memory[a] = b))(fn(a));
