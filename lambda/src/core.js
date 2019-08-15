@@ -1,30 +1,51 @@
-import {reduce, reduceRight} from "./list";
+import {reduce, reduceRight} from './list';
 import {isString, isArray, isObject} from './conditional';
 import {minusOneToUndefined, passThrough} from './utils';
 
 /**
- * identity :: a -> a
+ * identity simply passes its input to its output.
  *
- * identity output is the same as input.
+ * @HindleyMilner identity :: a -> a
+ *
+ * @pure
+ * @param {*} a
+ * @return {a}
+ *
+ * @example
+ * identity('anything');
+ * // => anything
  */
 export const identity = a => a;
 
 /**
- * compose :: [(a -> b)] -> a -> (a -> b)
- *
- * compose output is a function composition
+ * pipe output is a right-to-left function composition
  * where each function receives input and hands over its output to the next function.
  *
  * compose executes functions in reverse order to pipe.
  *
  * compose(f,g)(x) is equivalent to f(g(x)).
+ *
+ * @HindleyMilner compose :: [(a -> b)] -> a -> (a -> b)
+ *
+ * @pure
+ * @param {function} fns
+ * @param {*} a
+ * @return {*}
+ *
+ * @example
+ * const addA = a => a + 'A';
+ * const addB = a => a + 'B';
+ * const addAB = compose(addB, addA);
+ *
+ * addAB('Order: ');
+ * // => Order: AB
  */
 export const compose = (...fns) => a => reduceRight(a)((v, f) => f(v))(fns);
 
 /**
  * pipe :: [(a -> b)] -> a -> (a -> b)
  *
- * pipe output is a function composition
+ * pipe output is a left-to-right function composition
  * where each function receives input and hands over its output to the next function.
  *
  * pipe executes functions in reverse order to compose.
