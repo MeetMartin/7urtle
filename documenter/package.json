@@ -12,8 +12,12 @@
   ],
   "scripts": {
     "build": "webpack --progress --mode production",
+    "start": "nodemon -r @babel/register ./src/index.js --input ../lambda/src/core.js",
     "update": "npm outdated --depth=0 | grep -v Package | awk '{print $1}' | xargs -I% npm install %@latest --save",
     "test": "jest --silent"
+  },
+  "bin": {
+    "documenter": "./dist/documenter.min.js"
   },
   "repository": {
     "type": "git",
@@ -34,16 +38,21 @@
   "homepage": "https://github.com/MartinGentleman/7urtle/tree/master/packages/lambda",
   "devDependencies": {
     "@7urtle/lambda": "^1.0.21",
+    "@7urtle/logger": "^1.0.1",
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-throw-expressions": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
+    "@babel/register": "^7.5.5",
     "@babel/runtime": "^7.5.5",
     "babel-jest": "^24.8.0",
     "babel-loader": "^8.0.6",
+    "commander": "^3.0.0",
     "jest": "^24.8.0",
+    "nodemon": "^1.19.1",
     "webpack": "^4.38.0",
     "webpack-cli": "^3.3.6",
-    "webpack-dev-server": "^3.7.2"
+    "webpack-dev-server": "^3.7.2",
+    "yargs": "^13.3.0"
   }
 }

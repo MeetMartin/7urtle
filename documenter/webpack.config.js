@@ -1,6 +1,8 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
+  target: 'node',
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -18,5 +20,12 @@ module.exports = {
       }
     ]
   },
-  devtool: 'source-map'
+  node: {
+    fs: 'empty',
+    child_process: 'empty'
+  },
+  devtool: 'source-map',
+  plugins: [
+    new webpack.BannerPlugin({ banner: "#!/usr/bin/env node", raw: true })
+  ]
 };

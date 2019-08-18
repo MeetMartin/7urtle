@@ -22,9 +22,9 @@
   "keywords": [
     "JavaScript",
     "functional",
-    "lambda",
-    "functor",
-    "monad"
+    "log",
+    "logging",
+    "logger"
   ],
   "author": "Martin Novak <ragnarecek@gmail.com>",
   "license": "MIT",
