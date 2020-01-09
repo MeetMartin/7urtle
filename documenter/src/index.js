@@ -9,7 +9,10 @@ import {
   compose,
   startsWith,
   lengthOf,
-  substr, isEqual
+  search,
+  substr,
+  isEqual,
+  isArray
 } from "@7urtle/lambda";
 import createLogger from "@7urtle/logger";
 import commander from 'commander';
@@ -42,11 +45,12 @@ const states = {
 
 let documentation = {
   state: states.CODE,
-  contents: {
+  contents: [{
     description: [],
     tags: {},
     example: []
-  }
+  }],
+  counter: 0
 };
 
 const getDocumentationLineContents = line =>
@@ -58,12 +62,30 @@ const processLineCodeState = line =>
     ? documentation.state = states.DESCRIPTION
     : false;
 
+const positionToWhiteSpaceOrStringLenght = contents => (result => isEqual(result)(undefined) ? lengthOf(contents) : result)(search(' ')(contents));
+
+const getTag = contents => substr(positionToWhiteSpaceOrStringLenght(contents))(1)(contents);
+
+const increaseCounter = () => ++documentation.counter &&
+  documentation.contents.push({
+    description: [],
+    tags: {},
+    example: []
+  });
+
+//const createArrayIfNotArrayAndPush = contents => target => isArray(target) ? target.push(contents) : (target = []) && target.push(contents);
+
+const processDescriptionOrTag = contents =>
+  startsWith('@')(contents)
+    ? (lengthOf(contents) > 2 ? documentation.contents[documentation.counter].tags[getTag(contents)] = contents : false)
+    : lengthOf(contents) > 1 ? documentation.contents[documentation.counter].description.push(contents) : false;
+    //: lengthOf(contents) > 1 ? createArrayIfNotArrayAndPush(contents)(documentation.contents[documentation.counter].description) : false;
+
 const processLineDescriptionState = line =>
   startsWith('*')(line)
     ? isEqual('*/')(line)
-        ? documentation.state = states.CODE
-        : (contents => lengthOf(contents) > 1 ? documentation.contents.description.push(contents) : false)
-          (getDocumentationLineContents(line))
+        ? increaseCounter() && (documentation.state = states.CODE)
+        : processDescriptionOrTag(getDocumentationLineContents(line))
     : documentation.state = states.ERROR;
 
 const processLineBasedOnState = state =>
