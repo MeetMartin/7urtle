@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "build": "webpack --progress --mode production",
-    "start": "nodemon -r @babel/register ./src/index.js --input ../lambda/src/core.js",
+    "start": "nodemon -r @babel/register ./src/index.js --input ../lambda/src/core.js --output ./documentation/",
     "update": "npm outdated --depth=0 | grep -v Package | awk '{print $1}' | xargs -I% npm install %@latest --save",
     "test": "jest --silent"
   },

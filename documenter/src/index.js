@@ -1,40 +1,25 @@
 import {
-  SyncEffect,
-  Either,
-  either,
-  Maybe,
-  Case,
-  trim,
-  identity,
-  compose,
-  startsWith,
-  lengthOf,
-  search,
-  substr,
-  isEqual,
-  isArray,
-  lowerCaseOf
+    Either,
+    either,
+    Case,
+    trim,
+    identity,
+    startsWith,
+    lengthOf,
+    search,
+    substr,
+    isEqual,
+    lowerCaseOf,
+    isUndefined,
 } from "@7urtle/lambda";
 import createLogger from "@7urtle/logger";
-import commander from 'commander';
+
 import fs from 'fs';
 import readline from 'readline';
-import path from 'path';
+
+import {getCMDInput} from './IOCommanderSyncEffect';
 
 const logger = createLogger();
-
-const program =
-  SyncEffect
-  .of(() => new commander.Command())
-  .map(a => a.version('0.0.1', '-v, --version', 'output the current version'))
-  .map(a => a.option('-i, --input <input>', 'input file or directory'))
-  .map(a => a.option('-o, --output <output>', 'output directory'))
-  .map(a => a.parse(process.argv));
-
-const commanderFailed = logger => error => logger.error(`Documenter failed during initialisation with error: ${error}.`);
-
-const getFSStatus = path => Either.try(() => fs.statSync(path));
-const isFile = fsStatus => fsStatus.isLeft() ? false : fsStatus.value.isFile();
 
 const states = {
   ERROR: 'ERROR',
@@ -140,16 +125,8 @@ const lineReaderWithExceptionProcessing = logger => path => {
   (Either.try(() => lineReader(path)));
 };
 
-const getInput = logger => program =>
-  (input =>
-    input.isNothing()
-      ? logger.error('Input is required argument. Try: $ documenter --input ./your/directory')
-      : compose(isFile, getFSStatus)(input.value)
-        ? lineReaderWithExceptionProcessing(logger)(input.value)
-        : logger.error('Only files are supported.')
-  )(Maybe.of(program.input));
+const IOConfiguration = getCMDInput(logger);
 
-either
-(commanderFailed(logger))
-(getInput(logger))
-(Either.try(program.trigger));
+const documentationJSON = isUndefined(IOConfiguration.input) // || isUndefined(IOConfiguration.output)
+  ? false
+  : lineReaderWithExceptionProcessing(logger)(IOConfiguration.input);
