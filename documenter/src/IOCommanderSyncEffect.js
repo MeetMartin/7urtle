@@ -37,6 +37,15 @@ const getDefinedIO = logger => commander => (
     }
 );
 
+/**
+ * getCMDInput takes a logger object as its input and attempts to read IO command line variables for the documenter
+ * like --input ./your/input --output ./your/output. Object is then returned with these values.
+ *
+ * @pure
+ * @HindleyMilner getCMDInput :: a -> b
+ * @param {*} logger
+ * @returns {*}
+ */
 const getCMDInput = logger =>
     either
     (getUndefinedIO(logger))

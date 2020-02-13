@@ -1,6 +1,4 @@
 import {
-    Either,
-    either,
     Case,
     trim,
     identity,
@@ -14,10 +12,8 @@ import {
 } from "@7urtle/lambda";
 import createLogger from "@7urtle/logger";
 
-import fs from 'fs';
-import readline from 'readline';
-
 import {getCMDInput} from './IOCommanderSyncEffect';
+import {getCodeReader} from './CodeReaderAsyncEffect';
 
 const logger = createLogger();
 
@@ -111,22 +107,9 @@ const processLine = line => processLineBasedOnState(documentation.state)(trim(li
 
 const onFileEnd = logger => documentation => () => logger.debug(JSON.stringify(documentation));
 
-const lineReader = path =>
-  readline
-  .createInterface({input: fs.createReadStream(path)})
-  .on('line', processLine)
-  .on('close', onFileEnd(logger)(documentation));
-
-const lineReaderWithExceptionProcessing = logger => path => {
-  logger.info(`Processing file "${path}".`);
-  return either
-  (error => logger.error(`There was an error processing file "${path}" with exception: "${error}".`))
-  (identity)
-  (Either.try(() => lineReader(path)));
-};
-
 const IOConfiguration = getCMDInput(logger);
 
 const documentationJSON = isUndefined(IOConfiguration.input) // || isUndefined(IOConfiguration.output)
-  ? false
-  : lineReaderWithExceptionProcessing(logger)(IOConfiguration.input);
+    ? false
+    : logger.info(`Processing file "${IOConfiguration.input}".`)
+      && getCodeReader(IOConfiguration.input)(processLine).trigger(logger.error, onFileEnd(logger)(documentation));
