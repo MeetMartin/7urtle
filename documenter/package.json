@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "build": "webpack --progress --mode production",
-    "start": "nodemon -r @babel/register ./src/index.js --input ../lambda/src/core.js --output ./documentation/",
+    "start": "nodemon -r @babel/register ./src/index.js --input ../lambda/src/core.js --output ../documentation/",
     "update": "npm outdated --depth=0 | grep -v Package | awk '{print $1}' | xargs -I% npm install %@latest --save",
     "test": "jest --silent"
   },
@@ -39,20 +39,20 @@
   "devDependencies": {
     "@7urtle/lambda": "^1.0.21",
     "@7urtle/logger": "^1.0.1",
-    "@babel/core": "^7.7.7",
-    "@babel/plugin-proposal-throw-expressions": "^7.7.4",
-    "@babel/plugin-transform-runtime": "^7.7.6",
-    "@babel/preset-env": "^7.7.7",
-    "@babel/register": "^7.7.7",
-    "@babel/runtime": "^7.7.7",
+    "@babel/core": "^7.8.4",
+    "@babel/plugin-proposal-throw-expressions": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "@babel/preset-env": "^7.8.4",
+    "@babel/register": "^7.8.3",
+    "@babel/runtime": "^7.8.4",
     "babel-jest": "^24.9.0",
     "babel-loader": "^8.0.6",
     "commander": "^3.0.2",
     "jest": "^24.9.0",
     "nodemon": "^1.19.4",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.10.1",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3",
     "yargs": "^13.3.0"
   }
 }

@@ -14,6 +14,7 @@ import createLogger from "@7urtle/logger";
 
 import {getCMDInput} from './IOCommanderSyncEffect';
 import {getCodeReader} from './CodeReaderAsyncEffect';
+import {getDocumentationWriter} from './DocumentationWriterAsyncEffect';
 
 const logger = createLogger();
 
@@ -105,11 +106,14 @@ const processLineBasedOnState = state =>
 
 const processLine = line => processLineBasedOnState(documentation.state)(trim(line));
 
-const onFileEnd = logger => documentation => () => logger.debug(JSON.stringify(documentation));
+//const onFileEnd = logger => documentation => () => logger.debug(JSON.stringify(documentation));
+const onFileEnd = logger => output => documentation => () =>
+    logger.info(`Writing into ${output}.`)
+    && getDocumentationWriter(output)(documentation).trigger(logger.error, () => logger.info('Documentation created!'));
 
 const IOConfiguration = getCMDInput(logger);
 
-const documentationJSON = isUndefined(IOConfiguration.input) // || isUndefined(IOConfiguration.output)
-    ? false
+const documentationJSON = isUndefined(IOConfiguration.input) || isUndefined(IOConfiguration.output)
+    ? logger.error(`input and/or output are passed as undefined.`)
     : logger.info(`Processing file "${IOConfiguration.input}".`)
-      && getCodeReader(IOConfiguration.input)(processLine).trigger(logger.error, onFileEnd(logger)(documentation));
+      && getCodeReader(IOConfiguration.input)(processLine).trigger(logger.error, onFileEnd(logger)(IOConfiguration.output)(documentation));
