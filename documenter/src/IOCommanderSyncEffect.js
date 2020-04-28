@@ -1,5 +1,5 @@
 import commander from 'commander';
-import {compose, Either, either, identity, Maybe, SyncEffect} from "@7urtle/lambda";
+import {compose, Either, either, Maybe, SyncEffect} from "@7urtle/lambda";
 import fs from 'fs';
 
 const IOCommanderSyncEffect =
@@ -10,7 +10,7 @@ const IOCommanderSyncEffect =
         .map(a => a.option('-o, --output <output>', 'output directory'))
         .map(a => a.parse(process.argv));
 
-const createDirectories = targetPath => fs.mkdirSync(targetPath, { recursive: true });
+//const createDirectories = targetPath => fs.mkdirSync(targetPath, { recursive: true });
 
 const getUndefinedIO = logger => error =>
     logger.error(`Documenter failed during initialisation with error: ${error}.`) &&
@@ -20,20 +20,28 @@ const getUndefinedIO = logger => error =>
     };
 
 const getFSStatus = targetPath => Either.try(() => fs.statSync(targetPath));
-const isFile = fsStatus => fsStatus.isLeft() ? false : fsStatus.value.isFile();
-const isInputValid = compose(isFile, getFSStatus);
+const isDirectory = fsStatus => fsStatus.isLeft() ? false : fsStatus.value.isDirectory();
+//const isFile = fsStatus => fsStatus.isLeft() ? false : fsStatus.value.isFile();
+const isValidDirectory = target => compose(isDirectory, getFSStatus);
+//const isInputValid = compose(isFile, getFSStatus);
 
-const validateInput = logger => input =>
+const validateIO = logger => target =>
+    isValidDirectory(target)
+        ? target
+        : logger.error(`Only existing ${target} directories are supported for --${target}.`)
+          && undefined;
+
+/*const validateInput = logger => input =>
     isInputValid(input)
         ? input
-        : logger.error(`Only existing output directories are supported for --output.`)
+        : logger.error(`Only existing output directories are supported for --input.`)
           && undefined;
 
 const validateOutput = logger => output =>
     fs.existsSync(output)
         ? output
-        : logger.error(`Only valid files are supported for --input.`)
-          && undefined;
+        : logger.error(`Only valid files are supported for --output.`)
+          && undefined;*/
         /*: either
           (error => logger.error(`There was an issue trying to create the output directory: ${error}.`) && undefined)
           (identity)
@@ -49,8 +57,10 @@ const getValue = target => logger => commander =>
 
 const getDefinedIO = logger => commander => (
     {
-        input: validateInput(logger)(getValue('input')(logger)(commander)),
-        output: validateOutput(logger)(getValue('output')(logger)(commander))
+        //input: validateInput(logger)(getValue('input')(logger)(commander)),
+        input: validateIO(logger)(getValue('input')(logger)(commander)),
+        output: validateIO(logger)(getValue('output')(logger)(commander))
+        //output: validateOutput(logger)(getValue('output')(logger)(commander))
     }
 );
 

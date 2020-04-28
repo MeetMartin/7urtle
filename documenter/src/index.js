@@ -45,15 +45,14 @@ const processLineCodeState = line =>
     ? newCodeDocumentation()
     : false;
 
-const positionToWhiteSpaceOrStringLenght = contents => (result => isEqual(result)(undefined) ? lengthOf(contents) : result)(search(' ')(contents));
+const positionToWhiteSpaceOrStringLength = contents => (result => isEqual(result)(undefined) ? lengthOf(contents) : result)(search(' ')(contents));
 
-const getTag = contents => substr(positionToWhiteSpaceOrStringLenght(contents) -1)(1)(contents);
+const getTag = contents => substr(positionToWhiteSpaceOrStringLength(contents) -1)(1)(contents);
 
 const getTagContents = contents => isEqual(search(' ')(contents))(undefined) ? 'true' : trim(substr(lengthOf(contents))(positionToWhiteSpaceOrStringLenght(contents))(contents));
 
 const newCodeDocumentation = () =>
   (documentation.state = states.DESCRIPTION) &&
-  ++documentation.counter &&
   documentation.contents.push({
     description: [],
     tags: {},
@@ -115,5 +114,9 @@ const IOConfiguration = getCMDInput(logger);
 
 const documentationJSON = isUndefined(IOConfiguration.input) || isUndefined(IOConfiguration.output)
     ? logger.error(`input and/or output are passed as undefined.`)
-    : logger.info(`Processing file "${IOConfiguration.input}".`)
-      && getCodeReader(IOConfiguration.input)(processLine).trigger(logger.error, onFileEnd(logger)(IOConfiguration.output)(documentation));
+    : logger.info(`Processing directory "${IOConfiguration.input}".`)
+      && getCodeReader(IOConfiguration.input)(processLine)
+        .trigger(
+            logger.error,
+            onFileEnd(logger)(IOConfiguration.output)(documentation)
+        );
