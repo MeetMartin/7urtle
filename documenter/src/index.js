@@ -110,6 +110,7 @@ const onFileEnd = logger => output => documentation => () =>
     logger.info(`Writing into ${output}.`)
     && getDocumentationWriter(output)(documentation).trigger(logger.error, () => logger.info('Documentation created!'));
 
+// Execution starts here
 const IOConfiguration = getCMDInput(logger);
 
 const documentationJSON = isUndefined(IOConfiguration.input) || isUndefined(IOConfiguration.output)

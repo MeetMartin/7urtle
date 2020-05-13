@@ -70,8 +70,8 @@ const getDefinedIO = logger => commander => (
  *
  * @pure
  * @HindleyMilner getCMDInput :: a -> b
- * @param {*} logger
- * @returns {*}
+ * @param {Logger} logger
+ * @returns {object}
  */
 const getCMDInput = logger =>
     either
