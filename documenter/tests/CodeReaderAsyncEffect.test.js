@@ -1,14 +1,14 @@
 import * as CodeReaderAsyncEffect from '../src/CodeReaderAsyncEffect';
-import {Either} from '@7urtle/lambda';
+import {deepInspect} from '@7urtle/lambda';
+import merge from 'deepmerge';
 
 test('getJSFilesInDirectory provides an array of all .js files in a provided path.', () => {
   expect(CodeReaderAsyncEffect.getJSFilesInDirectory('./tests/testable')).toEqual(['Case.js','core.js']);
 });
 
 test('processLineCodeState changes state to description if it finds a start of a documentation comment returning Either.', () => {
-    expect(CodeReaderAsyncEffect.processLineCodeState('anything') instanceof Either).toBe(true);
-    expect(CodeReaderAsyncEffect.processLineCodeState('/**').value).toEqual({state: 'DESCRIPTION'});
-    expect(CodeReaderAsyncEffect.processLineCodeState('const some = "code";').value).toEqual({state: 'CODE'});
+    expect(CodeReaderAsyncEffect.processLineCodeState('/**')).toEqual({state: 'DESCRIPTION', newDocumentationBlock: true});
+    expect(CodeReaderAsyncEffect.processLineCodeState('const some = "code";')).toEqual({state: 'CODE'});
 });
 
 test('getDocumentationLineContents gets line of a documentation text from an input line string.', () => {
@@ -32,29 +32,98 @@ test('getTagContents returns the tag value from a tag documentation.', () => {
     expect(CodeReaderAsyncEffect.getTagContents('@example')).toBe('true');
 });
 
-test('processTag returns Either of documentation of a tag line.', () => {
-    expect(CodeReaderAsyncEffect.processTag('true')('example') instanceof Either).toBe(true);
-    expect(CodeReaderAsyncEffect.processTag('true')('example').value).toEqual({state: 'EXAMPLE'});
-    expect(CodeReaderAsyncEffect.processTag('true')('pure').value).toEqual({state: 'TAG', contents: {tags: {pure: 'true'}}});
-    expect(CodeReaderAsyncEffect.processTag('{string} description')('param').value).toEqual({state: 'TAG', contents: {tags: {param: '{string} description'}}});
+test('processTag returns documentation of a tag line.', () => {
+    expect(CodeReaderAsyncEffect.processTag('true')('example')).toEqual({state: 'EXAMPLE'});
+    expect(CodeReaderAsyncEffect.processTag('true')('pure')).toEqual({state: 'TAG', contents: {tags: [{pure: 'true'}]}});
+    expect(CodeReaderAsyncEffect.processTag('{string} description')('param')).toEqual({state: 'TAG', contents: {tags: [{param: '{string} description'}]}});
 });
 
-test('processTextOrTag returns Either of text or a tag depending on found content.', () => {
-    expect(CodeReaderAsyncEffect.processTextOrTag('description')('some description') instanceof Either).toBe(true);
-    expect(CodeReaderAsyncEffect.processTextOrTag('description')('some description').value).toEqual({contents:{description:['some description']}});
-    expect(CodeReaderAsyncEffect.processTextOrTag('example')('some example').value).toEqual({contents:{example:['some example']}});
-    expect(CodeReaderAsyncEffect.processTextOrTag('description')('@something else').value).toEqual({state: 'TAG', contents: {tags: {something: 'else'}}});
-    expect(CodeReaderAsyncEffect.processTextOrTag('description')('@1').value).toEqual({});
-    expect(CodeReaderAsyncEffect.processTextOrTag('description')('@12').value).toEqual({state: 'TAG', contents: {tags: {'12': 'true'}}});
-    expect(CodeReaderAsyncEffect.processTextOrTag('description')('1').value).toEqual({});
-    expect(CodeReaderAsyncEffect.processTextOrTag('description')('12').value).toEqual({contents:{description:['12']}});
+test('processTextOrTag returns text or a tag depending on found content.', () => {
+    expect(CodeReaderAsyncEffect.processTextOrTag('description')('some description')).toEqual({contents:{description:['some description']}});
+    expect(CodeReaderAsyncEffect.processTextOrTag('example')('some example')).toEqual({contents:{example:['some example']}});
+    expect(CodeReaderAsyncEffect.processTextOrTag('description')('@something else')).toEqual({state: 'TAG', contents: {tags: [{something: 'else'}]}});
+    expect(CodeReaderAsyncEffect.processTextOrTag('description')('@1')).toEqual({});
+    expect(CodeReaderAsyncEffect.processTextOrTag('description')('@12')).toEqual({state: 'TAG', contents: {tags: [{'12': 'true'}]}});
+    expect(CodeReaderAsyncEffect.processTextOrTag('description')('1')).toEqual({});
+    expect(CodeReaderAsyncEffect.processTextOrTag('description')('12')).toEqual({contents:{description:['12']}});
 });
 
-test('processLineTextState returns Either of text or a tag depending on found content.', () => {
-    expect(CodeReaderAsyncEffect.processLineTextState('example')('* some example') instanceof Either).toBe(true);
-    expect(CodeReaderAsyncEffect.processLineTextState('example')('* some example').value).toEqual({contents:{example:['some example']}});
-    expect(CodeReaderAsyncEffect.processLineTextState('description')('* some description').value).toEqual({contents:{description:['some description']}});
-    expect(CodeReaderAsyncEffect.processLineTextState('example')('* @something else').value).toEqual({state: 'TAG', contents: {tags: {something: 'else'}}});
-    expect(CodeReaderAsyncEffect.processLineTextState('example')('*/').value).toEqual({state: 'CODE'});
-    expect(CodeReaderAsyncEffect.processLineTextState('example')('no star').value).toEqual({});
+test('processLineTextState returns text or a tag depending on found content.', () => {
+    expect(CodeReaderAsyncEffect.processLineTextState('example')('* some example')).toEqual({contents:{example:['some example']}});
+    expect(CodeReaderAsyncEffect.processLineTextState('description')('* some description')).toEqual({contents:{description:['some description']}});
+    expect(CodeReaderAsyncEffect.processLineTextState('example')('* @something else')).toEqual({state: 'TAG', contents: {tags: [{something: 'else'}]}});
+    expect(CodeReaderAsyncEffect.processLineTextState('example')('*/')).toEqual({state: 'CODE'});
+    expect(CodeReaderAsyncEffect.processLineTextState('example')('no star')).toEqual({});
+});
+
+test('processLineBasedOnState accepts the current state and returns the correct function for line processing.', () => {
+    expect(CodeReaderAsyncEffect.processLineBasedOnState('CODE')).toEqual(CodeReaderAsyncEffect.processLineCodeState);
+    expect(String(CodeReaderAsyncEffect.processLineBasedOnState('DESCRIPTION'))).toBe(String(CodeReaderAsyncEffect.processLineTextState('description')));
+    expect(String(CodeReaderAsyncEffect.processLineBasedOnState('TAG'))).toBe(String(CodeReaderAsyncEffect.processLineTextState('description')));
+    expect(String(CodeReaderAsyncEffect.processLineBasedOnState('EXAMPLE'))).toBe(String(CodeReaderAsyncEffect.processLineTextState('example')));
+});
+
+test('processLine merges proccessed lines with data from a new line.', () => {
+    expect(CodeReaderAsyncEffect.processLine({
+        state: 'CODE',
+        numberOfDocumentatonBlocks: 1,
+        contents: [{
+            description: ['first block'],
+            tags: [{
+                pure: 'true'
+            }],
+            example: []
+        }]
+    }, {toString: () => '/**'})).toEqual({
+        state: 'DESCRIPTION',
+        numberOfDocumentatonBlocks: 2,
+        contents: [{
+            description: ['first block'],
+            tags: [{
+                pure: 'true'
+            }],
+            example: []
+        },
+        {
+            description: [],
+            tags: [],
+            example: []
+        }]
+    });
+
+    expect(CodeReaderAsyncEffect.processLine({
+        state: 'DESCRIPTION',
+        numberOfDocumentatonBlocks: 2,
+        contents: [
+            {
+                description: ['first block'],
+                tags: [],
+                example: []
+            },
+            {
+                description: ['line 1'],
+                tags: [{
+                    pure: 'true'
+                }],
+                example: ['example1','example2']
+            }
+        ]
+    }, {toString: () => ' * line 2'})).toEqual({
+        state: 'DESCRIPTION',
+        numberOfDocumentatonBlocks: 2,
+        contents: [
+            {
+                description: ['first block'],
+                tags: [],
+                example: []
+            },
+            {
+                description: ['line 1','line 2'],
+                tags: [{
+                    pure: 'true'
+                }],
+                example: ['example1','example2']
+            }
+        ]
+    });
 });

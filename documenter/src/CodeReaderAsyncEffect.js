@@ -1,22 +1,12 @@
-import {
-    AsyncEffect,
-    Either,
-    either,
-    identity,
-    filter,
-    endsWith,
-    reduce,
-    trim,
-    Case,
-    isEqual,
-    lowerCaseOf, startsWith, lengthOf, substr, search
-} from "@7urtle/lambda";
+import {AsyncEffect, Either, either, identity, filter, endsWith, reduce, trim, Case, isEqual, lowerCaseOf,
+    startsWith, lengthOf, substr, search, concat, deepInspect} from "@7urtle/lambda";
 import readline from "readline";
 import readlines from 'gen-readlines';
+import merge from 'deepmerge';
 import fs from "fs";
 
 const states = {
-    ERROR: 'ERROR',
+    //ERROR: 'ERROR',
     CODE: 'CODE',
     DESCRIPTION: 'DESCRIPTION',
     TAG: 'TAG',
@@ -62,15 +52,15 @@ const getDocumentationLineContents = line =>
  * 
  * @pure
  * @param {string} line 
- * @returns {Either}
+ * @returns {object}
  * @example
  * processLineCodeState('/**');
- * // => Either.of({state: DESCRIPTION})
+ * // => {state: DESCRIPTION}
  */
 const processLineCodeState = line =>
     isEqual('/**')(line)
-        ? Either.of({state: states.DESCRIPTION})
-        : Either.of({state: states.CODE});
+        ? {state: states.DESCRIPTION, newDocumentationBlock: true}
+        : {state: states.CODE};
 
 /**
  * positionToWhiteSpaceOrStringLength returns the position of the first white space or a string length.
@@ -111,99 +101,110 @@ const getTag = contents => substr(positionToWhiteSpaceOrStringLength(contents) -
 const getTagContents = contents => isEqual(search(' ')(contents))(undefined) ? 'true' : trim(substr(lengthOf(contents))(positionToWhiteSpaceOrStringLength(contents))(contents));
 
 /**
- * processTag returns Either of documentation of a tag line.
+ * processTag returns documentation of a tag line.
  * 
  * @pure
  * @param {string} tagContents 
  * @param {string} tag
- * @returns {Either}
+ * @returns {object}
  * @example
  * processTag('tag')('label');
- * // => Either.of({
+ * // => {
  *   state: "TAG",
  *     contents: {
- *       tags: {
+ *       tags: [{
  *         something: "else"
- *       }
+ *       }]
  *    }
- * })
+ * }
  */
 const processTag = tagContents => tag =>
     isEqual(lowerCaseOf(tag))('example')
-        ? Either.of({state: states.EXAMPLE})
-        : Either.of({
+        ? {state: states.EXAMPLE}
+        : {
             state: states.TAG,
             contents: {
-                tags: {
+                tags: [{
                     [tag]: tagContents
-                }
+                }]
             }
-        });
+        };
 
 /**
- * processExampleOrTag returns Either of text or a tag depending on found content.
+ * processExampleOrTag returns text or a tag depending on found content.
  * 
  * @pure
  * @param {string} contents
- * @returns {Either}
+ * @returns {object}
  * @example
  * processTextOrTag('example')('some example')
- * // => Eithert.of({
+ * // => {
  *   contents: {
  *     example: ['some example']
  *   }
- * })
+ * }
  * 
  * processTextOrTag('example')(('@something else')
- * // => Either.of({
+ * // => {
  *   state: "TAG",
  *     contents: {
  *       tags: {
  *         something: "else"
  *       }
  *    }
- * })
+ * }
  */
 const processTextOrTag = type => contents =>
     startsWith('@')(contents)
-        ? (lengthOf(contents) > 2 ? processTag(getTagContents(contents))(getTag(contents)) : Either.of({}))
-        : lengthOf(contents) > 1 ? Either.of({contents:{[type]:[contents]}}) : Either.of({});
+        ? (lengthOf(contents) > 2 ? processTag(getTagContents(contents))(getTag(contents)) : {})
+        : lengthOf(contents) > 1 ? {contents:{[type]:[contents]}} : {};
 
 /**
- * processLineTextState returns Either of text or a tag depending on found content.
+ * processLineTextState returns text or a tag depending on found content.
  * 
  * @pure
  * @param {string} contents
- * @returns {Either}
+ * @returns {object}
  * @example
  * processLineTextState('example')('* some example')
- * // => Eithert.of({
+ * // => {
  *   contents: {
  *     example: ['some example']
  *   }
- * })
+ * }
  * 
  * processLineTextState('example')('* @something else')
- * // => Either.of({
+ * // => {
  *   state: "TAG",
  *     contents: {
  *       tags: {
  *         something: "else"
  *       }
  *    }
- * })
+ * }
  */
 const processLineTextState = type => line =>
     startsWith('*')(line)
         ? isEqual('*/')(line)
-            ? Either.of({state: states.CODE})
+            ? {state: states.CODE}
             : processTextOrTag(type)(getDocumentationLineContents(line))
-        : Either.of({}) // lines not starting with a star are ignored
+        : {} // lines not starting with a star are ignored
 
+/**
+ * processLineBasedOnState accepts the current state and returns the correct function for line processing.
+ * 
+ * @pure
+ * @param {string} state 
+ * @returns {function}
+ * 
+ * @example
+ * processLineBasedOnState('CODE');
+ * // => processLineCodeState
+ */
 const processLineBasedOnState = state =>
     Case
     .of([
-        [states.ERROR, identity],
+        //[states.ERROR, identity],
         [states.CODE, processLineCodeState],
         [states.DESCRIPTION, processLineTextState('description')],
         [states.TAG, processLineTextState('description')],
@@ -211,10 +212,70 @@ const processLineBasedOnState = state =>
     ])
     .match(state);
 
-const mergeProcessedLines = processedLines => newLine => processedLines;
+const mergeContentItem = label => processedLines => newData =>
+    (newData.contents && newData.contents[label])
+    ? concat(newData.contents[label])(processedLines.contents[processedLines.numberOfDocumentatonBlocks -1][label])
+    : processedLines.contents[processedLines.numberOfDocumentatonBlocks -1][label];
 
+/*const mergeData = processedLines => newData =>
+    ({
+        ...processedLines,
+        state: (newData.state) ? newData.state : processedLines.state,
+        contents: {
+            ...processedLines.contents,
+            [processedLines.numberOfDocumentatonBlocks -1]: {
+                description: mergeContentItem('description')(processedLines)(newData),
+                tags: mergeContentItem('tags')(processedLines)(newData),
+                example: mergeContentItem('example')(processedLines)(newData)
+            }
+        }
+    });*/
+const mergeData = processedLines => newData =>
+    ({
+        ...processedLines,
+        state: (newData.state) ? newData.state : processedLines.state,
+        accumulator: {
+            ...processedLines.accumulator,
+            ...newData.contents
+        }
+    });
+
+const updateNumberOfDocumentatonBlocks = processedLines => newData =>
+    ({
+        ...processedLines,
+        numberOfDocumentatonBlocks: newData.newDocumentationBlock ? ++processedLines.numberOfDocumentatonBlocks : processedLines.numberOfDocumentatonBlocks,
+        accumulator: {
+            description: [],
+            tags: [],
+            example: []
+        }
+    });
+
+const mergeDocumentationContents = processedLines => newData =>
+    mergeData(updateNumberOfDocumentatonBlocks(processedLines)(newData))(newData);
+    
 //const processLine = line => processLineBasedOnState(documentation.state)(trim(line));
-const processLine = (processedLines, line) => processLineBasedOnState(processedLines.state)(trim(line.toString));
+/**
+ * processLine merges proccessed lines with data from a new line.
+ * 
+ * @pure
+ * @param {object} processedLines 
+ * @param {EventListenerObject} line
+ * @returns {object}
+ * @example
+ * processLine({state: 'CODE'})({toString: () => 'some description'});
+ * // =>
+ * {
+ *   state: 'DESCRIPTION',
+ *   contents: [{
+ *     description: ['some description'],
+ *     tags: {},
+ *     example: []
+ *   }]
+ * }
+ */
+const processLine = (processedLines, line) =>
+    mergeDocumentationContents(processedLines)(processLineBasedOnState(processedLines.state)(trim(line.toString())));
 
 /**
  * getJSFilesInDirectory provides an array of all .js files in a provided path.
@@ -250,9 +311,10 @@ const processOneFile = path =>
     reduce
     ({
         state: states.CODE,
+        numberOfDocumentatonBlocks: 0,
         contents: [{
             description: [],
-            tags: {},
+            tags: [],
             example: []
         }]
     })
@@ -294,5 +356,7 @@ export {
     getTagContents,
     processTag,
     processTextOrTag,
-    processLineTextState
+    processLineTextState,
+    processLineBasedOnState,
+    processLine
 };
