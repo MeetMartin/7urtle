@@ -48,7 +48,6 @@
     "babel-jest": "^26.0.1",
     "babel-loader": "^8.1.0",
     "commander": "^3.0.2",
-    "deepmerge": "^4.2.2",
     "gen-readlines": "^0.2.0",
     "jest": "^26.0.1",
     "nodemon": "^2.0.3",

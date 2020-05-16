@@ -52,7 +52,7 @@ test('processLineTextState returns text or a tag depending on found content.', (
     expect(CodeReaderAsyncEffect.processLineTextState('example')('* some example')).toEqual({contents:{example:['some example']}});
     expect(CodeReaderAsyncEffect.processLineTextState('description')('* some description')).toEqual({contents:{description:['some description']}});
     expect(CodeReaderAsyncEffect.processLineTextState('example')('* @something else')).toEqual({state: 'TAG', contents: {tags: [{something: 'else'}]}});
-    expect(CodeReaderAsyncEffect.processLineTextState('example')('*/')).toEqual({state: 'CODE'});
+    expect(CodeReaderAsyncEffect.processLineTextState('example')('*/')).toEqual({state: 'END'});
     expect(CodeReaderAsyncEffect.processLineTextState('example')('no star')).toEqual({});
 });
 
@@ -66,64 +66,162 @@ test('processLineBasedOnState accepts the current state and returns the correct 
 test('processLine merges proccessed lines with data from a new line.', () => {
     expect(CodeReaderAsyncEffect.processLine({
         state: 'CODE',
-        numberOfDocumentatonBlocks: 1,
-        contents: [{
-            description: ['first block'],
-            tags: [{
-                pure: 'true'
-            }],
-            example: []
-        }]
-    }, {toString: () => '/**'})).toEqual({
-        state: 'DESCRIPTION',
-        numberOfDocumentatonBlocks: 2,
-        contents: [{
-            description: ['first block'],
-            tags: [{
-                pure: 'true'
-            }],
-            example: []
-        },
-        {
+        contents: [],
+        accumulator: {
             description: [],
             tags: [],
             example: []
-        }]
+        }
+    }, {toString: () => '/**'})).toEqual({
+        state: 'DESCRIPTION',
+        contents: [],
+        accumulator: {
+            description: [],
+            tags: [],
+            example: []
+        }
     });
 
     expect(CodeReaderAsyncEffect.processLine({
         state: 'DESCRIPTION',
-        numberOfDocumentatonBlocks: 2,
-        contents: [
-            {
-                description: ['first block'],
-                tags: [],
-                example: []
-            },
-            {
-                description: ['line 1'],
-                tags: [{
-                    pure: 'true'
-                }],
-                example: ['example1','example2']
-            }
-        ]
+        contents: [],
+        accumulator: {
+            description: ['line 1'],
+            tags: [],
+            example: []
+        }
     }, {toString: () => ' * line 2'})).toEqual({
         state: 'DESCRIPTION',
-        numberOfDocumentatonBlocks: 2,
-        contents: [
-            {
-                description: ['first block'],
-                tags: [],
-                example: []
-            },
-            {
-                description: ['line 1','line 2'],
-                tags: [{
-                    pure: 'true'
-                }],
-                example: ['example1','example2']
-            }
-        ]
+        contents: [],
+        accumulator: {
+            description: ['line 1', 'line 2'],
+            tags: [],
+            example: []
+        }
+    });
+
+    expect(CodeReaderAsyncEffect.processLine({
+        state: 'DESCRIPTION',
+        contents: [],
+        accumulator: {
+            description: [],
+            tags: [],
+            example: []
+        }
+    }, {toString: () => ' * @pure'})).toEqual({
+        state: 'TAG',
+        contents: [],
+        accumulator: {
+            description: [],
+            tags: [{pure: 'true'}],
+            example: []
+        }
+    });
+
+    expect(CodeReaderAsyncEffect.processLine({
+        state: 'TAG',
+        contents: [],
+        accumulator: {
+            description: [],
+            tags: [{pure: 'true'},{param: '{string} a'}],
+            example: []
+        }
+    }, {toString: () => ' * @param {boolean} b'})).toEqual({
+        state: 'TAG',
+        contents: [],
+        accumulator: {
+            description: [],
+            tags: [{pure: 'true'},{param: '{string} a'},{param: '{boolean} b'}],
+            example: []
+        }
+    });
+
+    expect(CodeReaderAsyncEffect.processLine({
+        state: 'TAG',
+        contents: [],
+        accumulator: {
+            description: [],
+            tags: [],
+            example: []
+        }
+    }, {toString: () => ' * @example'})).toEqual({
+        state: 'EXAMPLE',
+        contents: [],
+        accumulator: {
+            description: [],
+            tags: [],
+            example: []
+        }
+    });
+
+    expect(CodeReaderAsyncEffect.processLine({
+        state: 'EXAMPLE',
+        contents: [],
+        accumulator: {
+            description: [],
+            tags: [],
+            example: ['processLineBasedOnState(\'CODE\');']
+        }
+    }, {toString: () => ' * // => processLineCodeState'})).toEqual({
+        state: 'EXAMPLE',
+        contents: [],
+        accumulator: {
+            description: [],
+            tags: [],
+            example: ['processLineBasedOnState(\'CODE\');','// => processLineCodeState']
+        }
+    });
+
+    expect(CodeReaderAsyncEffect.processLine({
+        state: 'EXAMPLE',
+        contents: [],
+        accumulator: {
+            description: ['first block'],
+            tags: [],
+            example: []
+        }
+    }, {toString: () => ' */'})).toEqual({
+        state: 'END',
+        contents: [{
+            description: ['first block'],
+            tags: [],
+            example: []
+        }],
+        accumulator: {
+            description: [],
+            tags: [],
+            example: []
+        }
+    });
+
+    expect(CodeReaderAsyncEffect.processLine({
+        state: 'EXAMPLE',
+        contents: [{
+            description: ['first block'],
+            tags: [],
+            example: []
+        }],
+        accumulator: {
+            description: ['second block'],
+            tags: [],
+            example: []
+        }
+    }, {toString: () => ' */'})).toEqual({
+        state: 'END',
+        contents: [{
+            description: ['first block'],
+            tags: [],
+            example: []
+        },
+        {
+            description: ['second block'],
+            tags: [],
+            example: []
+        }],
+        accumulator: {
+            description: [],
+            tags: [],
+            example: []
+        }
     });
 });

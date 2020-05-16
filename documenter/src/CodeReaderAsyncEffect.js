@@ -1,16 +1,17 @@
 import {AsyncEffect, Either, either, identity, filter, endsWith, reduce, trim, Case, isEqual, lowerCaseOf,
-    startsWith, lengthOf, substr, search, concat, deepInspect} from "@7urtle/lambda";
+    startsWith, lengthOf, substr, search, concat} from "@7urtle/lambda";
 import readline from "readline";
 import readlines from 'gen-readlines';
-import merge from 'deepmerge';
 import fs from "fs";
 
 const states = {
     //ERROR: 'ERROR',
     CODE: 'CODE',
+    START: 'START',
     DESCRIPTION: 'DESCRIPTION',
     TAG: 'TAG',
-    EXAMPLE: 'EXAMPLE'
+    EXAMPLE: 'EXAMPLE',
+    END: 'END'
 };
 
 /*const documentation = {
@@ -186,7 +187,7 @@ const processTextOrTag = type => contents =>
 const processLineTextState = type => line =>
     startsWith('*')(line)
         ? isEqual('*/')(line)
-            ? {state: states.CODE}
+            ? {state: states.END}
             : processTextOrTag(type)(getDocumentationLineContents(line))
         : {} // lines not starting with a star are ignored
 
@@ -204,57 +205,42 @@ const processLineTextState = type => line =>
 const processLineBasedOnState = state =>
     Case
     .of([
-        //[states.ERROR, identity],
         [states.CODE, processLineCodeState],
+        [states.START, processLineTextState('description')],
         [states.DESCRIPTION, processLineTextState('description')],
         [states.TAG, processLineTextState('description')],
-        [states.EXAMPLE, processLineTextState('example')]
+        [states.EXAMPLE, processLineTextState('example')],
+        [states.END, processLineCodeState],
     ])
     .match(state);
 
-const mergeContentItem = label => processedLines => newData =>
+const concatContentItem = label => processedLines => newData =>
     (newData.contents && newData.contents[label])
-    ? concat(newData.contents[label])(processedLines.contents[processedLines.numberOfDocumentatonBlocks -1][label])
-    : processedLines.contents[processedLines.numberOfDocumentatonBlocks -1][label];
+    ? concat(newData.contents[label])(processedLines.accumulator[label])
+    : processedLines.accumulator[label]
 
-/*const mergeData = processedLines => newData =>
-    ({
+const mergeDocumentationContents = processedLines => newData =>
+    (isEqual(newData.state)(states.END))
+    ? ({ // at the end of every code we move documentation to contents array and clear accumulator
         ...processedLines,
-        state: (newData.state) ? newData.state : processedLines.state,
-        contents: {
-            ...processedLines.contents,
-            [processedLines.numberOfDocumentatonBlocks -1]: {
-                description: mergeContentItem('description')(processedLines)(newData),
-                tags: mergeContentItem('tags')(processedLines)(newData),
-                example: mergeContentItem('example')(processedLines)(newData)
-            }
-        }
-    });*/
-const mergeData = processedLines => newData =>
-    ({
-        ...processedLines,
-        state: (newData.state) ? newData.state : processedLines.state,
-        accumulator: {
-            ...processedLines.accumulator,
-            ...newData.contents
-        }
-    });
-
-const updateNumberOfDocumentatonBlocks = processedLines => newData =>
-    ({
-        ...processedLines,
-        numberOfDocumentatonBlocks: newData.newDocumentationBlock ? ++processedLines.numberOfDocumentatonBlocks : processedLines.numberOfDocumentatonBlocks,
+        state: states.END,
+        contents: concat(processedLines.accumulator)(processedLines.contents),
         accumulator: {
             description: [],
             tags: [],
             example: []
         }
+    })
+    : ({ // with new lines of documentation we add them to accumulator
+        ...processedLines,
+        state: (newData.state) ? newData.state : processedLines.state,
+        accumulator: {
+            description: concatContentItem('description')(processedLines)(newData),
+            tags: concatContentItem('tags')(processedLines)(newData),
+            example: concatContentItem('example')(processedLines)(newData)
+        }
     });
 
-const mergeDocumentationContents = processedLines => newData =>
-    mergeData(updateNumberOfDocumentatonBlocks(processedLines)(newData))(newData);
-    
-//const processLine = line => processLineBasedOnState(documentation.state)(trim(line));
 /**
  * processLine merges proccessed lines with data from a new line.
  * 
@@ -311,8 +297,8 @@ const processOneFile = path =>
     reduce
     ({
         state: states.CODE,
-        numberOfDocumentatonBlocks: 0,
-        contents: [{
+        contents: [],
+        accumulator: [{
             description: [],
             tags: [],
             example: []
