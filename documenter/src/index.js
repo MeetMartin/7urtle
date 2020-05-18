@@ -13,7 +13,7 @@ import {
 import createLogger from "@7urtle/logger";
 
 import {getCMDInput} from './IOCommanderSyncEffect';
-import {getCodeReader} from './CodeReaderAsyncEffect';
+import {getCodeReader} from './CodeReaderSyncEffect';
 import {getDocumentationWriter} from './DocumentationWriterAsyncEffect';
 
 const logger = createLogger();
