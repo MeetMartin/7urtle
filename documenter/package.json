@@ -12,9 +12,9 @@
   ],
   "scripts": {
     "build": "webpack --progress --mode production",
-    "start": "nodemon -r @babel/register ./src/index.js --input ./src/ --output ../documentation/",
+    "dev": "nodemon -r @babel/register ./src/ --input ./src/ --output ./documentation/",
     "update": "npm outdated --depth=0 | grep -v Package | awk '{print $1}' | xargs -I% npm install %@latest --save",
-    "document": "node ./dist/documenter.min.js --input ./src/ --output ./documentation/",
+    "document": "./documenter --input ./src/ --output ./documentation/",
     "test": "jest"
   },
   "bin": {

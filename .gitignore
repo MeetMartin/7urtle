@@ -2,4 +2,5 @@
 .idea
 .sonarlint
 .vscode
+.DS_Store
 **/coverage/
