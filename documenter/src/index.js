@@ -1,22 +1,18 @@
 import createLogger from "@7urtle/logger";
 
 import IOCommanderAsyncEffect from './IOCommanderAsyncEffect';
-import CodeReaderSyncEffect from './CodeReaderAsyncEffect';
+import {getCodeReaderAsyncEffect} from './CodeReaderAsyncEffect';
 import {getDocumentationWriterAsyncEffect} from './DocumentationWriterAsyncEffect';
 
 const logger = createLogger();
 
+/**
+ * Executes the program that reads --input and --output from commandline and generates documentation object that is save as JSON.
+ */
 IOCommanderAsyncEffect
-.flatMap(
-  configuration =>
-    (EitherDocumentation =>
-      EitherDocumentation.isLeft()
-      ? logger.error(EitherDocumentation.value)
-      : getDocumentationWriterAsyncEffect(configuration.output)(EitherDocumentation.value)
-    )
-    (Either.try(CodeReaderSyncEffect.trigger(configuration.input)))
-)
+.flatMap(getCodeReaderAsyncEffect)
+.flatMap(getDocumentationWriterAsyncEffect)
 .trigger(
   logger.error,
-  () => logger.info(`Documentation from ${configuration.input} was successfuly saved to ${configuration.output}.`)
+  configuration => logger.info(`Documentation from ${configuration.input} was successfuly saved to ${configuration.output}.`) || process.exit(0)
 );

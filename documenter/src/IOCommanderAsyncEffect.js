@@ -44,7 +44,8 @@ const IOCommanderAsyncEffect =
     .map(a => a.option('-o, --output <output>', 'output directory'))
     .map(a => a.parse(process.argv))
     .flatMap(isDirectoryValid('input'))
-    .flatMap(isDirectoryValid('output'));
+    .flatMap(isDirectoryValid('output'))
+    .map(a => ({input: a.input, output: a.output}));
 
 export default IOCommanderAsyncEffect;
 export {
