@@ -1,5 +1,5 @@
 import {filter, endsWith, reduce, trim, Case, isEqual, lowerCaseOf, map,
-    startsWith, lengthOf, substr, search, concat, SyncEffect} from "@7urtle/lambda";
+    startsWith, lengthOf, substr, search, concat, SyncEffect, AsyncEffect} from "@7urtle/lambda";
 import readlines from 'gen-readlines';
 import fs from "fs";
 
@@ -398,24 +398,31 @@ const processLine = (processedLines, line) =>
     mergeDocumentationContents(processedLines)(processLineBasedOnState(processedLines.state)(trim(line.toString())));
 
 /**
- * JSFilesInADirectorySyncEffect returns a SyncEffect functor that provides an array of all .js files in a given path.
+ * getJSFilesInADirectoryAsyncEffect returns a AsyncEffect functor that provides a configuration object
+ * with input, output, and an array of all .js files in a given path.
  * 
- * @functor {SyncEffect}
+ * @pure
+ * @HindleyMilner getJSFilesInADirectoryAsyncEffect :: {a} -> {AsyncEffect}
+ * @param {object} configuration
+ * @returns {AsyncEffect}
  * @example
- * JSFilesInADirectorySyncEffect.trigger('./tests/testable') 
- * // => ['Case.js','core.js']
- * 
- * JSFilesInADirectorySyncEffect.trigger('./i-dont-exist') 
- * // => throws: ENOENT: no such file or directory, scandir './i-dont-exist'
+ * getJSFilesInADirectoryAsyncEffect({input: './input/', output: './output/'}).trigger(
+ *   error => console.error(error),
+ *   result => console.log(result) // ==> {input: './input/', output: './output/', files: ['./input/Case.js','./input/core.js']}
+ * )
  */
-const JSFilesInADirectorySyncEffect =
-    SyncEffect
-    .of(path =>
+const getJSFilesInADirectoryAsyncEffect = configuration =>
+    AsyncEffect
+    .of((reject, resolve) =>
         (path =>
-            map(file => path + file)
-                (filter(endsWith('.js'))
-                    (fs.readdirSync(path)))
-        )(endsWith('/')(path) ? path : path + '/')
+            resolve({
+                input: path,
+                output: endsWith('/')(configuration.output) ? configuration.output : configuration.output + '/',
+                files: map(file => path + file)
+                          (filter(endsWith('.js'))
+                          (fs.readdirSync(path)))
+            })
+        )(endsWith('/')(configuration.input) ? configuration.input : configuration.input + '/')
     );
 
 /**
@@ -457,38 +464,47 @@ const processOneFile = documentation => generator =>
     (generator.next());
 
 /**
- * CodeReaderSyncEffect returns a SyncEffect functor that provides an object of documentation of all .js files in a given path.
+ * getCodeReaderAsyncEffect returns a AsyncEffect functor that provides an object of configuration
+ * and documentation of all .js files in a given input path.
  *
- * @functor {SyncEffect}
+ * @pure
+ * @HindleyMilner getCodeReaderAsyncEffect :: {a} -> {AsyncEffect}
+ * @param {object} configuration
+ * @returns {AsyncEffect}
  * @example
- * CodeReaderSyncEffect.trigger('./tests/testable')
- * // => {documentation object}
- * 
- * CodeReaderSyncEffect.trigger('./i-dont-exist')
- * // => throws: ENOENT: no such file or directory, scandir './i-dont-exist'
+ * getCodeReaderAsyncEffect({input: './input/', output: './output/'}).trigger(
+ *   error => console.error(error),
+ *   result => console.log(result)
+ *   // ==> {
+ *      input: './input/', output: './output/',
+ *      files: ['./input/Case.js','./input/core.js'],
+ *      documentation: {...}
+ *   }
+ * )
  */
-const CodeReaderSyncEffect =
-    JSFilesInADirectorySyncEffect
-    .map(
-        reduce
-        ([])
-        ((documentation, file) => [
-            ...documentation,
-            {
-                file: file,
-                contents: processOneFile({
-                    state: 'CODE',
-                    contents: [],
-                    accumulator: {
-                        description: [],
-                        tags: [],
-                        example: []
-                    }
-                })(FileLinesGeneratorSyncEffect.trigger(file)).contents
-            }
-        ])
-    );
-export default CodeReaderSyncEffect;
+const getCodeReaderAsyncEffect = configuration =>
+    getJSFilesInADirectoryAsyncEffect(configuration)
+    .map(configurationWithFiles => ({
+        ...configurationWithFiles,
+        documentation: reduce
+            ([])
+            ((documentation, file) => [
+                ...documentation,
+                {
+                    file: file,
+                    contents: processOneFile({
+                        state: 'CODE',
+                        contents: [],
+                        accumulator: {
+                            description: [],
+                            tags: [],
+                            example: []
+                        }
+                    })(FileLinesGeneratorSyncEffect.trigger(file)).contents
+                }
+            ])
+            (configurationWithFiles.files)
+    }));
 export {
     processLineCodeState,
     getDocumentationLineContents,
@@ -504,8 +520,8 @@ export {
     getNameFromLine,
     concatContentItem,
     mergeDocumentationContents,
-    JSFilesInADirectorySyncEffect,
+    getJSFilesInADirectoryAsyncEffect,
     FileLinesGeneratorSyncEffect,
     processOneFile,
-    CodeReaderSyncEffect
+    getCodeReaderAsyncEffect
 };

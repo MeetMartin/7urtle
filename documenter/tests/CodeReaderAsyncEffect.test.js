@@ -1,86 +1,86 @@
-import * as CodeReaderSyncEffect from '../src/CodeReaderSyncEffect';
+import * as CodeReaderAsyncEffect from '../src/CodeReaderAsyncEffect';
 
 jest.mock('fs');
 jest.mock('gen-readlines');
 
 test('getNameFromLine returns the name of class or a function from a line of source file.', () => {
-    expect(CodeReaderSyncEffect.getNameFromLine(6)('const lambda = something => ({});')).toBe('lambda');
+    expect(CodeReaderAsyncEffect.getNameFromLine(6)('const lambda = something => ({});')).toBe('lambda');
 });
 
 test('processLineNameState returns object with a new state and the name and type of a documented function based on a source file line.', () => {
-    expect(CodeReaderSyncEffect.processLineNameState('const lambda = something => ({});')).toEqual({state: 'END', contents: {name: 'lambda', type: 'expression'}});
-    expect(CodeReaderSyncEffect.processLineNameState(' export const lambda = something => ({});')).toEqual({state: 'END', contents: {name: 'lambda', type: 'expression'}});
-    expect(CodeReaderSyncEffect.processLineNameState('     const lambda = something => ({}); ')).toEqual({state: 'END', contents: {name: 'lambda', type: 'expression'}});
-    expect(CodeReaderSyncEffect.processLineNameState('function namedFunction (something) {return something};')).toEqual({state: 'END', contents: {name: 'namedFunction', type: 'function'}});
-    expect(CodeReaderSyncEffect.processLineNameState('class myClass {}')).toEqual({state: 'END', contents: {name: 'myClass', type: 'class'}});
-    expect(CodeReaderSyncEffect.processLineNameState('let something = 1;')).toEqual({state: 'END', contents: {name: 'unknown', type: 'unknown'}});
+    expect(CodeReaderAsyncEffect.processLineNameState('const lambda = something => ({});')).toEqual({state: 'END', contents: {name: 'lambda', type: 'expression'}});
+    expect(CodeReaderAsyncEffect.processLineNameState(' export const lambda = something => ({});')).toEqual({state: 'END', contents: {name: 'lambda', type: 'expression'}});
+    expect(CodeReaderAsyncEffect.processLineNameState('     const lambda = something => ({}); ')).toEqual({state: 'END', contents: {name: 'lambda', type: 'expression'}});
+    expect(CodeReaderAsyncEffect.processLineNameState('function namedFunction (something) {return something};')).toEqual({state: 'END', contents: {name: 'namedFunction', type: 'function'}});
+    expect(CodeReaderAsyncEffect.processLineNameState('class myClass {}')).toEqual({state: 'END', contents: {name: 'myClass', type: 'class'}});
+    expect(CodeReaderAsyncEffect.processLineNameState('let something = 1;')).toEqual({state: 'END', contents: {name: 'unknown', type: 'unknown'}});
 });
 
 test('processLineCodeState changes state to description if it finds a start of a documentation comment returning Either.', () => {
-    expect(CodeReaderSyncEffect.processLineCodeState('/**')).toEqual({state: 'DESCRIPTION', newDocumentationBlock: true});
-    expect(CodeReaderSyncEffect.processLineCodeState('const some = "code";')).toEqual({state: 'CODE'});
+    expect(CodeReaderAsyncEffect.processLineCodeState('/**')).toEqual({state: 'DESCRIPTION', newDocumentationBlock: true});
+    expect(CodeReaderAsyncEffect.processLineCodeState('const some = "code";')).toEqual({state: 'CODE'});
 });
 
 test('getDocumentationLineContents gets line of a documentation text from an input line string.', () => {
-    expect(CodeReaderSyncEffect.getDocumentationLineContents('* some description ')).toBe('some description');
-    expect(CodeReaderSyncEffect.getDocumentationLineContents('some text')).toBe('ome text');
-    expect(CodeReaderSyncEffect.getDocumentationLineContents('*')).toBe('');
+    expect(CodeReaderAsyncEffect.getDocumentationLineContents('* some description ')).toBe('some description');
+    expect(CodeReaderAsyncEffect.getDocumentationLineContents('some text')).toBe('ome text');
+    expect(CodeReaderAsyncEffect.getDocumentationLineContents('*')).toBe('');
 });
 
 test('positionToWhiteSpaceOrStringLength returns the position of the first white space or a string length.', () => {
-    expect(CodeReaderSyncEffect.positionToWhiteSpaceOrStringLength('@tag label')).toBe(4);
-    expect(CodeReaderSyncEffect.positionToWhiteSpaceOrStringLength('@example')).toBe(8);
+    expect(CodeReaderAsyncEffect.positionToWhiteSpaceOrStringLength('@tag label')).toBe(4);
+    expect(CodeReaderAsyncEffect.positionToWhiteSpaceOrStringLength('@example')).toBe(8);
 });
 
 test('getTag returns the tag name from a tag documentation.', () => {
-    expect(CodeReaderSyncEffect.getTag('@tag label')).toBe('tag');
-    expect(CodeReaderSyncEffect.getTag('@example')).toBe('example');
+    expect(CodeReaderAsyncEffect.getTag('@tag label')).toBe('tag');
+    expect(CodeReaderAsyncEffect.getTag('@example')).toBe('example');
 });
 
 test('getTagContents returns the tag value from a tag documentation.', () => {
-    expect(CodeReaderSyncEffect.getTagContents('@tag label')).toBe('label');
-    expect(CodeReaderSyncEffect.getTagContents('@example')).toBe('true');
+    expect(CodeReaderAsyncEffect.getTagContents('@tag label')).toBe('label');
+    expect(CodeReaderAsyncEffect.getTagContents('@example')).toBe('true');
 });
 
 test('processTag returns documentation of a tag line.', () => {
-    expect(CodeReaderSyncEffect.processTag('true')('example')).toEqual({state: 'EXAMPLE'});
-    expect(CodeReaderSyncEffect.processTag('true')('pure')).toEqual({state: 'TAG', contents: {tags: [{pure: 'true'}]}});
-    expect(CodeReaderSyncEffect.processTag('{string} description')('param')).toEqual({state: 'TAG', contents: {tags: [{param: '{string} description'}]}});
+    expect(CodeReaderAsyncEffect.processTag('true')('example')).toEqual({state: 'EXAMPLE'});
+    expect(CodeReaderAsyncEffect.processTag('true')('pure')).toEqual({state: 'TAG', contents: {tags: [{pure: 'true'}]}});
+    expect(CodeReaderAsyncEffect.processTag('{string} description')('param')).toEqual({state: 'TAG', contents: {tags: [{param: '{string} description'}]}});
 });
 
 test('processTextOrTag returns text or a tag depending on found content.', () => {
-    expect(CodeReaderSyncEffect.processTextOrTag('description')('some description')).toEqual({contents:{description:['some description']}});
-    expect(CodeReaderSyncEffect.processTextOrTag('example')('some example')).toEqual({contents:{example:['some example']}});
-    expect(CodeReaderSyncEffect.processTextOrTag('description')('@something else')).toEqual({state: 'TAG', contents: {tags: [{something: 'else'}]}});
-    expect(CodeReaderSyncEffect.processTextOrTag('description')('@1')).toEqual({});
-    expect(CodeReaderSyncEffect.processTextOrTag('description')('@12')).toEqual({state: 'TAG', contents: {tags: [{'12': 'true'}]}});
-    expect(CodeReaderSyncEffect.processTextOrTag('description')('1')).toEqual({});
-    expect(CodeReaderSyncEffect.processTextOrTag('description')('12')).toEqual({contents:{description:['12']}});
+    expect(CodeReaderAsyncEffect.processTextOrTag('description')('some description')).toEqual({contents:{description:['some description']}});
+    expect(CodeReaderAsyncEffect.processTextOrTag('example')('some example')).toEqual({contents:{example:['some example']}});
+    expect(CodeReaderAsyncEffect.processTextOrTag('description')('@something else')).toEqual({state: 'TAG', contents: {tags: [{something: 'else'}]}});
+    expect(CodeReaderAsyncEffect.processTextOrTag('description')('@1')).toEqual({});
+    expect(CodeReaderAsyncEffect.processTextOrTag('description')('@12')).toEqual({state: 'TAG', contents: {tags: [{'12': 'true'}]}});
+    expect(CodeReaderAsyncEffect.processTextOrTag('description')('1')).toEqual({});
+    expect(CodeReaderAsyncEffect.processTextOrTag('description')('12')).toEqual({contents:{description:['12']}});
 });
 
 test('processLineTextState returns text or a tag depending on found content.', () => {
-    expect(CodeReaderSyncEffect.processLineTextState('example')('* some example')).toEqual({contents:{example:['some example']}});
-    expect(CodeReaderSyncEffect.processLineTextState('description')('* some description')).toEqual({contents:{description:['some description']}});
-    expect(CodeReaderSyncEffect.processLineTextState('example')('* @something else')).toEqual({state: 'TAG', contents: {tags: [{something: 'else'}]}});
-    expect(CodeReaderSyncEffect.processLineTextState('example')('*/')).toEqual({state: 'NAME'});
-    expect(CodeReaderSyncEffect.processLineTextState('example')('no star')).toEqual({});
+    expect(CodeReaderAsyncEffect.processLineTextState('example')('* some example')).toEqual({contents:{example:['some example']}});
+    expect(CodeReaderAsyncEffect.processLineTextState('description')('* some description')).toEqual({contents:{description:['some description']}});
+    expect(CodeReaderAsyncEffect.processLineTextState('example')('* @something else')).toEqual({state: 'TAG', contents: {tags: [{something: 'else'}]}});
+    expect(CodeReaderAsyncEffect.processLineTextState('example')('*/')).toEqual({state: 'NAME'});
+    expect(CodeReaderAsyncEffect.processLineTextState('example')('no star')).toEqual({});
 });
 
 test('processLineBasedOnState accepts the current state and returns the correct function for line processing.', () => {
-    expect(String(CodeReaderSyncEffect.processLineBasedOnState('CODE'))).toBe(String(CodeReaderSyncEffect.processLineCodeState));
-    expect(String(CodeReaderSyncEffect.processLineBasedOnState('DESCRIPTION'))).toBe(String(CodeReaderSyncEffect.processLineTextState('description')));
-    expect(String(CodeReaderSyncEffect.processLineBasedOnState('TAG'))).toBe(String(CodeReaderSyncEffect.processLineTextState('description')));
-    expect(String(CodeReaderSyncEffect.processLineBasedOnState('EXAMPLE'))).toBe(String(CodeReaderSyncEffect.processLineTextState('example')));
-    expect(String(CodeReaderSyncEffect.processLineBasedOnState('NAME'))).toBe(String(CodeReaderSyncEffect.processLineNameState));
-    expect(String(CodeReaderSyncEffect.processLineBasedOnState('END'))).toBe(String(CodeReaderSyncEffect.processLineCodeState));
+    expect(String(CodeReaderAsyncEffect.processLineBasedOnState('CODE'))).toBe(String(CodeReaderAsyncEffect.processLineCodeState));
+    expect(String(CodeReaderAsyncEffect.processLineBasedOnState('DESCRIPTION'))).toBe(String(CodeReaderAsyncEffect.processLineTextState('description')));
+    expect(String(CodeReaderAsyncEffect.processLineBasedOnState('TAG'))).toBe(String(CodeReaderAsyncEffect.processLineTextState('description')));
+    expect(String(CodeReaderAsyncEffect.processLineBasedOnState('EXAMPLE'))).toBe(String(CodeReaderAsyncEffect.processLineTextState('example')));
+    expect(String(CodeReaderAsyncEffect.processLineBasedOnState('NAME'))).toBe(String(CodeReaderAsyncEffect.processLineNameState));
+    expect(String(CodeReaderAsyncEffect.processLineBasedOnState('END'))).toBe(String(CodeReaderAsyncEffect.processLineCodeState));
 });
 
 test('concatContentItem concatenates items for object contents of accumulator.', () => {
-    expect(CodeReaderSyncEffect.concatContentItem('item')({accumulator: {item: 'a'}})({contents:{item: 'b'}})).toBe('ab');
+    expect(CodeReaderAsyncEffect.concatContentItem('item')({accumulator: {item: 'a'}})({contents:{item: 'b'}})).toBe('ab');
 });
 
 test('mergeDocumentationContents merges processedLines and new data from a new source line.', () => {
-    expect(CodeReaderSyncEffect.mergeDocumentationContents({
+    expect(CodeReaderAsyncEffect.mergeDocumentationContents({
         state: 'DESCRIPTION',
         contents: [],
         accumulator: {
@@ -104,7 +104,7 @@ test('mergeDocumentationContents merges processedLines and new data from a new s
         }
     });
 
-    expect(CodeReaderSyncEffect.mergeDocumentationContents({
+    expect(CodeReaderAsyncEffect.mergeDocumentationContents({
         state: 'NAME',
         contents: [{
             name: 'firstFunction',
@@ -150,7 +150,7 @@ test('mergeDocumentationContents merges processedLines and new data from a new s
 });
 
 test('processLine merges proccessed lines with data from a new line.', () => {
-    expect(CodeReaderSyncEffect.processLine({
+    expect(CodeReaderAsyncEffect.processLine({
         state: 'CODE',
         contents: [],
         accumulator: {
@@ -168,7 +168,7 @@ test('processLine merges proccessed lines with data from a new line.', () => {
         }
     });
 
-    expect(CodeReaderSyncEffect.processLine({
+    expect(CodeReaderAsyncEffect.processLine({
         state: 'DESCRIPTION',
         contents: [],
         accumulator: {
@@ -186,7 +186,7 @@ test('processLine merges proccessed lines with data from a new line.', () => {
         }
     });
 
-    expect(CodeReaderSyncEffect.processLine({
+    expect(CodeReaderAsyncEffect.processLine({
         state: 'DESCRIPTION',
         contents: [],
         accumulator: {
@@ -204,7 +204,7 @@ test('processLine merges proccessed lines with data from a new line.', () => {
         }
     });
 
-    expect(CodeReaderSyncEffect.processLine({
+    expect(CodeReaderAsyncEffect.processLine({
         state: 'TAG',
         contents: [],
         accumulator: {
@@ -222,7 +222,7 @@ test('processLine merges proccessed lines with data from a new line.', () => {
         }
     });
 
-    expect(CodeReaderSyncEffect.processLine({
+    expect(CodeReaderAsyncEffect.processLine({
         state: 'TAG',
         contents: [],
         accumulator: {
@@ -240,7 +240,7 @@ test('processLine merges proccessed lines with data from a new line.', () => {
         }
     });
 
-    expect(CodeReaderSyncEffect.processLine({
+    expect(CodeReaderAsyncEffect.processLine({
         state: 'EXAMPLE',
         contents: [],
         accumulator: {
@@ -258,7 +258,7 @@ test('processLine merges proccessed lines with data from a new line.', () => {
         }
     });
 
-    expect(CodeReaderSyncEffect.processLine({
+    expect(CodeReaderAsyncEffect.processLine({
         state: 'EXAMPLE',
         contents: [],
         accumulator: {
@@ -276,7 +276,7 @@ test('processLine merges proccessed lines with data from a new line.', () => {
         }
     });
 
-    expect(CodeReaderSyncEffect.processLine({
+    expect(CodeReaderAsyncEffect.processLine({
         state: 'NAME',
         contents: [{
             name: 'firstFunction',
@@ -315,7 +315,7 @@ test('processLine merges proccessed lines with data from a new line.', () => {
 });
 
 test('processLine merges proccessed lines with data from a new line.', () => {
-    expect(CodeReaderSyncEffect.processLine({
+    expect(CodeReaderAsyncEffect.processLine({
         state: 'DESCRIPTION',
         contents: [],
         accumulator: {
@@ -335,22 +335,46 @@ test('processLine merges proccessed lines with data from a new line.', () => {
     });
 });
 
-test('JSFilesInADirectorySyncEffect provides an array of all .js files in a provided path.', () => {
-    expect(CodeReaderSyncEffect.JSFilesInADirectorySyncEffect.trigger('./existing-directory')).toEqual(['./existing-directory/Case.js','./existing-directory/core.js']);
-    expect(CodeReaderSyncEffect.JSFilesInADirectorySyncEffect.trigger('./existing-directory/')).toEqual(['./existing-directory/Case.js','./existing-directory/core.js']);
-    expect(() => CodeReaderSyncEffect.JSFilesInADirectorySyncEffect.trigger('./i-dont-exist')).toThrow('ENOENT: no such file or directory, scandir \'./i-dont-exist/\'');
+test('getJSFilesInADirectoryAsyncEffect returns a AsyncEffect functor that provides a configuration object with input, output, and an array of all .js files in a given path.', done => {
+    CodeReaderAsyncEffect.getJSFilesInADirectoryAsyncEffect({input: './existing-directory/', output: './existing-directory/'}).trigger(
+        error => {
+            done.fail('getJSFilesInADirectoryAsyncEffect should not end in error: ' + error);
+        },
+        result => {
+            expect(result).toEqual({input: './existing-directory/', output: './existing-directory/', files: ['./existing-directory/Case.js','./existing-directory/core.js']});
+            done();
+        }
+    );
+    CodeReaderAsyncEffect.getJSFilesInADirectoryAsyncEffect({input: './existing-directory', output: './existing-directory'}).trigger(
+        error => {
+            done.fail('getJSFilesInADirectoryAsyncEffect should not end in error: ' + error);
+        },
+        result => {
+            expect(result).toEqual({input: './existing-directory/', output: './existing-directory/', files: ['./existing-directory/Case.js','./existing-directory/core.js']});
+            done();
+        }
+    );
+    CodeReaderAsyncEffect.getJSFilesInADirectoryAsyncEffect({input: './i-dont-exist/', output: './i-dont-exist/'}).trigger(
+        error => {
+            expect(error).toBe('ENOENT: no such file or directory, scandir \'./i-dont-exist/\'');
+            done();
+        },
+        result => {
+            done.fail('getJSFilesInADirectoryAsyncEffect should not be successful with result: ' + result);
+        }
+    );
 });
 
 test('FileLinesGeneratorSyncEffect returns a SyncEffect Functor of a generator that provides all lines of a file.', () => {
-    expect(CodeReaderSyncEffect.FileLinesGeneratorSyncEffect.trigger('./existing-directory/core.js').next().done).toBe(false);
-    expect(CodeReaderSyncEffect.FileLinesGeneratorSyncEffect.trigger('./i-dont-exist').next().done).toBe(true);
+    expect(CodeReaderAsyncEffect.FileLinesGeneratorSyncEffect.trigger('./existing-directory/core.js').next().done).toBe(false);
+    expect(CodeReaderAsyncEffect.FileLinesGeneratorSyncEffect.trigger('./i-dont-exist').next().done).toBe(true);
 });
 
 test('processOneFile recursively reads one file and returns an object with processed documentation.', () => {
     function* generator(){
         yield 'some code';
     };
-    expect(CodeReaderSyncEffect.processOneFile({
+    expect(CodeReaderAsyncEffect.processOneFile({
         state: 'CODE',
         contents: [],
         accumulator: {
@@ -369,6 +393,17 @@ test('processOneFile recursively reads one file and returns an object with proce
     });
 });
 
-test('CodeReaderSyncEffect returns a SyncEffect functor that provides an object of documentation of all .js files in a given path.', () => {
-    expect(typeof CodeReaderSyncEffect.CodeReaderSyncEffect.trigger('./existing-directory')).toBe('object');
+test('getCodeReaderAsyncEffect returns a AsyncEffect functor that provides an object of configuration and documentation of all .js files in a given input path.', done => {
+    CodeReaderAsyncEffect.getCodeReaderAsyncEffect({input: './existing-directory/', output: './existing-directory/'}).trigger(
+        error => {
+            done.fail('getCodeReaderAsyncEffect should not end in error: ' + error);
+        },
+        result => {
+            expect(result.input).toBe('./existing-directory/');
+            expect(result.output).toBe('./existing-directory/');
+            expect(result.files).toEqual(['./existing-directory/Case.js','./existing-directory/core.js']);
+            expect(result.documentation.length).toBe(2);
+            done();
+        }
+    );
 });

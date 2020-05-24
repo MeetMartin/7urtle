@@ -1,20 +1,22 @@
-import {isUndefined} from "@7urtle/lambda";
 import createLogger from "@7urtle/logger";
 
-import {getCMDInput} from './IOCommanderSyncEffect';
-import CodeReaderSyncEffect from './CodeReaderSyncEffect';
-import {getDocumentationWriter} from './DocumentationWriterAsyncEffect';
+import IOCommanderAsyncEffect from './IOCommanderAsyncEffect';
+import CodeReaderSyncEffect from './CodeReaderAsyncEffect';
+import {getDocumentationWriterAsyncEffect} from './DocumentationWriterAsyncEffect';
 
 const logger = createLogger();
 
-// Execution starts here
-const IOConfiguration = getCMDInput(logger);
-
-const documentationJSON = isUndefined(IOConfiguration.input) || isUndefined(IOConfiguration.output)
-    ? logger.error(`input and/or output are passed as undefined.`)
-    : logger.info(`Processing directory "${IOConfiguration.input}".`)
-      && getCodeReader(IOConfiguration.input)(processLine)
-        .trigger(
-            logger.error,
-            onFileEnd(logger)(IOConfiguration.output)(documentation)
-        );
+IOCommanderAsyncEffect
+.flatMap(
+  configuration =>
+    (EitherDocumentation =>
+      EitherDocumentation.isLeft()
+      ? logger.error(EitherDocumentation.value)
+      : getDocumentationWriterAsyncEffect(configuration.output)(EitherDocumentation.value)
+    )
+    (Either.try(CodeReaderSyncEffect.trigger(configuration.input)))
+)
+.trigger(
+  logger.error,
+  () => logger.info(`Documentation from ${configuration.input} was successfuly saved to ${configuration.output}.`)
+);

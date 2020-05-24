@@ -1,4 +1,4 @@
-import {AsyncEffect, Either, either, identity} from "@7urtle/lambda";
+import {AsyncEffect} from "@7urtle/lambda";
 import fs from "fs";
 
 /**
@@ -6,10 +6,16 @@ import fs from "fs";
  * of a documentation writer.
  *
  * @pure
- * @HindleyMilner getDocumentationWriter :: a -> {b} -> {c}
+ * @HindleyMilner getDocumentationWriter :: a -> {b} -> {AsyncEffect}
  * @param string path
  * @param {object} documentation
  * @returns {AsyncEffect}
+ * @example
+ * getDocumentationWriterAsyncEffect('./existing-output/')(documentation).trigger(
+ *   error => console.error(error),
+ *   result => console.info('Documentation is saved')
+ * );
+ * // => 'Documentation is saved'
  */
 const getDocumentationWriterAsyncEffect = path => documentation =>
     AsyncEffect.of(
