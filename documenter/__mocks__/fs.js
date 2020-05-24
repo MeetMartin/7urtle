@@ -21,4 +21,13 @@ fs.readdirSync = path => {
 
 fs.existsSync = path => filesWithPath.includes(path);
 
+let writeFileSuccess = true;
+
+fs.writeFile = (path, contents, coding, callback) => writeFileSuccess ? contents : callback('Unknown error occured.');
+
+const setWriteFileSuccess = arg => {
+    writeFileSuccess = arg;
+};
+
+export {setWriteFileSuccess};
 export default fs;
