@@ -1,5 +1,8 @@
 import * as CodeReaderSyncEffect from '../src/CodeReaderSyncEffect';
 
+jest.mock('fs');
+jest.mock('gen-readlines');
+
 test('getNameFromLine returns the name of class or a function from a line of source file.', () => {
     expect(CodeReaderSyncEffect.getNameFromLine(6)('const lambda = something => ({});')).toBe('lambda');
 });
@@ -333,13 +336,13 @@ test('processLine merges proccessed lines with data from a new line.', () => {
 });
 
 test('JSFilesInADirectorySyncEffect provides an array of all .js files in a provided path.', () => {
-    expect(CodeReaderSyncEffect.JSFilesInADirectorySyncEffect.trigger('./tests/testable')).toEqual(['./tests/testable/Case.js','./tests/testable/core.js']);
-    expect(CodeReaderSyncEffect.JSFilesInADirectorySyncEffect.trigger('./tests/testable/')).toEqual(['./tests/testable/Case.js','./tests/testable/core.js']);
+    expect(CodeReaderSyncEffect.JSFilesInADirectorySyncEffect.trigger('./existing-directory')).toEqual(['./existing-directory/Case.js','./existing-directory/core.js']);
+    expect(CodeReaderSyncEffect.JSFilesInADirectorySyncEffect.trigger('./existing-directory/')).toEqual(['./existing-directory/Case.js','./existing-directory/core.js']);
     expect(() => CodeReaderSyncEffect.JSFilesInADirectorySyncEffect.trigger('./i-dont-exist')).toThrow('ENOENT: no such file or directory, scandir \'./i-dont-exist/\'');
 });
 
 test('FileLinesGeneratorSyncEffect returns a SyncEffect Functor of a generator that provides all lines of a file.', () => {
-    expect(CodeReaderSyncEffect.FileLinesGeneratorSyncEffect.trigger('./tests/testable/core.js').next().done).toBe(false);
+    expect(CodeReaderSyncEffect.FileLinesGeneratorSyncEffect.trigger('./existing-directory/core.js').next().done).toBe(false);
     expect(CodeReaderSyncEffect.FileLinesGeneratorSyncEffect.trigger('./i-dont-exist').next().done).toBe(true);
 });
 
@@ -367,5 +370,5 @@ test('processOneFile recursively reads one file and returns an object with proce
 });
 
 test('CodeReaderSyncEffect returns a SyncEffect functor that provides an object of documentation of all .js files in a given path.', () => {
-    expect(typeof CodeReaderSyncEffect.CodeReaderSyncEffect.trigger('./tests/testable')).toBe('object');
+    expect(typeof CodeReaderSyncEffect.CodeReaderSyncEffect.trigger('./existing-directory')).toBe('object');
 });

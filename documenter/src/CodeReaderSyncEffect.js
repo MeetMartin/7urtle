@@ -1,4 +1,4 @@
-import {filter, endsWith, reduce, trim, Case, isEqual, lowerCaseOf, map, testRegEx,
+import {filter, endsWith, reduce, trim, Case, isEqual, lowerCaseOf, map,
     startsWith, lengthOf, substr, search, concat, SyncEffect} from "@7urtle/lambda";
 import readlines from 'gen-readlines';
 import fs from "fs";
@@ -400,7 +400,6 @@ const processLine = (processedLines, line) =>
 /**
  * JSFilesInADirectorySyncEffect returns a SyncEffect functor that provides an array of all .js files in a given path.
  * 
- * @pure
  * @functor {SyncEffect}
  * @example
  * JSFilesInADirectorySyncEffect.trigger('./tests/testable') 
@@ -460,7 +459,6 @@ const processOneFile = documentation => generator =>
 /**
  * CodeReaderSyncEffect returns a SyncEffect functor that provides an object of documentation of all .js files in a given path.
  *
- * @pure
  * @functor {SyncEffect}
  * @example
  * CodeReaderSyncEffect.trigger('./tests/testable')
