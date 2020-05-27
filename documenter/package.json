@@ -8,7 +8,8 @@
     "dist/*",
     "src/*",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "documenter"
   ],
   "scripts": {
     "build": "webpack --progress --mode production",

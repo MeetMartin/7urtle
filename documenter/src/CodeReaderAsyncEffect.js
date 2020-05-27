@@ -505,6 +505,7 @@ const getCodeReaderAsyncEffect = configuration =>
             ])
             (configurationWithFiles.files)
     }));
+
 export {
     processLineCodeState,
     getDocumentationLineContents,
