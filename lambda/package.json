@@ -13,7 +13,8 @@
   "scripts": {
     "build": "webpack --progress --mode production",
     "update": "npm outdated --depth=0 | grep -v Package | awk '{print $1}' | xargs -I% npm install %@latest --save",
-    "test": "jest --silent"
+    "test": "jest --silent",
+    "maintain": "npm install & npm update && npm audit fix --force && npm run build"
   },
   "repository": {
     "type": "git",

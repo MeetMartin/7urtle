@@ -19,17 +19,17 @@ const states = {
  * @pure
  * @function
  * @HindleyMilner getNameFromLine :: a -> b
- * @param {number} lenght 
+ * @param {number} length
  * @param {string} line
  * @returns {string}
  * @example
  * getNameFromLine(6)('const lambda = a => b => a + b');
  * // => lambda
  */
-const getNameFromLine = lenght => line =>
+const getNameFromLine = length => line =>
     (
         contents => substr(search(' ')(contents))(0)(contents)
-    )(substr(lengthOf(line))(lenght)(line));
+    )(substr(lengthOf(line))(length)(line));
 
 /**
  * processLineNameState returns object with a new state and the name and type of a documented function based on a source file line.
@@ -80,7 +80,7 @@ const processLineNameState = line =>
         )
         (startsWith('export ')(line) ? substr(lengthOf(line))(7)(line) : line)
     )
-    (trim(line))
+    (trim(line));
 
 /**
  * getDocumentationLineContents gets line of a documentation text from an input line string.

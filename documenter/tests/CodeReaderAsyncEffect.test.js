@@ -16,12 +16,12 @@ test('processLineNameState returns object with a new state and the name and type
     expect(CodeReaderAsyncEffect.processLineNameState('let something = 1;')).toEqual({state: 'END', contents: {name: 'unknown', type: 'unknown'}});
 });
 
-test('processLineCodeState changes state to description if it finds a start of a documentation comment returning Either.', () => {
+test('processLineCodeState changes state to description if it finds a start of a docs comment returning Either.', () => {
     expect(CodeReaderAsyncEffect.processLineCodeState('/**')).toEqual({state: 'DESCRIPTION', newDocumentationBlock: true});
     expect(CodeReaderAsyncEffect.processLineCodeState('const some = "code";')).toEqual({state: 'CODE'});
 });
 
-test('getDocumentationLineContents gets line of a documentation text from an input line string.', () => {
+test('getDocumentationLineContents gets line of a docs text from an input line string.', () => {
     expect(CodeReaderAsyncEffect.getDocumentationLineContents('* some description ')).toBe('some description');
     expect(CodeReaderAsyncEffect.getDocumentationLineContents('some text')).toBe('ome text');
     expect(CodeReaderAsyncEffect.getDocumentationLineContents('*')).toBe('');
@@ -32,17 +32,17 @@ test('positionToWhiteSpaceOrStringLength returns the position of the first white
     expect(CodeReaderAsyncEffect.positionToWhiteSpaceOrStringLength('@example')).toBe(8);
 });
 
-test('getTag returns the tag name from a tag documentation.', () => {
+test('getTag returns the tag name from a tag docs.', () => {
     expect(CodeReaderAsyncEffect.getTag('@tag label')).toBe('tag');
     expect(CodeReaderAsyncEffect.getTag('@example')).toBe('example');
 });
 
-test('getTagContents returns the tag value from a tag documentation.', () => {
+test('getTagContents returns the tag value from a tag docs.', () => {
     expect(CodeReaderAsyncEffect.getTagContents('@tag label')).toBe('label');
     expect(CodeReaderAsyncEffect.getTagContents('@example')).toBe('true');
 });
 
-test('processTag returns documentation of a tag line.', () => {
+test('processTag returns docs of a tag line.', () => {
     expect(CodeReaderAsyncEffect.processTag('true')('example')).toEqual({state: 'EXAMPLE'});
     expect(CodeReaderAsyncEffect.processTag('true')('pure')).toEqual({state: 'TAG', contents: {tags: [{pure: 'true'}]}});
     expect(CodeReaderAsyncEffect.processTag('{string} description')('param')).toEqual({state: 'TAG', contents: {tags: [{param: '{string} description'}]}});
@@ -370,7 +370,7 @@ test('FileLinesGeneratorSyncEffect returns a SyncEffect Functor of a generator t
     expect(CodeReaderAsyncEffect.FileLinesGeneratorSyncEffect.trigger('./i-dont-exist').next().done).toBe(true);
 });
 
-test('processOneFile recursively reads one file and returns an object with processed documentation.', () => {
+test('processOneFile recursively reads one file and returns an object with processed docs.', () => {
     function* generator(){
         yield 'some code';
     };
@@ -393,7 +393,7 @@ test('processOneFile recursively reads one file and returns an object with proce
     });
 });
 
-test('getCodeReaderAsyncEffect returns a AsyncEffect functor that provides an object of configuration and documentation of all .js files in a given input path.', done => {
+test('getCodeReaderAsyncEffect returns a AsyncEffect functor that provides an object of configuration and docs of all .js files in a given input path.', done => {
     CodeReaderAsyncEffect.getCodeReaderAsyncEffect({input: './existing-directory/', output: './existing-directory/'}).trigger(
         error => {
             done.fail('getCodeReaderAsyncEffect should not end in error: ' + error);

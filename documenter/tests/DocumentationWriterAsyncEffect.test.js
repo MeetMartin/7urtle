@@ -4,7 +4,7 @@ import {setWriteFileSuccess} from 'fs'; // comes from a mock
 
 jest.mock('fs');
 
-test('getDocumentationWriterAsyncEffect takes output path and documentation object to return AsyncEffect functor of a documentation writer.', done => {
+test('getDocumentationWriterAsyncEffect takes output path and docs object to return AsyncEffect functor of a docs writer.', done => {
     getDocumentationWriterAsyncEffect({output: './existing-directory/', documentation: [{a:'a'},{b:'b'}]}).trigger(
         error => {
             done.fail('getDocumentationWriterAsyncEffect should not end in error: ' + error);
@@ -18,7 +18,7 @@ test('getDocumentationWriterAsyncEffect takes output path and documentation obje
     setWriteFileSuccess(false);
     getDocumentationWriterAsyncEffect({output: './existing-directory/', documentation: [{a:'a'},{b:'b'}]}).trigger(
         error => {
-            expect(error).toBe('There was an error writing into "./existing-directory/documentation.json" with exception: "Unknown error occured.".');
+            expect(error).toBe('There was an error writing into "./existing-directory/docs.json" with exception: "Unknown error occured.".');
             done();
         },
         result => {
