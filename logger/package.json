@@ -1,6 +1,6 @@
 {
   "name": "@7urtle/logger",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Functional programming logger.",
   "main": "dist/logger.min.js",
   "module": "src/index.js",
@@ -13,7 +13,8 @@
   "scripts": {
     "build": "webpack --progress --mode production",
     "update": "npm outdated --depth=0 | grep -v Package | awk '{print $1}' | xargs -I% npm install %@latest --save",
-    "test": "jest --silent"
+    "test": "jest --silent",
+    "maintain": "npm install & npm update && npm audit --force && npm run build"
   },
   "repository": {
     "type": "git",
