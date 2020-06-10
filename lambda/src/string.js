@@ -1,4 +1,5 @@
 import {minusOneToUndefined} from './utils';
+import {nary} from "./arity";
 
 /**
  * trim :: string -> string
@@ -12,56 +13,56 @@ export const trim = string => string.trim();
  *
  * testRegEx outputs true if string b passes regular expression a.
  */
-export const testRegEx = regex => string => regex.test(string);
+export const testRegEx = nary(regex => string => regex.test(string));
 
 /**
  * substr :: number -> number -> string -> string
  * 
  * substr outputs substring based on provided string, start and limit.
  */
-export const substr = limit => start => string => string.substr(start, limit);
+export const substr = nary(limit => start => string => string.substr(start, limit));
 
 /**
  * startsWith :: string -> string -> boolean
  * 
  * startsWith outputs true if an input string starts with provided string.
  */
-export const startsWith = substring => string => string.startsWith(substring);
+export const startsWith = nary(substring => string => string.startsWith(substring));
 
 /**
  * endsWith :: string -> string -> boolean
  * 
  * endsWith outputs true if an input string ends with provided string.
  */
-export const endsWith = substring => string => string.endsWith(substring);
+export const endsWith = nary(substring => string => string.endsWith(substring));
 
 /**
  * repeat :: number -> string -> string
  * 
  * repeat outputs new string repeating input string inputed count of times.
  */
-export const repeat = count => string => string.repeat(count);
+export const repeat = nary(count => string => string.repeat(count));
 
 /**
  * replace :: string -> string -> string -> string
  * 
  * replace outputs new string replacing input substring with input replacement string in input string.
  */
-export const replace = replacement => substring => string => string.replace(substring, replacement);
+export const replace = nary(replacement => substring => string => string.replace(substring, replacement));
 
 /**
  * search :: string/regex -> string -> number
  * 
  * search outputs position of input substring or regular expression withing input string or undefined if it is not found.
  */
-export const search = substring => string => minusOneToUndefined(string.search(substring));
+export const search = nary(substring => string => minusOneToUndefined(string.search(substring)));
 
 /**
  * split :: string -> string -> array
  * 
  * split outputs and array of an input string split by the input substring.
  */
-export const split = substring => string => string.split(substring);
+export const split = nary(substring => string => string.split(substring));
 
 /**
  * lowerCaseOf :: string -> string

@@ -1,4 +1,5 @@
 import {typeOf, lengthOf} from "./utils";
+import {nary} from "./arity";
 
 /**
  * isEqual :: a -> b -> boolean
@@ -6,7 +7,7 @@ import {typeOf, lengthOf} from "./utils";
  * isEqual output is true if strict equality between a and b is true.
  * isEqual output is always false for comparison of objects and arrays.
  */
-export const isEqual = a => b => a === b;
+export const isEqual = nary(a => b => a === b);
 
 /**
  * isNotEqual :: a -> b -> boolean
@@ -14,7 +15,7 @@ export const isEqual = a => b => a === b;
  * isNotEqual output is true if strict equality between a and b is false.
  * isNotEqual output is always true for comparison of objects and arrays.
  */
-export const isNotEqual = a => b => a !== b;
+export const isNotEqual = nary(a => b => a !== b);
 
 /**
  * isTrue :: a -> boolean
@@ -35,35 +36,35 @@ export const isFalse = isEqual(false);
  *
  * isGreaterThan output is true if b is greater than a.
  */
-export const isGreaterThan = a => b => b > a;
+export const isGreaterThan = nary(a => b => b > a);
 
 /**
  * isLessThan :: a -> b -> boolean
  *
  * isLessThan output is true if b is less than a.
  */
-export const isLessThan = a => b => b < a;
+export const isLessThan = nary(a => b => b < a);
 
 /**
  * isAtLeast :: a -> b -> boolean
  *
  * isAtLeast output is true if b is greater or equal to a.
  */
-export const isAtLeast = a => b => b >= a;
+export const isAtLeast = nary(a => b => b >= a);
 
 /**
  * isAtMost :: a -> b -> boolean
  *
  * isAtMost output is true if b is less or equal to a.
  */
-export const isAtMost = a => b => b <= a;
+export const isAtMost = nary(a => b => b <= a);
 
 /**
  * isTypeOf :: a -> b -> boolean
  *
  * isTypeOf output is true if b is a type of a.
  */
-export const isTypeOf = a => b => isEqual(typeOf(b))(a);
+export const isTypeOf = nary(a => b => isEqual(typeOf(b))(a));
 
 /**
  * isString :: a -> boolean
@@ -126,14 +127,14 @@ export const isFunction = isTypeOf('function');
  *
  * isLength output is true if b is a length of a.
  */
-export const isLength = a => b => isEqual(lengthOf(b))(a);
+export const isLength = nary(a => b => isEqual(lengthOf(b))(a));
 
 /**
  * isNotLength :: (string|array) -> b -> boolean
  *
  * isNotLength output is true if b is not a length of a.
  */
-export const isNotLength = a => b => !isLength(a)(b);
+export const isNotLength = nary(a => b => !isLength(a)(b));
 
 /**
  * isEmpty :: (string|array) -> boolean

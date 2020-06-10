@@ -1,3 +1,4 @@
+export * from './arity';
 export * from './list';
 export * from './core';
 export * from './utils';

@@ -1,5 +1,6 @@
 import {deepInspect} from "./utils";
 import {isNothing} from "./conditional";
+import {nary} from "./arity";
 
 /**
  * Maybe.of() outputs instance of Maybe.
@@ -84,7 +85,7 @@ class Nothing extends Maybe {
  *
  * maybe outputs result of a function onJust if input Maybe is Just or outputs input error if input Maybe is Nothing.
  */
-export const maybe = error => onJust => functorMaybe =>
+export const maybe = nary(error => onJust => functorMaybe =>
   functorMaybe.isNothing()
     ? error
-    : onJust(functorMaybe.value);
+    : onJust(functorMaybe.value));

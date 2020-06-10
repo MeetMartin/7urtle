@@ -1,6 +1,7 @@
 import {reduce, reduceRight} from './list';
 import {isString, isArray, isObject} from './conditional';
 import {minusOneToUndefined, passThrough} from './utils';
+import {nary} from "./arity";
 
 /**
  * identity simply passes its input to its output.
@@ -59,66 +60,66 @@ export const pipe = (...fns) => a => reduce(a)((v, f) => f(v))(fns);
  *
  * functorMap maps function over inputted functor outputting resulting functor.
  */
-export const functorMap = fn => functor => functor.map(fn);
+export const functorMap = nary(fn => functor => functor.map(fn));
 
 /**
  * functorFlatMap :: (a -> Functor) -> Functor -> Functor
  *
  * functorFlatMap flatMaps function outputting functor over inputted functor outputting resulting functor.
  */
-export const functorFlatMap = fn => functor => functor.flatMap(fn);
+export const functorFlatMap = nary(fn => functor => functor.flatMap(fn));
 
 /**
  * liftA2 (a -> b -> c) -> Applicative a -> Applicative b -> Applicative c
  *
  * liftA2 provides point-free way of writing calls over applicative functors and functions with arity 2.
  */
-export const liftA2 = fn => ap1 => ap2 => ap1.map(fn).ap(ap2);
+export const liftA2 = nary(fn => ap1 => ap2 => ap1.map(fn).ap(ap2));
 
 /**
  * liftA3 (a -> b -> c -> d) -> Applicative a -> Applicative b -> Applicative c -> Applicative d
  *
  * liftA3 provides point-free way of writing calls over applicative functors and functions with arity 3.
  */
-export const liftA3 = fn => ap1 => ap2 => ap3 => ap1.map(fn).ap(ap2).ap(ap3);
+export const liftA3 = nary(fn => ap1 => ap2 => ap3 => ap1.map(fn).ap(ap2).ap(ap3));
 
 /**
  * concat :: a -> a|boolean
  * 
  * contact outputs concatenated inputs of strings, arrays and objects or outputs undefined for other types.
  */
-export const concat = a => b =>
+export const concat = nary(a => b =>
   isString(b) || isArray(b)
     ? b.concat(a)
     : isObject(b)
       ? {...b, ...a}
-      : undefined;
+      : undefined);
 
 /**
  * includes :: a -> b -> boolean
  *
  * includes output is true if b includes a.
  */
-export const includes = a => b => b.includes(a);
+export const includes = nary(a => b => b.includes(a));
 
 /**
  * indexOf :: a -> b -> number
  * 
  * indexOf outputs position of input a within input b or undefined if it is not found.
  */
-export const indexOf = a => b => minusOneToUndefined(b.indexOf(a));
+export const indexOf = nary(a => b => minusOneToUndefined(b.indexOf(a)));
 
 /**
  * lastIndexOf :: a -> b -> number
  * 
  * lastIndexOf outputs position of input a withing input b looking from the end or it retuns undefined if it is not found.
  */
-export const lastIndexOf = a => b => minusOneToUndefined(b.lastIndexOf(a));
+export const lastIndexOf = nary(a => b => minusOneToUndefined(b.lastIndexOf(a)));
 
 /**
  * memoize :: object -> (a -> b) -> a -> b
  *
  * memoize uses input memory to save output of input function and then uses it to lookup result on a repeated run
  */
-export const memoize = memory => fn => a =>
-  a in memory ? memory[a] : (passThrough(b => memory[a] = b))(fn(a));
+export const memoize = nary(memory => fn => a =>
+  a in memory ? memory[a] : (passThrough(b => memory[a] = b))(fn(a)));

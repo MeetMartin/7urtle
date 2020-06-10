@@ -1,5 +1,4 @@
 import * as λ from '../src';
-import {memoize} from "../src";
 
 test('identity output is the same as input.', () => {
   expect(λ.identity('a')).toBe('a');
@@ -41,6 +40,7 @@ test('functorMap maps function over inputted functor outputting resulting functo
     }
   }
   expect(λ.functorMap(a => a + 's')(Functor.of('7urtle')).value).toBe('7urtles');
+  expect(λ.functorMap(a => a + 's')(Functor.of('7urtle')).value).toBe(λ.functorMap(a => a + 's', Functor.of('7urtle')).value);
 });
 
 test('functorFlatMap flatMaps function outputting functor over inputted functor outputting resulting functor.', () => {
@@ -59,6 +59,7 @@ test('functorFlatMap flatMaps function outputting functor over inputted functor 
     }
   }
   expect(λ.functorFlatMap(a => Functor.of(a + 's'))(Functor.of('7urtle')).value).toBe('7urtles');
+  expect(λ.functorFlatMap(a => Functor.of(a + 's'))(Functor.of('7urtle')).value).toBe(λ.functorFlatMap(a => Functor.of(a + 's'), Functor.of('7urtle')).value);
 });
 
 test('liftA2 provides point-free way of writing calls over applicative functors and functions with arity 2.', () => {
@@ -78,6 +79,7 @@ test('liftA2 provides point-free way of writing calls over applicative functors 
     }
   }
   expect(λ.liftA2(add)(Applicative.of(1))(Applicative.of(2)).value).toBe(3);
+  expect(λ.liftA2(add)(Applicative.of(1))(Applicative.of(2)).value).toBe(λ.liftA2(add, Applicative.of(1), Applicative.of(2)).value);
 });
 
 test('liftA3 provides point-free way of writing calls over applicative functors and functions with arity 3.', () => {
@@ -97,6 +99,7 @@ test('liftA3 provides point-free way of writing calls over applicative functors 
     }
   }
   expect(λ.liftA3(add3)(Applicative.of(1))(Applicative.of(2))(Applicative.of(3)).value).toBe(6);
+  expect(λ.liftA3(add3)(Applicative.of(1))(Applicative.of(2))(Applicative.of(3)).value).toBe(λ.liftA3(add3, Applicative.of(1), Applicative.of(2), Applicative.of(3)).value);
 });
 
 test('contact outputs concatenated inputs of strings, arrays and objects or outputs undefined for other types.', () => {
@@ -105,6 +108,7 @@ test('contact outputs concatenated inputs of strings, arrays and objects or outp
   expect(λ.concat({here: 'there'})({hi: 'hello'})).toEqual({hi: 'hello', here: 'there'});
   expect(λ.concat({here: {here: 'there'}})({hi: 'hello'})).toEqual({hi: 'hello', here: {here: 'there'}});
   expect(λ.concat('cd')(1)).toBe(undefined);
+  expect(λ.concat('cd')('ab')).toBe(λ.concat('cd', 'ab'));
 });
 
 test('includes output is true if b includes a.', () => {
@@ -113,6 +117,7 @@ test('includes output is true if b includes a.', () => {
   expect(λ.includes('turtle')('7urtle')).toBe(false);
   expect(λ.includes(1)([1, 2, 3])).toBe(true);
   expect(λ.includes(4)([1, 2, 3])).toBe(false);
+  expect(λ.includes('rt')('7urtle')).toBe(λ.includes('rt', '7urtle'));
 });
 
 test('indexOf outputs position of input a withing input b or undefined if it is not found.', () => {
@@ -124,6 +129,7 @@ test('indexOf outputs position of input a withing input b or undefined if it is 
   expect(λ.indexOf('8')('7urtle')).toBe(undefined);
   expect(λ.indexOf(4)([1, 2, 3])).toBe(undefined);
   expect(λ.indexOf('a')('aa')).toBe(0);
+  expect(λ.indexOf('a')('aa')).toBe(λ.indexOf('a', 'aa'));
 });
 
 test('lastIndexOf outputs position of input a withing input b looking from the end or it retuns undefined if it is not found.', () => {
@@ -135,13 +141,15 @@ test('lastIndexOf outputs position of input a withing input b looking from the e
   expect(λ.lastIndexOf(2)([1, 2, 3, 2])).toBe(3);
   expect(λ.lastIndexOf(4)([1, 2, 3])).toBe(undefined);
   expect(λ.lastIndexOf('a')('aa')).toBe(1);
+  expect(λ.lastIndexOf('a')('aa')).toBe(λ.lastIndexOf('a', 'aa'));
 });
 
 test('memoize uses input memory to save output of input function and then uses it to lookup result on a repeated run.', () => {
   const addTwo = a => a + 2;
   let memory = {};
-  const memoizedAddTwo = memoize(memory)(addTwo);
+  const memoizedAddTwo = λ.memoize(memory)(addTwo);
   expect(memoizedAddTwo(1)).toBe(3);
   expect(memoizedAddTwo(1)).toBe(3);
   expect(memory[1]).toBe(3);
+  expect(λ.memoize(memory)(addTwo)(1)).toBe(λ.memoize(memory, addTwo)(1));
 });

@@ -93,4 +93,5 @@ test('Either.of(Either -> Either -> c).ap(Either).ap(Either) provides applicativ
 test('either outputs result of a function onRight if input Either is Right or outputs result of a function onLeft if input Either is Left.', () => {
   expect(λ.either(a => 'error: ' + a)(a => 'success: ' + a)(λ.Either.of('abc'))).toBe('success: abc');
   expect(λ.either(a => 'error: ' + a)(a => 'success: ' + a)(λ.Either.Left(':('))).toBe('error: :(');
+  expect(λ.either(a => 'error: ' + a)(a => 'success: ' + a)(λ.Either.of('abc'))).toBe(λ.either(a => 'error: ' + a, a => 'success: ' + a, λ.Either.of('abc')));
 });

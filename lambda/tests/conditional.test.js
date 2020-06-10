@@ -3,6 +3,7 @@ import * as λ from '../src';
 test('isEqual output is true if strict equality between a and b is true.', () => {
   expect(λ.isEqual('something')('something')).toBe(true);
   expect(λ.isEqual('something')('something else')).toBe(false);
+  expect(λ.isEqual('something')('something')).toBe(λ.isEqual('something', 'something'));
 });
 
 test('isEqual output is always false for comparison of objects and arrays.', () => {
@@ -13,6 +14,7 @@ test('isEqual output is always false for comparison of objects and arrays.', () 
 test('isNotEqual output is true if strict equality between a and b is false.', () => {
   expect(λ.isNotEqual('something')('something else')).toBe(true);
   expect(λ.isNotEqual('something')('something')).toBe(false);
+  expect(λ.isNotEqual('something')('something else')).toBe(λ.isNotEqual('something', 'something else'));
 });
 
 test('isNotEqual output is always true for comparison of objects and arrays.', () => {
@@ -33,28 +35,33 @@ test('isFalse output is true if input is false.', () => {
 test('isGreaterThan output is true if b is greater than a.', () => {
   expect(λ.isGreaterThan(1)(2)).toBe(true);
   expect(λ.isGreaterThan(2)(1)).toBe(false);
+  expect(λ.isGreaterThan(1)(2)).toBe(λ.isGreaterThan(1, 2));
 });
 
 test('isLessThan output is true if b is less than a.', () => {
   expect(λ.isLessThan(2)(1)).toBe(true);
   expect(λ.isLessThan(1)(2)).toBe(false);
+  expect(λ.isLessThan(2)(1)).toBe(λ.isLessThan(2, 1));
 });
 
 test('isAtLeast output is true if b is greater or equal to a.', () => {
   expect(λ.isAtLeast(1)(2)).toBe(true);
   expect(λ.isAtLeast(2)(2)).toBe(true);
   expect(λ.isAtLeast(2)(1)).toBe(false);
+  expect(λ.isAtLeast(1)(2)).toBe(λ.isAtLeast(1, 2));
 });
 
 test('isAtMost output is true if b is less or equal to a.', () => {
   expect(λ.isAtMost(2)(1)).toBe(true);
   expect(λ.isAtMost(2)(2)).toBe(true);
   expect(λ.isAtMost(1)(2)).toBe(false);
+  expect(λ.isAtMost(2)(1)).toBe(λ.isAtMost(2, 1));
 });
 
 test('isTypeOf output is true if b is a type of a.', () => {
   expect(λ.isTypeOf('number')(1)).toBe(true);
   expect(λ.isTypeOf('string')(1)).toBe(false);
+  expect(λ.isTypeOf('number')(1)).toBe(λ.isTypeOf('number', 1));
 });
 
 test('isString output is true if b is a string.', () => {
@@ -106,6 +113,7 @@ test('isLength output is true if b is a length of a.', () => {
   expect(λ.isLength(3)([1,2,3])).toBe(true);
   expect(λ.isLength(1)('abc')).toBe(false);
   expect(λ.isLength(1)([1,2,3])).toBe(false);
+  expect(λ.isLength(3)('abc')).toBe(λ.isLength(3, 'abc'));
 });
 
 test('isNotLength output is true if b is not a length of a.', () => {
@@ -113,6 +121,7 @@ test('isNotLength output is true if b is not a length of a.', () => {
   expect(λ.isNotLength(1)([1,2,3])).toBe(true);
   expect(λ.isNotLength(3)('abc')).toBe(false);
   expect(λ.isNotLength(3)([1,2,3])).toBe(false);
+  expect(λ.isNotLength(1)('abc')).toBe(λ.isNotLength(1, 'abc'));
 });
 
 test('isEmpty output is true if input has a length of 0.', () => {

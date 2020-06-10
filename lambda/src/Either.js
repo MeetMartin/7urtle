@@ -1,4 +1,5 @@
 import {deepInspect} from "./utils";
+import {nary} from "./arity";
 
 /**
  * Either.of() outputs instance of Either.
@@ -102,7 +103,7 @@ class Left extends Either {
  *
  * either outputs result of a function onRight if input Either is Right or outputs result of a function onLeft if input Either is Left.
  */
-export const either = onLeft => onRight => functorEither =>
+export const either = nary(onLeft => onRight => functorEither =>
   functorEither.isLeft()
     ? onLeft(functorEither.value)
-    : onRight(functorEither.value);
+    : onRight(functorEither.value));

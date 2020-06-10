@@ -1,5 +1,6 @@
-import {isArray, isEqual, isString, isObject, isFunction, isNull, isUndefined} from "./conditional";
+import {isArray, isEqual, isString, isObject, isFunction, isNull, isUndefined, isGreaterThan} from "./conditional";
 import {keysOf, join, map} from "./list";
+import {nary} from "./arity";
 
 /**
  * typeOf :: a -> string
@@ -10,6 +11,8 @@ export const typeOf = a => typeof a;
 
 /**
  * lengthOf :: (string|array) -> number
+ *
+ * lenghtOf outputs the length of an input.
  */
 export const lengthOf = a => a.length;
 
@@ -19,10 +22,10 @@ export const lengthOf = a => a.length;
  * passThrough output is the same as input a.
  * passThrough executes function passed as first argument.
  */
-export const passThrough = f => a => {
+export const passThrough = nary(f => a => {
   f(a);
   return a;
-};
+});
 
 /**
  * log :: a -> a

@@ -4,8 +4,15 @@ test('typeOf outputs type of its input a.', () => {
   expect(λ.typeOf('7turtle')).toBe('string');
 });
 
+test('lenghtOf outputs the length of an input.', () => {
+  expect(λ.lengthOf('7turtle')).toBe(7);
+  expect(λ.lengthOf([1,2,3])).toBe(3);
+  expect(λ.lengthOf({})).toBe(undefined);
+});
+
 test('passThrough output is the same as input a.', () => {
   expect(λ.passThrough(() => 'b')('a')).toBe('a');
+  expect(λ.passThrough(() => 'b')('a')).toBe(λ.passThrough(() => 'b', 'a'));
 });
 
 test('log output is the same as input.', () => {
