@@ -1,0 +1,969 @@
+[
+  {
+    "file": "./src/arity.js",
+    "contents": [
+      {
+        "description": [
+          "nary takes input of a curried function and allows it to be called both as curried and n-ary."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "nary :: function a -> function b"
+          },
+          {
+            "param": "{function} fn"
+          },
+          {
+            "returns": "{function}"
+          }
+        ],
+        "example": [],
+        "name": "nary",
+        "type": "expression"
+      }
+    ]
+  },
+  {
+    "file": "./src/AsyncEffect.js",
+    "contents": [
+      {
+        "description": [
+          "AsyncEffect.of() outputs instance of AsyncEffect.",
+          "AsyncEffect.of(() -> a).inspect() outputs string AsyncEffect(a).",
+          "AsyncEffect.wrap(a) is equal to AsyncEffect.of((_, resolve) -> resolve(a)).",
+          "AsyncEffect.of((a, b) -> c).promise() outputs JavaScript promise.",
+          "AsyncEffect.of((a, b) -> c).trigger(d -> e, f -> g) for resolving async function resolves.",
+          "AsyncEffect.of((a, b) -> c).trigger(d -> e, f -> g) for rejecting async function rejects.",
+          "AsyncEffect.of((a, b) -> c).trigger(d -> e, f -> g) for synchronous exceptions rejects.",
+          "AsyncEffect.of((a, b) -> c).map(b -> c) composes function over AsyncEffect input function.",
+          "AsyncEffect.of((a, b) -> c).map(b -> AsyncEffect) outputs AsyncEffect(AsyncEffect).",
+          "AsyncEffect.of((a, b) -> c).flatMap(b -> AsyncEffect) outputs AsyncEffect.",
+          "AsyncEffect.of((a, b) -> c).flatMap(b -> AsyncEffect) handles reject states correctly passing along the initial error.",
+          "AsyncEffect.of((a, b) -> c).map(a -> b).ap(AsyncEffect) provides applicative ability to apply functors to each other.",
+          "AsyncEffect.of(AsyncEffect -> AsyncEffect -> c).ap(AsyncEffect).ap(AsyncEffect) provides applicative interface for a functor of a function.",
+          "No input function is executed until trigger is called."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "AsyncEffect",
+        "type": "class"
+      }
+    ]
+  },
+  {
+    "file": "./src/Case.js",
+    "contents": [
+      {
+        "description": [
+          "Case.of() outputs instance of Case.",
+          "Case.of([]).inspect() outputs string Case(a -> b).",
+          "Case.of([]).match(a) matches input a against map provided as input of Case.",
+          "Case.of([]).match(a) outputs undefined if no matching case is found.",
+          "Case.of([]).map(a -> b) composes function over Case match function.",
+          "Case.of([]).map(a -> Case) outputs Case(Case).",
+          "Case.of([]).flatMap(a -> Case) outputs Case."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "Case",
+        "type": "class"
+      }
+    ]
+  },
+  {
+    "file": "./src/conditional.js",
+    "contents": [
+      {
+        "description": [
+          "isEqual :: a -> b -> boolean",
+          "isEqual output is true if strict equality between a and b is true.",
+          "isEqual output is always false for comparison of objects and arrays."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isEqual",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isNotEqual :: a -> b -> boolean",
+          "isNotEqual output is true if strict equality between a and b is false.",
+          "isNotEqual output is always true for comparison of objects and arrays."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isNotEqual",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isTrue :: a -> boolean",
+          "isTrue output is true if input is true."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isTrue",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isFalse :: a -> Boolean",
+          "isFalse output is true if input is false."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isFalse",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isGreaterThan :: a -> b -> boolean",
+          "isGreaterThan output is true if b is greater than a."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isGreaterThan",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isLessThan :: a -> b -> boolean",
+          "isLessThan output is true if b is less than a."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isLessThan",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isAtLeast :: a -> b -> boolean",
+          "isAtLeast output is true if b is greater or equal to a."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isAtLeast",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isAtMost :: a -> b -> boolean",
+          "isAtMost output is true if b is less or equal to a."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isAtMost",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isTypeOf :: a -> b -> boolean",
+          "isTypeOf output is true if b is a type of a."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isTypeOf",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isString :: a -> boolean",
+          "isString output is true if b is a string."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isString",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isBoolean :: a -> boolean",
+          "isBoolean output is true if b is a boolean."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isBoolean",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isNull :: a -> boolean",
+          "isNull output is true if b is a null."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isNull",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isUndefined :: a -> boolean",
+          "isUndefined output is true if b is an undefined."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isUndefined",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isNumber :: a -> boolean",
+          "isNumber output is true if b is a number."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isNumber",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isObject :: a -> boolean",
+          "isObject output is true if b is an object, array of null."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isObject",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isArray :: a -> boolean",
+          "isArray output is true if b is an array."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isArray",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isFunction :: a -> boolean",
+          "isFunction output is true if b is a function."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isFunction",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isLength :: (string|array) -> b -> boolean",
+          "isLength output is true if b is a length of a."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isLength",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isNotLength :: (string|array) -> b -> boolean",
+          "isNotLength output is true if b is not a length of a."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isNotLength",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isEmpty :: (string|array) -> boolean",
+          "isEmpty output is true if input has a length of 0.",
+          "isEmpty output is always false if input is an object and not an array or a string."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isEmpty",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isNotEmpty :: (string|array) -> boolean",
+          "isNotEmpty output is true if input does not have a length of 0.",
+          "isNotEmpty output is always true if input is an object and not an array or a string."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isNotEmpty",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isZero :: a -> boolean",
+          "isZero output is true if a is 0."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isZero",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isNotZero :: a -> boolean",
+          "isNotZero output is true if a is not 0."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isNotZero",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isNothing :: a -> boolean",
+          "isNothing returns true if input is null, undefined or empty string or empty array."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isNothing",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "isJust :: a -> boolean",
+          "isJust returns true if input is not null, undefined or empty string or empty array."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "isJust",
+        "type": "expression"
+      }
+    ]
+  },
+  {
+    "file": "./src/core.js",
+    "contents": [
+      {
+        "description": [
+          "identity simply passes its input to its output."
+        ],
+        "tags": [
+          {
+            "HindleyMilner": "identity :: a -> a"
+          },
+          {
+            "pure": "true"
+          },
+          {
+            "param": "{*} a"
+          },
+          {
+            "return": "{a}"
+          }
+        ],
+        "example": [
+          "identity('anything');",
+          "// => anything"
+        ],
+        "name": "identity",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "pipe output is a right-to-left function composition",
+          "where each function receives input and hands over its output to the next function.",
+          "compose executes functions in reverse order to pipe.",
+          "compose(f,g)(x) is equivalent to f(g(x))."
+        ],
+        "tags": [
+          {
+            "HindleyMilner": "compose :: [(a -> b)] -> a -> (a -> b)"
+          },
+          {
+            "pure": "true"
+          },
+          {
+            "param": "{function} fns"
+          },
+          {
+            "param": "{*} a"
+          },
+          {
+            "return": "{*}"
+          }
+        ],
+        "example": [
+          "const addA = a => a + 'A';",
+          "const addB = a => a + 'B';",
+          "const addAB = compose(addB, addA);",
+          "addAB('Order: ');",
+          "// => Order: AB"
+        ],
+        "name": "compose",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "pipe :: [(a -> b)] -> a -> (a -> b)",
+          "pipe output is a left-to-right function composition",
+          "where each function receives input and hands over its output to the next function.",
+          "pipe executes functions in reverse order to compose.",
+          "pipe(f,g)(x) is equivalent to g(f(x))."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "pipe",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "functorMap :: (a -> b) -> Functor -> Functor",
+          "functorMap maps function over inputted functor outputting resulting functor."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "functorMap",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "functorFlatMap :: (a -> Functor) -> Functor -> Functor",
+          "functorFlatMap flatMaps function outputting functor over inputted functor outputting resulting functor."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "functorFlatMap",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "liftA2 (a -> b -> c) -> Applicative a -> Applicative b -> Applicative c",
+          "liftA2 provides point-free way of writing calls over applicative functors and functions with arity 2."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "liftA2",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "liftA3 (a -> b -> c -> d) -> Applicative a -> Applicative b -> Applicative c -> Applicative d",
+          "liftA3 provides point-free way of writing calls over applicative functors and functions with arity 3."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "liftA3",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "concat :: a -> a|boolean",
+          "contact outputs concatenated inputs of strings, arrays and objects or outputs undefined for other types."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "concat",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "includes :: a -> b -> boolean",
+          "includes output is true if b includes a."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "includes",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "indexOf :: a -> b -> number",
+          "indexOf outputs position of input a within input b or undefined if it is not found."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "indexOf",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "lastIndexOf :: a -> b -> number",
+          "lastIndexOf outputs position of input a withing input b looking from the end or it retuns undefined if it is not found."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "lastIndexOf",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "memoize :: object -> (a -> b) -> a -> b",
+          "memoize uses input memory to save output of input function and then uses it to lookup result on a repeated run"
+        ],
+        "tags": [],
+        "example": [],
+        "name": "memoize",
+        "type": "expression"
+      }
+    ]
+  },
+  {
+    "file": "./src/Either.js",
+    "contents": [
+      {
+        "description": [
+          "Either.of() outputs instance of Either.",
+          "Either.of(a) outputs instance of Right holding its input value.",
+          "Either.Right(a) outputs instance of Right holding its input value.",
+          "Either.Left(a) outputs instance of Left holding its input value.",
+          "Either.of(a).inspect() outputs string Right(a).",
+          "Either.Right(a).inspect() outputs string Right(a).",
+          "Either.Left(a).inspect() outputs string Left(a).",
+          "Either.of(a).isRight() always outputs true.",
+          "Either.Left(a).isLeft() outputs false if Either is Left.",
+          "Either.try(a -> b) outputs Right(b) if no error is thrown.",
+          "Either.try(a -> b) outputs Left(e.message) if error is thrown.",
+          "Either.of(a).map(a -> b) executes function over Either input a.",
+          "Either.of(a).map(a -> Right) outputs Right(Right).",
+          "Either.Left(a).map(a -> b) does not execute provided function and retains Left input value.",
+          "Either.of(a).flatMap(a -> b) executes function over Either input a returns its raw value through flatten.",
+          "Either.Left(a).flatMap(a -> b) does not execute provided function and retains Left input value.",
+          "Either.of(Either -> Either -> c).ap(Either).ap(Either) provides applicative interface."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "Either",
+        "type": "class"
+      },
+      {
+        "description": [
+          "either :: (a -> b) -> (b -> c) -> Either",
+          "either outputs result of a function onRight if input Either is Right or outputs result of a function onLeft if input Either is Left."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "either",
+        "type": "expression"
+      }
+    ]
+  },
+  {
+    "file": "./src/index.js",
+    "contents": []
+  },
+  {
+    "file": "./src/list.js",
+    "contents": [
+      {
+        "description": [
+          "reduce :: a -> ((a, b) -> a) -> [b] -> a",
+          "reduce executes input reducer function that over each member of input array [b] to output single value a.",
+          "reduce executes functions in reverse order to reduceRight."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "reduce",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "reduceRight :: a -> ((a, b) -> a) -> [b] -> a",
+          "reduceRight executes input reducer function that over each member of input array [b] to output single value a.",
+          "reduceRight executes functions in reverse order to reduce."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "reduceRight",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "map :: (a -> b) -> [a] -> [b]",
+          "map executes input mapper over each member of input array [a] to output new array [b]."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "map",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "filter :: (a -> boolean) -> [a] -> [b]",
+          "filter executes input checker over each member of input array [a] to filter and output filtered new array [b]."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "filter",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "find :: (a -> boolean) -> [a] -> [b]",
+          "find executes input checker over each member of input array [a] and outputs the first array member that matches checker or undefined."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "find",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "findIndex :: (a -> boolean) -> [a] -> [b]",
+          "findIndex executes input checker over each member of input array [a] and outputs the index of first array member that matches checker or undefined."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "findIndex",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "join :: string -> [a] -> string",
+          "join outputs a string created by joining input array members with input separator."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "join",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "keysOf :: object -> [string]",
+          "keysOf outputs array of string keys of input array or object."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "keysOf",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "entriesOf :: object -> [[string, a]]",
+          "entriesOf outputs array of arrays of string keys and raw values of input array or object."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "entriesOf",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "everyOf :: (a -> boolean) -> [a] -> boolean",
+          "everyOf outputs true if every element of input array passes input checker function as true."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "everyOf",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "slice :: number -> number -> [a] -> [a]",
+          "slice outputs selected array elements as an array based on input range."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "slice",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "some :: (a -> boolean) -> [a] -> boolean",
+          "some outputs true if any element of input array passes input checker function as true."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "someOf",
+        "type": "expression"
+      }
+    ]
+  },
+  {
+    "file": "./src/Maybe.js",
+    "contents": [
+      {
+        "description": [
+          "Maybe.of() outputs instance of Maybe.",
+          "Maybe.of(a).inspect() outputs string Just(a) or Nothing.",
+          "Maybe.of(a) outputs Nothing for an input that is null, undefined, an empty string or an empty array.",
+          "Maybe.of(a) outputs Just for an input a that is not Nothing.",
+          "Maybe.of(a) outputs Nothing for an input a that is null or undefined.",
+          "Maybe.of(a).isJust() of an input a outputs true for a value that is Just.",
+          "Maybe.of(a).isNothing() of an input a outputs true for a value that is Nothing.",
+          "Maybe.of(a).map(a -> b) executes function over Maybe input a.",
+          "Maybe.of(a).map(a -> Just) outputs Just(Just).",
+          "Maybe.of(a).map(a -> b) does not execute over Nothing.",
+          "Maybe.of(a).flatMap(a -> b) executes function over Maybe input a returns its raw value.",
+          "Maybe.of(a).flatMap(a -> b) does not execute over Nothing.",
+          "Maybe.of(a).map(a -> b).ap(Maybe) provides applicative ability to apply functors to each other.",
+          "Maybe.of(Maybe -> Maybe -> c).ap(Maybe).ap(Maybe) provides applicative interface for a functor of a function."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "Maybe",
+        "type": "class"
+      },
+      {
+        "description": [
+          "maybe :: a -> (b -> c) -> Maybe",
+          "maybe outputs result of a function onJust if input Maybe is Just or outputs input error if input Maybe is Nothing."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "maybe",
+        "type": "expression"
+      }
+    ]
+  },
+  {
+    "file": "./src/string.js",
+    "contents": [
+      {
+        "description": [
+          "trim :: string -> string",
+          "trim output is a string without white characters around it."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "trim",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "testRegEx :: regex -> string -> boolean",
+          "testRegEx outputs true if string b passes regular expression a."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "testRegEx",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "substr :: number -> number -> string -> string",
+          "substr outputs substring based on provided string, start and limit."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "substr",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "startsWith :: string -> string -> boolean",
+          "startsWith outputs true if an input string starts with provided string."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "startsWith",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "endsWith :: string -> string -> boolean",
+          "endsWith outputs true if an input string ends with provided string."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "endsWith",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "repeat :: number -> string -> string",
+          "repeat outputs new string repeating input string inputed count of times."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "repeat",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "replace :: string -> string -> string -> string",
+          "replace outputs new string replacing input substring with input replacement string in input string."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "replace",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "search :: string/regex -> string -> number",
+          "search outputs position of input substring or regular expression withing input string or undefined if it is not found."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "search",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "split :: string -> string -> array",
+          "split outputs and array of an input string split by the input substring."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "split",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "lowerCaseOf :: string -> string",
+          "lowerCaseOf ouputs the lower case version of input string."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "lowerCaseOf",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "upperCaseOf :: string -> string",
+          "upperCaseOf ouputs the upper case version of input string."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "upperCaseOf",
+        "type": "expression"
+      }
+    ]
+  },
+  {
+    "file": "./src/SyncEffect.js",
+    "contents": [
+      {
+        "description": [
+          "SyncEffect.of() outputs instance of SyncEffect.",
+          "SyncEffect.wrap(a) is equal to SyncEffect.of(() -> a).",
+          "SyncEffect.of(() -> a).inspect() outputs string SyncEffect(a).",
+          "SyncEffect.of(() -> a).trigger() executes function provided as input of SyncEffect.",
+          "SyncEffect.of(() -> a).map(b -> c) composes function over SyncEffect input function.",
+          "SyncEffect.of(() -> a).map(b -> SyncEffect) outputs SyncEffect(SyncEffect).",
+          "SyncEffect.of(() -> a).flatMap(b -> SyncEffect) outputs SyncEffect.",
+          "SyncEffect.of(() -> a).map(a -> b).ap(SyncEffect) provides applicative ability to apply functors to each other.",
+          "SyncEffect.of(SyncEffect -> SyncEffect -> c).ap(SyncEffect).ap(SyncEffect) provides applicative interface for a functor of a function.",
+          "No input function is executed until trigger is called."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "SyncEffect",
+        "type": "class"
+      }
+    ]
+  },
+  {
+    "file": "./src/utils.js",
+    "contents": [
+      {
+        "description": [
+          "typeOf :: a -> string",
+          "typeOf outputs type of its input a."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "typeOf",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "lengthOf :: (string|array) -> number",
+          "lenghtOf outputs the length of an input."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "lengthOf",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "passThrough :: function -> a -> a",
+          "passThrough output is the same as input a.",
+          "passThrough executes function passed as first argument."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "passThrough",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "log :: a -> a",
+          "log output is the same as input.",
+          "log causes side effect of console.log."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "log",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "spy :: a -> a",
+          "spy output is the same as input.",
+          "spy causes side effect of console.log."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "spy",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "minusOneToUndefined :: a -> a|boolean",
+          "minusOneToUndefined output is the same as input or undefined if input is -1."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "minusOneToUndefined",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "inspectFunction :: (a -> b) -> string",
+          "inspectFunction outputs name of named function or its conversion to string."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "inspectFunction",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "inspectArray :: [a] -> string",
+          "inspectArray maps over input array [a] and outputs string representing it."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "inspectArray",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "inspectString :: a -> string",
+          "inspectString outputs string representing input."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "inspectString",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "inspectObject :: a -> string",
+          "inspectObject outputs string representing input."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "inspectObject",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "deepInspect :: a -> string",
+          "deepInspect runs recursively over input and outputs string representing the input."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "deepInspect",
+        "type": "expression"
+      }
+    ]
+  }
+]
