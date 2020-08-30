@@ -65,7 +65,7 @@ export const isAtMost = nary(a => b => b <= a);
  * isTypeOf output is true if b is a type of a.
  */
 export const isTypeOf = nary(a => b => isEqual(typeOf(b))(a));
-
+// is not type of, is not string...
 /**
  * isString :: a -> boolean
  *

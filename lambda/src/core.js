@@ -4,22 +4,24 @@ import {minusOneToUndefined, passThrough} from './utils';
 import {nary} from "./arity";
 
 /**
- * identity simply passes its input to its output.
+ * identity is a function that simply passes its input to its output without changing it.
  *
  * @HindleyMilner identity :: a -> a
  *
  * @pure
- * @param {*} a
- * @return {a}
+ * @param {*} anything
+ * @return {*}
  *
  * @example
+ * import {identity} from '@7urtle/lambda';
+ *
  * identity('anything');
  * // => anything
  */
-export const identity = a => a;
+export const identity = anything => anything;
 
 /**
- * pipe output is a right-to-left function composition
+ * compose is a right-to-left function composition
  * where each function receives input and hands over its output to the next function.
  *
  * compose executes functions in reverse order to pipe.
@@ -30,42 +32,98 @@ export const identity = a => a;
  *
  * @pure
  * @param {function} fns
- * @param {*} a
+ * @param {*} anything
  * @return {*}
  *
  * @example
+ * import {compose} from '@7urtle/lambda';
+ *
  * const addA = a => a + 'A';
  * const addB = a => a + 'B';
- * const addAB = compose(addB, addA);
+ * const addAB = compose(addA, addB);
  *
  * addAB('Order: ');
- * // => Order: AB
+ * // => Order: BA
  */
-export const compose = (...fns) => a => reduceRight(a)((v, f) => f(v))(fns);
+export const compose = (...fns) => anything => reduceRight(anything)((v, f) => f(v))(fns);
 
 /**
- * pipe :: [(a -> b)] -> a -> (a -> b)
- *
  * pipe output is a left-to-right function composition
  * where each function receives input and hands over its output to the next function.
  *
  * pipe executes functions in reverse order to compose.
  *
  * pipe(f,g)(x) is equivalent to g(f(x)).
+ *
+ * @HindleyMilner pipe :: [(a -> b)] -> a -> (a -> b)
+ *
+ * @pure
+ * @param {function} fns
+ * @param {*} anything
+ * @return {*}
+ *
+ * @example
+ * import {pipe} from '@7urtle/lambda';
+ *
+ * const addA = a => a + 'A';
+ * const addB = a => a + 'B';
+ * const addAB = pipe(addA, addB);
+ *
+ * addAB('Order: ');
+ * // => Order: AB
  */
-export const pipe = (...fns) => a => reduce(a)((v, f) => f(v))(fns);
+export const pipe = (...fns) => anything => reduce(anything)((v, f) => f(v))(fns);
 
 /**
- * functorMap :: (a -> b) -> Functor -> Functor
- *
  * functorMap maps function over inputted functor outputting resulting functor.
+ *
+ * You should use functorMap when you want to work with functors using functions
+ * and functional composition rather than calling maps.
+ *
+ * The function can be called both as unary functorMap(fn)(functor) and binary functorMap(fn, functor).
+ *
+ * @HindleyMilner functorMap :: (a -> b) -> Functor -> Functor
+ *
+ * @param {function} fn
+ * @param {functor} functor
+ * @return {functor}
+ *
+ * @example
+ * import {functorMap, Maybe, upperCaseOf} from '@7urtle/lambda';
+ *
+ * functorMap(upperCaseOf)(Maybe.of('something')); // => Just('SOMETHING')
+ *
+ * Maybe.of('something').map(upperCaseOf).value === functorMap(upperCaseOf)(Maybe.of('something'));
+ *
+ * functorMap(upperCaseOf)(Maybe.of('something')) === functorMap(upperCaseOf, Maybe.of('something'));
  */
 export const functorMap = nary(fn => functor => functor.map(fn));
 
 /**
- * functorFlatMap :: (a -> Functor) -> Functor -> Functor
+ * functorFlatMap maps function over inputted functor outputting resulting flattened functor.
  *
- * functorFlatMap flatMaps function outputting functor over inputted functor outputting resulting functor.
+ * You should use functorFlatMap when you want to work with functors using functions
+ * and functional composition rather than calling flatMaps.
+ *
+ * The function can be called both as unary functorFlatMap(fn)(functor) and binary functorFlatMap(fn, functor).
+ *
+ * @HindleyMilner functorFlatMap :: (a -> Functor) -> Functor -> Functor
+ *
+ * @param {function} fn
+ * @param {functor} functor
+ * @return {functor}
+ *
+ * @example
+ * import {functorFlatMap, functorMap, Maybe, upperCaseOf} from '@7urtle/lambda';
+ *
+ * const maybePlus2 = number => Maybe.of(number + 2);
+ *
+ * functorFlatMap(maybePlus2)(Maybe.of(3)); // => Just(5)
+ * functorMap(maybePlus2)(Maybe.of(3)); // => Just(Just(5))
+ *
+ * Maybe.of(3).flatMap(maybePlus2).value === functorFlatMap(maybePlus2)(Maybe.of(3));
+ *
+ * functorFlatMap(maybePlus2)(Maybe.of(3)) === functorFlatMap(maybePlus2, Maybe.of(3));
  */
 export const functorFlatMap = nary(fn => functor => functor.flatMap(fn));
 

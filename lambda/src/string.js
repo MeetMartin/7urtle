@@ -22,6 +22,8 @@ export const testRegEx = nary(regex => string => regex.test(string));
  */
 export const substr = nary(limit => start => string => string.substr(start, limit));
 
+// TODO: last letter, first letter, beginning, end
+
 /**
  * startsWith :: string -> string -> boolean
  * 
