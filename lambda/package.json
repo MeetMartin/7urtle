@@ -13,8 +13,7 @@
   "scripts": {
     "build": "webpack --progress --mode production",
     "test": "jest --silent",
-    "maintain": "npm install & npm update && npm audit fix --force && npm run build",
-    "document": "documenter --input ./src/ --output ../docs/store/ && gh-pages -d ../docs/"
+    "maintain": "npm install & npm update && npm audit fix --force && npm run build"
   },
   "repository": {
     "type": "git",
