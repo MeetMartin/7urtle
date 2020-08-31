@@ -1,1 +1,714 @@
-[{"file":"./src/CodeReaderAsyncEffect.js","contents":[{"description":["getNameFromLine returns the name of class or a function from a line of source file."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"getNameFromLine :: a -> b"},{"param":"{number} lenght"},{"param":"{string} line"},{"returns":"{string}"}],"example":["getNameFromLine(6)('const lambda = a => b => a + b');","// => lambda"],"name":"getNameFromLine","type":"expression"},{"description":["processLineNameState returns object with a new state and the name and type of a documented function based on a source file line."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"processLineNameState :: a -> {b}"},{"param":"{string} line"},{"returns":"{object}"}],"example":["processLineNameState('const lambda = a => b => a + b');","// => {state:'END', contents: {name: 'lambda', type: 'function'}}"],"name":"processLineNameState","type":"expression"},{"description":["getDocumentationLineContents gets line of a documentation text from an input line string."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"getDocumentationLineContents :: a -> b"},{"param":"{string} line"},{"returns":"{string}"}],"example":["getDocumentationLineContents('* some description ')","// => some description"],"name":"getDocumentationLineContents","type":"expression"},{"description":["processLineCodeState changes state to description if it finds a start of a documentation comment returning Either."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"processLineCodeState :: a -> {b}"},{"param":"{string} line"},{"returns":"{object}"}],"example":["processLineCodeState('/**');","// => {state: DESCRIPTION}"],"name":"processLineCodeState","type":"expression"},{"description":["positionToWhiteSpaceOrStringLength returns the position of the first white space or a string length."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"positionToWhiteSpaceOrStringLength :: a -> b"},{"param":"{string} contents"},{"returns":"{number}"}],"example":["positionToWhiteSpaceOrStringLength('@tag label');","// => 4"],"name":"positionToWhiteSpaceOrStringLength","type":"expression"},{"description":["getTag returns the tag name from a tag documentation."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"getTag :: a -> b"},{"param":"{string} contents"},{"returns":"{string}"}],"example":["getTag('@tag label')","// => tag"],"name":"getTag","type":"expression"},{"description":["getTagContents returns the tag value from a tag documentation."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"getTagContents :: a -> b"},{"param":"{string} contents"},{"returns":"{string}"}],"example":["getTagContents('@tag label')","// => label","getTagContents('@example')","// => true"],"name":"getTagContents","type":"expression"},{"description":["processTag returns documentation of a tag line."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"processTag :: a -> b -> {c}"},{"param":"{string} tagContents"},{"param":"{string} tag"},{"returns":"{object}"}],"example":["processTag('tag')('label');","// => {","state: \"TAG\",","contents: {","tags: [{","something: \"else\"","}]"],"name":"processTag","type":"expression"},{"description":["processExampleOrTag returns text or a tag depending on found content."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"processTextOrTag :: a -> {b}"},{"param":"{string} contents"},{"returns":"{object}"}],"example":["processTextOrTag('example')('some example')","// => {","contents: {","example: ['some example']","processTextOrTag('example')(('@something else')","// => {","state: \"TAG\",","contents: {","tags: {","something: \"else\""],"name":"processTextOrTag","type":"expression"},{"description":["processLineTextState returns text or a tag depending on found content."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"processLineTextState :: a -> {b}"},{"param":"{string} contents"},{"returns":"{object}"}],"example":["processLineTextState('example')('* some example')","// => {","contents: {","example: ['some example']","processLineTextState('example')('* @something else')","// => {","state: \"TAG\",","contents: {","tags: {","something: \"else\""],"name":"processLineTextState","type":"expression"},{"description":["processLineBasedOnState accepts the current state and returns the correct function for line processing."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"processLineBasedOnState :: a -> (b -> c)"},{"param":"{string} state"},{"returns":"{function}"}],"example":["processLineBasedOnState('CODE');","// => processLineCodeState"],"name":"processLineBasedOnState","type":"expression"},{"description":["concatContentItem concatenates items for object contents of accumulator."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"concatContentItem :: a -> {b} -> {c} -> {d}"},{"param":"{string} label"},{"param":"{object} processedLines"},{"param":"{object} newData"},{"returns":"{any}"}],"example":["concatContentItem('item')({accumulator:{item: 'a'}})({contents:{item: 'b'}});","// => 'ab'"],"name":"concatContentItem","type":"expression"},{"description":["mergeDocumentationContents merges processedLines and new data from a new source line."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"mergeDocumentationContents :: {a} -> {b} -> {a}"},{"param":"{object} processedLines"},{"param":"{object} newData"},{"returns":"{object}"}],"example":["mergeDocumentationContents({","state: 'DESCRIPTION',","contents: [],","accumulator: {","description: ['line 1'],","tags: [],","example: []","})({","state: 'DESCRIPTION',","contents: {","description: ['line 2']","});","// => {","state: 'DESCRIPTION',","contents: [],","accumulator: {","description: ['line 1', 'line 2'],","tags: [],","example: []"],"name":"mergeDocumentationContents","type":"expression"},{"description":["processLine merges proccessed lines with data from a new line."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"processLine :: {a} -> b -> {a}"},{"param":"{object} processedLines"},{"param":"{string} line"},{"returns":"{object}"}],"example":["processLine({","state: 'DESCRIPTION',","contents: [],","accumulator: {","description: ['line 1'],","tags: [],","example: []","}, {toString: () => 'some description'});","// =>","state: 'DESCRIPTION',","contents: [],","accumulator: {","description: ['line 1', 'line 2'],","tags: [],","example: []"],"name":"processLine","type":"expression"},{"description":["getJSFilesInADirectoryAsyncEffect returns a AsyncEffect functor that provides a configuration object","with input, output, and an array of all .js files in a given path."],"tags":[{"pure":"true"},{"HindleyMilner":"getJSFilesInADirectoryAsyncEffect :: {a} -> {AsyncEffect}"},{"param":"{object} configuration"},{"returns":"{AsyncEffect}"}],"example":["getJSFilesInADirectoryAsyncEffect({input: './input/', output: './output/'}).trigger(","error => console.error(error),","result => console.log(result) // ==> {input: './input/', output: './output/', files: ['./input/Case.js','./input/core.js']}"],"name":"getJSFilesInADirectoryAsyncEffect","type":"expression"},{"description":["FileLinesGeneratorSyncEffect returns a SyncEffect Functor of a generator that provides all lines of a file."],"tags":[{"pure":"true"},{"functor":"{SyncEffect}"}],"example":["FileLinesGeneratorSyncEffect.trigger('./tests/testable/core.js');","// => Generator {}"],"name":"FileLinesGeneratorSyncEffect","type":"expression"},{"description":["processOneFile recursively reads one file and returns an object with processed documentation."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"processOneFile :: {a} -> {b} -> {a}"},{"param":"{object} documentation"},{"param":"{object} documentation"},{"returns":"{object}"}],"example":["processOneFile({","state: 'CODE',","contents: [],","accumulator: {","description: [],","tags: [],","example: []","})(['line']);"],"name":"processOneFile","type":"expression"},{"description":["getCodeReaderAsyncEffect returns a AsyncEffect functor that provides an object of configuration","and documentation of all .js files in a given input path."],"tags":[{"pure":"true"},{"HindleyMilner":"getCodeReaderAsyncEffect :: {a} -> {AsyncEffect}"},{"param":"{object} configuration"},{"returns":"{AsyncEffect}"}],"example":["getCodeReaderAsyncEffect({input: './input/', output: './output/'}).trigger(","error => console.error(error),","result => console.log(result)","// ==> {","input: './input/', output: './output/',","files: ['./input/Case.js','./input/core.js'],","documentation: {...}"],"name":"getCodeReaderAsyncEffect","type":"expression"}]},{"file":"./src/DocumentationWriterAsyncEffect.js","contents":[{"description":["getDocumentationWriterAsyncEffect takes configuration object to return AsyncEffect functor","of a documentation writer."],"tags":[{"pure":"true"},{"HindleyMilner":"getDocumentationWriter :: a -> {b} -> {AsyncEffect}"},{"param":"{object} configuration"},{"returns":"{AsyncEffect}"}],"example":["getDocumentationWriterAsyncEffect(configuration).trigger(","error => console.error(error),","result => console.info('Documentation is saved')",");","// => 'Documentation is saved'"],"name":"getDocumentationWriterAsyncEffect","type":"expression"}]},{"file":"./src/IOCommanderAsyncEffect.js","contents":[{"description":["isDirectoryValid return functor AsyncEffect that throws error if directory based on an argument in commander is invalid and returns the commander."],"tags":[{"pure":"true"},{"function":"true"},{"HindleyMilner":"doestIOArgumentExist :: a -> {b} -> AsyncEffect"},{"param":"{string} argument"},{"param":"{object} commander"},{"returns":"{AsyncEffect}"}],"example":["isDirectoryValid('input')({input: './valid-directory'});","// => AsyncEffect"],"name":"isDirectoryValid","type":"expression"},{"description":["IOCommanderAsyncEffect reads and validates --input and --output values from a commandline."],"tags":[{"functor":"true"}],"example":["IOCommanderAsyncEffect.trigger(","error => console.error(error),","result => console.log(`input is ${result.input}, output is ${result.output}`)",");","// => input is ./existing-input/ , output is ./existing-output/"],"name":"IOCommanderAsyncEffect","type":"expression"}]},{"file":"./src/index.js","contents":[{"description":["Executes the program that reads --input and --output from commandline and generates documentation object that is save as JSON."],"tags":[],"example":[],"name":"unknown","type":"unknown"}]}]
+[
+  {
+    "file": "./src/CodeReaderAsyncEffect.js",
+    "contents": [
+      {
+        "description": [
+          "getNameFromLine returns the name of class or a function from a line of source file."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "getNameFromLine :: a -> b"
+          },
+          {
+            "param": "{number} length"
+          },
+          {
+            "param": "{string} line"
+          },
+          {
+            "returns": "{string}"
+          }
+        ],
+        "example": [
+          "getNameFromLine(6)('const lambda = a => b => a + b');",
+          "// => lambda"
+        ],
+        "name": "getNameFromLine",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "processLineNameState returns object with a new state and the name and type of a documented function based on a source file line."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "processLineNameState :: a -> {b}"
+          },
+          {
+            "param": "{string} line"
+          },
+          {
+            "returns": "{object}"
+          }
+        ],
+        "example": [
+          "processLineNameState('const lambda = a => b => a + b');",
+          "// => {state:'END', contents: {name: 'lambda', type: 'function'}}"
+        ],
+        "name": "processLineNameState",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "getDocumentationLineContents gets line of a documentation text from an input line string."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "getDocumentationLineContents :: a -> b"
+          },
+          {
+            "param": "{string} line"
+          },
+          {
+            "returns": "{string}"
+          }
+        ],
+        "example": [
+          "getDocumentationLineContents('* some description ')",
+          "// => some description"
+        ],
+        "name": "getDocumentationLineContents",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "processLineCodeState changes state to description if it finds a start of a documentation comment returning Either."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "processLineCodeState :: a -> {b}"
+          },
+          {
+            "param": "{string} line"
+          },
+          {
+            "returns": "{object}"
+          }
+        ],
+        "example": [
+          "processLineCodeState('/**');",
+          "// => {state: DESCRIPTION}"
+        ],
+        "name": "processLineCodeState",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "positionToWhiteSpaceOrStringLength returns the position of the first white space or a string length."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "positionToWhiteSpaceOrStringLength :: a -> b"
+          },
+          {
+            "param": "{string} contents"
+          },
+          {
+            "returns": "{number}"
+          }
+        ],
+        "example": [
+          "positionToWhiteSpaceOrStringLength('@tag label');",
+          "// => 4"
+        ],
+        "name": "positionToWhiteSpaceOrStringLength",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "getTag returns the tag name from a tag documentation."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "getTag :: a -> b"
+          },
+          {
+            "param": "{string} contents"
+          },
+          {
+            "returns": "{string}"
+          }
+        ],
+        "example": [
+          "getTag('@tag label')",
+          "// => tag"
+        ],
+        "name": "getTag",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "getTagContents returns the tag value from a tag documentation."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "getTagContents :: a -> b"
+          },
+          {
+            "param": "{string} contents"
+          },
+          {
+            "returns": "{string}"
+          }
+        ],
+        "example": [
+          "getTagContents('@tag label')",
+          "// => label",
+          "getTagContents('@example')",
+          "// => true"
+        ],
+        "name": "getTagContents",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "processTag returns documentation of a tag line."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "processTag :: a -> b -> {c}"
+          },
+          {
+            "param": "{string} tagContents"
+          },
+          {
+            "param": "{string} tag"
+          },
+          {
+            "returns": "{object}"
+          }
+        ],
+        "example": [
+          "processTag('tag')('label');",
+          "// => {",
+          "  state: \"TAG\",",
+          "    contents: {",
+          "      tags: [{",
+          "        something: \"else\"",
+          "      }]",
+          "   }",
+          "}"
+        ],
+        "name": "processTag",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "processExampleOrTag returns text or a tag depending on found content."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "processTextOrTag :: a -> {b}"
+          },
+          {
+            "param": "{string} contents"
+          },
+          {
+            "returns": "{object}"
+          }
+        ],
+        "example": [
+          "processTextOrTag('example')('some example')",
+          "// => {",
+          "  contents: {",
+          "    example: ['some example']",
+          "  }",
+          "}",
+          "",
+          "processTextOrTag('example')(('@something else')",
+          "// => {",
+          "  state: \"TAG\",",
+          "    contents: {",
+          "      tags: {",
+          "        something: \"else\"",
+          "      }",
+          "   }",
+          "}"
+        ],
+        "name": "processTextOrTag",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "processLineTextState returns text or a tag depending on found content."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "processLineTextState :: a -> {b}"
+          },
+          {
+            "param": "{string} contents"
+          },
+          {
+            "returns": "{object}"
+          }
+        ],
+        "example": [
+          "processLineTextState('example')('* some example')",
+          "// => {",
+          "  contents: {",
+          "    example: ['some example']",
+          "  }",
+          "}",
+          "",
+          "processLineTextState('example')('* @something else')",
+          "// => {",
+          "  state: \"TAG\",",
+          "    contents: {",
+          "      tags: {",
+          "        something: \"else\"",
+          "      }",
+          "   }",
+          "}"
+        ],
+        "name": "processLineTextState",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "processLineBasedOnState accepts the current state and returns the correct function for line processing."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "processLineBasedOnState :: a -> (b -> c)"
+          },
+          {
+            "param": "{string} state"
+          },
+          {
+            "returns": "{function}"
+          }
+        ],
+        "example": [
+          "processLineBasedOnState('CODE');",
+          "// => processLineCodeState"
+        ],
+        "name": "processLineBasedOnState",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "concatContentItem concatenates items for object contents of accumulator."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "concatContentItem :: a -> {b} -> {c} -> {d}"
+          },
+          {
+            "param": "{string} label"
+          },
+          {
+            "param": "{object} processedLines"
+          },
+          {
+            "param": "{object} newData"
+          },
+          {
+            "returns": "{any}"
+          }
+        ],
+        "example": [
+          "concatContentItem('item')({accumulator:{item: 'a'}})({contents:{item: 'b'}});",
+          "// => 'ab'"
+        ],
+        "name": "concatContentItem",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "mergeDocumentationContents merges processedLines and new data from a new source line."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "mergeDocumentationContents :: {a} -> {b} -> {a}"
+          },
+          {
+            "param": "{object} processedLines"
+          },
+          {
+            "param": "{object} newData"
+          },
+          {
+            "returns": "{object}"
+          }
+        ],
+        "example": [
+          "mergeDocumentationContents({",
+          "     state: 'DESCRIPTION',",
+          "     contents: [],",
+          "     accumulator: {",
+          "         description: ['line 1'],",
+          "         tags: [],",
+          "         example: []",
+          "     }",
+          " })({",
+          "     state: 'DESCRIPTION',",
+          "     contents: {",
+          "         description: ['line 2']",
+          "     }",
+          " });",
+          "",
+          "// => {",
+          "     state: 'DESCRIPTION',",
+          "     contents: [],",
+          "     accumulator: {",
+          "         description: ['line 1', 'line 2'],",
+          "         tags: [],",
+          "         example: []",
+          "     }",
+          " }"
+        ],
+        "name": "mergeDocumentationContents",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "processLine merges proccessed lines with data from a new line."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "processLine :: {a} -> b -> {a}"
+          },
+          {
+            "param": "{object} processedLines"
+          },
+          {
+            "param": "{string} line"
+          },
+          {
+            "returns": "{object}"
+          }
+        ],
+        "example": [
+          "processLine({",
+          "     state: 'DESCRIPTION',",
+          "     contents: [],",
+          "     accumulator: {",
+          "         description: ['line 1'],",
+          "         tags: [],",
+          "         example: []",
+          "     }",
+          "  }, {toString: () => 'some description'});",
+          "// =>",
+          "{",
+          "  state: 'DESCRIPTION',",
+          "  contents: [],",
+          "  accumulator: {",
+          "    description: ['line 1', 'line 2'],",
+          "    tags: [],",
+          "    example: []",
+          "  }",
+          "}"
+        ],
+        "name": "processLine",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "getJSFilesInADirectoryAsyncEffect returns a AsyncEffect functor that provides a configuration object",
+          "with input, output, and an array of all .js files in a given path."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "HindleyMilner": "getJSFilesInADirectoryAsyncEffect :: {a} -> {AsyncEffect}"
+          },
+          {
+            "param": "{object} configuration"
+          },
+          {
+            "returns": "{AsyncEffect}"
+          }
+        ],
+        "example": [
+          "getJSFilesInADirectoryAsyncEffect({input: './input/', output: './output/'}).trigger(",
+          "  error => console.error(error),",
+          "  result => console.log(result) // ==> {input: './input/', output: './output/', files: ['./input/Case.js','./input/core.js']}",
+          ")"
+        ],
+        "name": "getJSFilesInADirectoryAsyncEffect",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "FileLinesGeneratorSyncEffect returns a SyncEffect Functor of a generator that provides all lines of a file."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "functor": "{SyncEffect}"
+          }
+        ],
+        "example": [
+          "FileLinesGeneratorSyncEffect.trigger('./tests/testable/core.js');",
+          "// => Generator {}"
+        ],
+        "name": "FileLinesGeneratorSyncEffect",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "processOneFile recursively reads one file and returns an object with processed documentation."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "processOneFile :: {a} -> {b} -> {a}"
+          },
+          {
+            "param": "{object} documentation"
+          },
+          {
+            "param": "{object} documentation"
+          },
+          {
+            "returns": "{object}"
+          }
+        ],
+        "example": [
+          "processOneFile({",
+          "     state: 'CODE',",
+          "     contents: [],",
+          "     accumulator: {",
+          "         description: [],",
+          "         tags: [],",
+          "         example: []",
+          "     }",
+          "  })(['line']);"
+        ],
+        "name": "processOneFile",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "getCodeReaderAsyncEffect returns a AsyncEffect functor that provides an object of configuration",
+          "and documentation of all .js files in a given input path."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "HindleyMilner": "getCodeReaderAsyncEffect :: {a} -> {AsyncEffect}"
+          },
+          {
+            "param": "{object} configuration"
+          },
+          {
+            "returns": "{AsyncEffect}"
+          }
+        ],
+        "example": [
+          "getCodeReaderAsyncEffect({input: './input/', output: './output/'}).trigger(",
+          "  error => console.error(error),",
+          "  result => console.log(result)",
+          "  // ==> {",
+          "     input: './input/', output: './output/',",
+          "     files: ['./input/Case.js','./input/core.js'],",
+          "     documentation: {...}",
+          "  }",
+          ")"
+        ],
+        "name": "getCodeReaderAsyncEffect",
+        "type": "expression"
+      }
+    ]
+  },
+  {
+    "file": "./src/DocumentationWriterAsyncEffect.js",
+    "contents": [
+      {
+        "description": [
+          "getDocumentationWriterAsyncEffect takes configuration object to return AsyncEffect functor",
+          "of a documentation writer."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "HindleyMilner": "getDocumentationWriter :: a -> {b} -> {AsyncEffect}"
+          },
+          {
+            "param": "{object} configuration"
+          },
+          {
+            "returns": "{AsyncEffect}"
+          }
+        ],
+        "example": [
+          "getDocumentationWriterAsyncEffect(configuration).trigger(",
+          "  error => console.error(error),",
+          "  result => console.info('Documentation is saved')",
+          ");",
+          "// => 'Documentation is saved'"
+        ],
+        "name": "getDocumentationWriterAsyncEffect",
+        "type": "expression"
+      }
+    ]
+  },
+  {
+    "file": "./src/index.js",
+    "contents": [
+      {
+        "description": [
+          "Executes the program that reads --input and --output from commandline and generates documentation object that is save as JSON."
+        ],
+        "tags": [],
+        "example": [],
+        "name": "unknown",
+        "type": "unknown"
+      }
+    ]
+  },
+  {
+    "file": "./src/IOCommanderAsyncEffect.js",
+    "contents": [
+      {
+        "description": [
+          "isDirectoryValid return functor AsyncEffect that throws error if directory based on an argument in commander is invalid and returns the commander."
+        ],
+        "tags": [
+          {
+            "pure": "true"
+          },
+          {
+            "function": "true"
+          },
+          {
+            "HindleyMilner": "doestIOArgumentExist :: a -> {b} -> AsyncEffect"
+          },
+          {
+            "param": "{string} argument"
+          },
+          {
+            "param": "{object} commander"
+          },
+          {
+            "returns": "{AsyncEffect}"
+          }
+        ],
+        "example": [
+          "isDirectoryValid('input')({input: './valid-directory'});",
+          "// => AsyncEffect"
+        ],
+        "name": "isDirectoryValid",
+        "type": "expression"
+      },
+      {
+        "description": [
+          "IOCommanderAsyncEffect reads and validates --input and --output values from a commandline."
+        ],
+        "tags": [
+          {
+            "functor": "true"
+          }
+        ],
+        "example": [
+          "IOCommanderAsyncEffect.trigger(",
+          "  error => console.error(error),",
+          "  result => console.log(`input is ${result.input}, output is ${result.output}`)",
+          ");",
+          "// => input is ./existing-input/ , output is ./existing-output/"
+        ],
+        "name": "IOCommanderAsyncEffect",
+        "type": "expression"
+      }
+    ]
+  }
+]

@@ -95,7 +95,7 @@ const processLineNameState = line =>
  * // => some description
  */
 const getDocumentationLineContents = line =>
-    (length => length > 1 ? trim(substr(length)(1)(line)) : '')
+    (length => length > 1 ? (substr(length)(2)(line)) : '')
     (lengthOf(line));
 
 /**
@@ -220,7 +220,10 @@ const processTag = tagContents => tag =>
 const processTextOrTag = type => contents =>
     startsWith('@')(contents)
         ? (lengthOf(contents) > 2 ? processTag(getTagContents(contents))(getTag(contents)) : {})
-        : lengthOf(contents) > 1 ? {contents:{[type]:[contents]}} : {};
+        //: lengthOf(contents) > 1 ? {contents:{[type]:[contents]}} : {};
+        : lengthOf(contents) > 1
+            ? {contents:{[type]:[contents]}}
+            : isEqual(type)('example') ? {contents:{[type]:[contents]}} : {};
 
 /**
  * processLineTextState returns text or a tag depending on found content.
@@ -453,7 +456,7 @@ const FileLinesGeneratorSyncEffect = SyncEffect.of(path => fs.existsSync(path) ?
  *          tags: [],
  *          example: []
  *      }
- *   })(['line']);
+ * })(['line']);
  */
 const processOneFile = documentation => generator =>
     (item =>

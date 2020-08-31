@@ -18,7 +18,7 @@ test('getDocumentationWriterAsyncEffect takes output path and docs object to ret
     setWriteFileSuccess(false);
     getDocumentationWriterAsyncEffect({output: './existing-directory/', documentation: [{a:'a'},{b:'b'}]}).trigger(
         error => {
-            expect(error).toBe('There was an error writing into "./existing-directory/docs.json" with exception: "Unknown error occured.".');
+            expect(error).toBe('There was an error writing into "./existing-directory/documentation.json" with exception: "Unknown error occured.".');
             done();
         },
         result => {

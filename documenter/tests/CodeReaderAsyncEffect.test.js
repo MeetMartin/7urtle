@@ -22,8 +22,8 @@ test('processLineCodeState changes state to description if it finds a start of a
 });
 
 test('getDocumentationLineContents gets line of a docs text from an input line string.', () => {
-    expect(CodeReaderAsyncEffect.getDocumentationLineContents('* some description ')).toBe('some description');
-    expect(CodeReaderAsyncEffect.getDocumentationLineContents('some text')).toBe('ome text');
+    expect(CodeReaderAsyncEffect.getDocumentationLineContents('* some description ')).toBe('some description ');
+    expect(CodeReaderAsyncEffect.getDocumentationLineContents('some text')).toBe('me text');
     expect(CodeReaderAsyncEffect.getDocumentationLineContents('*')).toBe('');
 });
 
@@ -55,11 +55,15 @@ test('processTextOrTag returns text or a tag depending on found content.', () =>
     expect(CodeReaderAsyncEffect.processTextOrTag('description')('@1')).toEqual({});
     expect(CodeReaderAsyncEffect.processTextOrTag('description')('@12')).toEqual({state: 'TAG', contents: {tags: [{'12': 'true'}]}});
     expect(CodeReaderAsyncEffect.processTextOrTag('description')('1')).toEqual({});
+    expect(CodeReaderAsyncEffect.processTextOrTag('example')('1')).toEqual({contents:{example:['1']}});
+    expect(CodeReaderAsyncEffect.processTextOrTag('example')('')).toEqual({contents:{example:['']}});
     expect(CodeReaderAsyncEffect.processTextOrTag('description')('12')).toEqual({contents:{description:['12']}});
 });
 
 test('processLineTextState returns text or a tag depending on found content.', () => {
     expect(CodeReaderAsyncEffect.processLineTextState('example')('* some example')).toEqual({contents:{example:['some example']}});
+    expect(CodeReaderAsyncEffect.processLineTextState('example')('*')).toEqual({contents:{example:['']}});
+    expect(CodeReaderAsyncEffect.processLineTextState('example')('*    some code')).toEqual({contents:{example:['   some code']}});
     expect(CodeReaderAsyncEffect.processLineTextState('description')('* some description')).toEqual({contents:{description:['some description']}});
     expect(CodeReaderAsyncEffect.processLineTextState('example')('* @something else')).toEqual({state: 'TAG', contents: {tags: [{something: 'else'}]}});
     expect(CodeReaderAsyncEffect.processLineTextState('example')('*/')).toEqual({state: 'NAME'});
