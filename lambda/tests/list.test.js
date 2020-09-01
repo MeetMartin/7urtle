@@ -25,6 +25,7 @@ test('map executes input mapper over each member of input array [a] to output ne
   const mapper = a => a + 'm';
   const list = ['a', 'b', 'c'];
   expect(λ.map(mapper)(list)).toEqual(['am', 'bm', 'cm']);
+  expect(list).toEqual(['a', 'b', 'c']);
   expect(λ.map(mapper)(list)).toEqual(λ.map(mapper, list));
 });
 

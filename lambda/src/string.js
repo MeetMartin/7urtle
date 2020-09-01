@@ -2,23 +2,67 @@ import {minusOneToUndefined} from './utils';
 import {nary} from "./arity";
 
 /**
- * trim :: string -> string
- *
  * trim output is a string without white characters around it.
+ *
+ * @HindleyMilner trim :: string -> string
+ *
+ * @pure
+ * @param {string} string
+ * @return {string}
+ *
+ * @example
+ * import {trim} from '@7urtle/lambda';
+ *
+ * trim(' a \n '); // => 'a'
  */
 export const trim = string => string.trim();
 
 /**
- * testRegEx :: regex -> string -> boolean
- *
  * testRegEx outputs true if string b passes regular expression a.
+ *
+ * testRegEx can be called both as a curried unary function or as a standard binary function.
+ *
+ * @HindleyMilner testRegEx :: regex -> string -> boolean
+ *
+ * @pure
+ * @param {regex} regex
+ * @param {string} string
+ * @return {boolean}
+ *
+ * @example
+ * import {testRegEx} from '@7urtle/lambda';
+ *
+ * testRegEx(/[a-z]/)('7urtle'); // => true
+ * testRegEx(/[0-9]/)('1'); // => true
+ * testRegEx(/[0-9]/)('abc'); // => false
+ *
+ * // testRegEx can be called both as a curried unary function or as a standard binary function
+ * testRegEx(/[a-z]/)('7urtle') === testRegEx(/[a-z]/, '7urtle');
  */
 export const testRegEx = nary(regex => string => regex.test(string));
 
 /**
- * substr :: number -> number -> string -> string
- * 
  * substr outputs substring based on provided string, start and limit.
+ *
+ * substr can be called both as a curried unary function or as a standard ternary function.
+ *
+ * @HindleyMilner substr :: number -> number -> string -> string
+ *
+ * @pure
+ * @param {number} limit
+ * @param {number} start
+ * @param {string} string
+ * @return {string}
+ *
+ * @example
+ * import {substr} from '@7urtle/lambda';
+ *
+ * substr(3)(1)('7urtle'); // => 'urt'
+ * substr(1)(0)('7urtle'); // => '7'
+ * substr(1)(-1)('7urtle'); // => 'e'
+ *
+ * // substr can be called both as a curried unary function or as a standard ternary function
+ * substr(3)(1)('7urtle') === substr(3, 1, '7urtle');
  */
 export const substr = nary(limit => start => string => string.substr(start, limit));
 

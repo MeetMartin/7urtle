@@ -242,8 +242,8 @@ export const concat = nary(a => b =>
  * import {includes} from '@7urtle/lambda';
  *
  * includes('rt')('7urtle'); // => true
- * includes(1)([1, 2, 3])) // => true
- * includes('turtle')([1, 2, 3])) // => false
+ * includes(1)([1, 2, 3]) // => true
+ * includes('turtle')([1, 2, 3]) // => false
  *
  * // includes can be called both as a curried unary function or as a standard binary function
  * includes('rt')('7urtle') === includes('rt', '7urtle');
@@ -300,9 +300,10 @@ export const indexOf = nary(a => b => minusOneToUndefined(b.indexOf(a)));
 export const lastIndexOf = nary(a => b => minusOneToUndefined(b.lastIndexOf(a)));
 
 /**
- * memoize uses input memory to save output of input function and then uses it to lookup the result on a repeated run.
+ * memoize uses input memory to save output of input function and then uses it to lookup the result on a repeated run. This
+ * function is not pure because the input memory is modified in the process.
  *
- * The function can be called both as a curried unary function or as a standard ternary function
+ * The function can be called both as a curried unary function or as a standard ternary function.
  *
  * @HindleyMilner memoize :: object -> (a -> b) -> a -> b
  *
