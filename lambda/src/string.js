@@ -66,60 +66,213 @@ export const testRegEx = nary(regex => string => regex.test(string));
  */
 export const substr = nary(limit => start => string => string.substr(start, limit));
 
-// TODO: last letter, first letter, beginning, end
+/**
+ * firstLetterOf outputs the first letter of a provided string.
+ *
+ * @HindleyMilner firstLetterOf :: string -> string
+ *
+ * @pure
+ * @param {string} string
+ * @return {string}
+ *
+ * @example
+ * import {firstLetterOf} from '@7urtle/lambda';
+ *
+ * firstLetterOf('7urtle'); // => '7'
+ */
+export const firstLetterOf = string => string.substr(0, 1);
 
 /**
- * startsWith :: string -> string -> boolean
- * 
+ * lastLetterOf outputs the last letter of a provided string.
+ *
+ * @HindleyMilner lastLetterOf :: string -> string
+ *
+ * @pure
+ * @param {string} string
+ * @return {string}
+ *
+ * @example
+ * import {lastLetterOf} from '@7urtle/lambda';
+ *
+ * lastLetterOf('7urtle'); // => 'e'
+ */
+export const lastLetterOf = string => string.substr(-1, 1);
+
+/**
  * startsWith outputs true if an input string starts with provided string.
+ *
+ * startsWith can be called both as a curried unary function or as a standard binary function.
+ *
+ * @HindleyMilner startsWith :: string -> string -> boolean
+ *
+ * @pure
+ * @param {string} substring
+ * @param {string} string
+ * @return {boolean}
+ *
+ * @example
+ * import {startsWith} from '@7urtle/lambda';
+ *
+ * startsWith('7')('7urtle'); // => true
+ * startsWith('7urtl')('7urtle'); // => true
+ * startsWith('8urtl')('7urtle'); // => false
+ *
+ * // startsWith can be called both as a curried unary function or as a standard binary function
+ * startsWith('7')('7urtle') === startsWith('7', '7urtle');
  */
 export const startsWith = nary(substring => string => string.startsWith(substring));
 
 /**
- * endsWith :: string -> string -> boolean
- * 
  * endsWith outputs true if an input string ends with provided string.
+ *
+ * endsWith can be called both as a curried unary function or as a standard binary function.
+ *
+ * @HindleyMilner endsWith :: string -> string -> boolean
+ *
+ * @pure
+ * @param {string} substring
+ * @param {string} string
+ * @return {boolean}
+ *
+ * @example
+ * import {endsWith} from '@7urtle/lambda';
+ *
+ * endsWith('7e')('7urtle'); // => true
+ * endsWith('urtle')('7urtle'); // => true
+ * endsWith('urtls')('7urtle'); // => false
+ *
+ * // endsWith can be called both as a curried unary function or as a standard binary function
+ * endsWith('e')('7urtle') === endsWith('e', '7urtle');
  */
 export const endsWith = nary(substring => string => string.endsWith(substring));
 
 /**
- * repeat :: number -> string -> string
- * 
- * repeat outputs new string repeating input string inputed count of times.
+ * repeat outputs new string repeating input string inputted count of times.
+ *
+ * repeat can be called both as a curried unary function or as a standard binary function.
+ *
+ * @HindleyMilner repeat :: number -> string -> string
+ *
+ * @pure
+ * @param {number} count
+ * @param {string} string
+ * @return {string}
+ *
+ * @example
+ * import {repeat} from '@7urtle/lambda';
+ *
+ * repeat(2)('7urtle'); // => '7urtle7urtle'
+ * repeat(0)('7urtle'); // => ''
+ *
+ * // repeat can be called both as a curried unary function or as a standard binary function
+ * repeat(2)('7urtle') === repeat(2, '7urtle');
  */
 export const repeat = nary(count => string => string.repeat(count));
 
 /**
- * replace :: string -> string -> string -> string
- * 
  * replace outputs new string replacing input substring with input replacement string in input string.
+ *
+ * replace can be called both as a curried unary function or as a standard ternary function.
+ *
+ * @HindleyMilner replace :: string -> string -> string -> string
+ *
+ * @pure
+ * @param {string} replacement
+ * @param {string} substring
+ * @param {string} string
+ * @return {string}
+ *
+ * @example
+ * import {replace} from '@7urtle/lambda';
+ *
+ * replace('8')('7')('7urtle'); // => '8urtle'
+ * replace('7')('')('7urtle'); // => '77urtle'
+ * replace('')('7')('7urtle'); // => 'urtle'
+ *
+ * // replace can be called both as a curried unary function or as a standard ternary function
+ * replace('8')('7')('7urtle') === replace('8', '7', '7urtle');
  */
 export const replace = nary(replacement => substring => string => string.replace(substring, replacement));
 
 /**
- * search :: string/regex -> string -> number
- * 
  * search outputs position of input substring or regular expression withing input string or undefined if it is not found.
+ *
+ * search can be called both as a curried unary function or as a standard binary function.
+ *
+ * @HindleyMilner search :: string/regex -> string -> number
+ *
+ * @pure
+ * @param {string|regex} substring
+ * @param {string} string
+ * @return {number}
+ *
+ * @example
+ * import {search} from '@7urtle/lambda';
+ *
+ * search('7')('7urtle'); 0
+ * search('e')('7urtle'); // => 5
+ * search('rt')('7urtle'); // => 2
+ * search(/URT/i)('7urtle'); // => 1
+ * search('8')('7urtle'); => undefined
+ *
+ * // search can be called both as a curried unary function or as a standard binary function
+ * search('7')('7urtle') === search('7', '7urtle');
  */
 export const search = nary(substring => string => minusOneToUndefined(string.search(substring)));
 
 /**
- * split :: string -> string -> array
- * 
  * split outputs and array of an input string split by the input substring.
+ *
+ * split can be called both as a curried unary function or as a standard binary function.
+ *
+ * @HindleyMilner split :: string -> string -> array
+ *
+ * @pure
+ * @param {string} substring
+ * @param {string} string
+ * @return {array}
+ *
+ * @example
+ * import {split} from '@7urtle/lambda';
+ *
+ * split(' ')('7urtles are awesome'); // => ['7urtles', 'are', 'awesome']
+ * split('/')('7urtles are awesome'); // => ['7urtles are awesome']
+ *
+ * // split can be called both as a curried unary function or as a standard binary function
+ * split(' ')('7urtles are awesome') === split(' ', '7urtles are awesome');
  */
 export const split = nary(substring => string => string.split(substring));
 
 /**
- * lowerCaseOf :: string -> string
- * 
- * lowerCaseOf ouputs the lower case version of input string.
+ * lowerCaseOf outputs the lower case version of input string.
+ *
+ * @HindleyMilner lowerCaseOf :: string -> string
+ *
+ * @pure
+ * @param {string} string
+ * @return {string}
+ *
+ * @example
+ * import {lowerCaseOf} from '@7urtle/lambda';
+ *
+ * lowerCaseOf('PeTrA'); // => 'petra'
+ * lowerCaseOf('PŘÍŠERNĚ ŽLUŤOUČKÝ KŮŇ ÚPĚL ĎÁBELSKÉ ÓDY'); // => 'příšerně žluťoučký kůň úpěl ďábelské ódy'
  */
 export const lowerCaseOf = string => string.toLowerCase();
 
 /**
- * upperCaseOf :: string -> string
- * 
- * upperCaseOf ouputs the upper case version of input string.
+ * upperCaseOf outputs the upper case version of input string.
+ *
+ * @HindleyMilner upperCaseOf :: string -> string
+ *
+ * @pure
+ * @param {string} string
+ * @return {string}
+ *
+ * @example
+ * import {upperCaseOf} from '@7urtle/lambda';
+ *
+ * upperCaseOf('PeTrA'); // => 'PETRA'
+ * upperCaseOf('příšerně žluťoučký kůň úpěl ďábelské ódy'); // => 'PŘÍŠERNĚ ŽLUŤOUČKÝ KŮŇ ÚPĚL ĎÁBELSKÉ ÓDY'
  */
 export const upperCaseOf = string => string.toUpperCase();

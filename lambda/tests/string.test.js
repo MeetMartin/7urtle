@@ -20,6 +20,18 @@ test('substr outputs substring based on provided string, start and limit.', () =
   expect(λ.substr(3)(1)('7urtle')).toBe(λ.substr(3, 1, '7urtle'));
 });
 
+test('firstLetterOf outputs the first letter of a provided string.', () => {
+  expect(λ.firstLetterOf('7urtle')).toBe('7');
+  expect(λ.firstLetterOf('1')).toBe('1');
+  expect(λ.firstLetterOf('')).toBe('');
+});
+
+test('lastLetterOf outputs the last letter of a provided string.', () => {
+  expect(λ.lastLetterOf('7urtle')).toBe('e');
+  expect(λ.lastLetterOf('1')).toBe('1');
+  expect(λ.lastLetterOf('')).toBe('');
+});
+
 test('startsWith outputs true if an input string starts with provided string.', () => {
   expect(λ.startsWith('7')('7urtle')).toBe(true);
   expect(λ.startsWith('7urtl')('7urtle')).toBe(true);
@@ -34,7 +46,7 @@ test('endsWith outputs true if an input string ends with provided string.', () =
   expect(λ.endsWith('e')('7urtle')).toBe(λ.endsWith('e', '7urtle'));
 });
 
-test('repeat outputs new string repeating input string inputed count of times.', () => {
+test('repeat outputs new string repeating input string inputted count of times.', () => {
   expect(λ.repeat(2)('7urtle')).toBe('7urtle7urtle');
   expect(λ.repeat(1)('7urtle')).toBe('7urtle');
   expect(λ.repeat(0)('7urtle')).toBe('');
@@ -67,12 +79,12 @@ test('split outputs and array of an input string split by the input substring.',
   expect(λ.split('/')('7urtles are awesome')).toEqual(λ.split('/', '7urtles are awesome'));
 });
 
-test('lowerCaseOf ouputs the lower case version of input string.', () => {
+test('lowerCaseOf outputs the lower case version of input string.', () => {
   expect(λ.lowerCaseOf('MaRTiN')).toBe('martin');
   expect(λ.lowerCaseOf('PŘÍŠERNĚ ŽLUŤOUČKÝ KŮŇ ÚPĚL ĎÁBELSKÉ ÓDY')).toBe('příšerně žluťoučký kůň úpěl ďábelské ódy');
 });
 
-test('upperCaseOf ouputs the upper case version of input string.', () => {
+test('upperCaseOf outputs the upper case version of input string.', () => {
   expect(λ.upperCaseOf('MaRTiN')).toBe('MARTIN');
   expect(λ.upperCaseOf('příšerně žluťoučký kůň úpěl ďábelské ódy')).toBe('PŘÍŠERNĚ ŽLUŤOUČKÝ KŮŇ ÚPĚL ĎÁBELSKÉ ÓDY');
 });
