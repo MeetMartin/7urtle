@@ -165,6 +165,11 @@ test('isArray output is true if input is an array.', () => {
   expect(λ.isArray({})).toBe(false);
 });
 
+test('isNotArray output is true if input is not an array.', () => {
+  expect(λ.isNotArray([])).toBe(false);
+  expect(λ.isNotArray({})).toBe(true);
+});
+
 test('isFunction output is true if input is a function.', () => {
   const someObject = {inspect: () => 'inspected'};
   expect(λ.isFunction(() => null)).toBe(true);
@@ -172,7 +177,14 @@ test('isFunction output is true if input is a function.', () => {
   expect(λ.isFunction(1)).toBe(false);
 });
 
-test('isLength output is true if input is a length of a.', () => {
+test('isNotFunction output is true if input is not a function.', () => {
+  const someObject = {inspect: () => 'inspected'};
+  expect(λ.isNotFunction(() => null)).toBe(false);
+  expect(λ.isNotFunction(someObject.inspect)).toBe(false);
+  expect(λ.isNotFunction(1)).toBe(true);
+});
+
+test('isLength output is true if b is a length of a.', () => {
   expect(λ.isLength(3)('abc')).toBe(true);
   expect(λ.isLength(3)([1,2,3])).toBe(true);
   expect(λ.isLength(1)('abc')).toBe(false);
@@ -180,7 +192,7 @@ test('isLength output is true if input is a length of a.', () => {
   expect(λ.isLength(3)('abc')).toBe(λ.isLength(3, 'abc'));
 });
 
-test('isNotLength output is true if input is not a length of a.', () => {
+test('isNotLength output is true if b is not a length of a.', () => {
   expect(λ.isNotLength(1)('abc')).toBe(true);
   expect(λ.isNotLength(1)([1,2,3])).toBe(true);
   expect(λ.isNotLength(3)('abc')).toBe(false);

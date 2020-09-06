@@ -3,78 +3,184 @@ import {keysOf, join, map} from "./list";
 import {nary} from "./arity";
 
 /**
- * typeOf :: a -> string
+ * typeOf outputs a type of its input.
  *
- * typeOf outputs type of its input a.
+ * @HindleyMilner typeOf :: a -> string
+ *
+ * @pure
+ * @param {*} a
+ * @return {string}
+ *
+ * @example
+ * import {typeOf} from '@7urtle/lambda';
+ *
+ * typeOf('7turtle'); // => 'string'
  */
 export const typeOf = a => typeof a;
 
 /**
- * lengthOf :: (string|array) -> number
+ * lengthOf outputs the length of an input.
  *
- * lenghtOf outputs the length of an input.
+ * @HindleyMilner lengthOf :: (string|array) -> number
+ *
+ * @pure
+ * @param {string|array} a
+ * @return {number}
+ *
+ * @example
+ * import {lengthOf} from '@7urtle/lambda';
+ *
+ * lengthOf('7turtle'); // => 7
+ * lengthOf([1,2,3]); // => 3
+ * lengthOf({}); // => undefined
  */
 export const lengthOf = a => a.length;
 
 /**
- * passThrough :: function -> a -> a
+ * passThrough output is the same as input a. passThrough executes function passed as first argument.
  *
- * passThrough output is the same as input a.
- * passThrough executes function passed as first argument.
+ * passThrough can be called both as a curried unary function or as a standard binary function.
+ *
+ * @HindleyMilner passThrough :: function -> a -> a
+ *
+ * @pure
+ * @param {function} fn
+ * @param {*} anything
+ * @return {boolean}
+ *
+ * @example
+ * import {passThrough} from '@7urtle/lambda';
+ *
+ * passThrough(() => 'b')('a'); // => 'a'
+ *
+ * // isTypeOf can be called both as a curried unary function or as a standard binary function
+ * passThrough(() => 'b')('a') === passThrough(() => 'b', 'a');
  */
-export const passThrough = nary(f => a => {
-  f(a);
-  return a;
+export const passThrough = nary(fn => anything => {
+  fn(anything);
+  return anything;
 });
 
 /**
- * log :: a -> a
+ * log output is the same as input and it logs the input value. log causes side effect of console.log.
  *
- * log output is the same as input.
- * log causes side effect of console.log.
+ * @HindleyMilner log :: a -> a
+ *
+ * @param {*} anything
+ * @return {*}
+ *
+ * @example
+ * import {log} from '@7urtle/lambda';
+ *
+ * log('anything'); // => 'anything'
  */
 export const log = passThrough(console.log);
 
 /**
- * spy :: a -> a
+ * spy output is the same as input and it logs the deepInspect of the input. spy causes side effect of console.log.
  *
- * spy output is the same as input.
- * spy causes side effect of console.log.
+ * @HindleyMilner spy :: a -> a
+ *
+ * @param {*} anything
+ * @return {*}
+ *
+ * @example
+ * import {spy} from '@7urtle/lambda';
+ *
+ * spy([1, 'a']); // => "[1, 'a']"
  */
 export const spy = passThrough(a => console.log(deepInspect(a)));
 
 /**
- * minusOneToUndefined :: a -> a|boolean
- *
  * minusOneToUndefined output is the same as input or undefined if input is -1.
+ *
+ * Because some functions return -1 as error state, this function is created to change it into a more consistent
+ * undefined output.
+ *
+ * @HindleyMilner minusOneToUndefined :: a -> a|boolean
+ *
+ * @param {*} anything
+ * @return {*|boolean}
+ *
+ * @example
+ * import {log} from '@7urtle/lambda';
+ *
+ * minusOneToUndefined(-1); // => undefined
+ * minusOneToUndefined(0); // => 0
+ * minusOneToUndefined('7urtle'); // => '7urtle'
  */
-export const minusOneToUndefined = a => isEqual(-1)(a) ? undefined: a;
+export const minusOneToUndefined = anything => isEqual(-1)(anything) ? undefined: anything;
 
 /**
- * inspectFunction :: (a -> b) -> string
- *
  * inspectFunction outputs name of named function or its conversion to string.
+ *
+ * @HindleyMilner inspectFunction :: (a -> b) -> string
+ *
+ * @param {function} fn
+ * @return {string}
+ *
+ * @example
+ * import {inspectFunction} from '@7urtle/lambda';
+ *
+ * function namedFunction() {
+ *   return null;
+ * }
+ *
+ * inspectFunction(namedFunction); // => 'namedFunction'
+ * inspectFunction(() => 'b');
+ * // => `function () {
+ * // =>     return 'b';
+ * // => }`
  */
-export const inspectFunction = f => f.name ? f.name : String(f);
+export const inspectFunction = fn => fn.name ? fn.name : String(fn);
 
 /**
- * inspectArray :: [a] -> string
- *
  * inspectArray maps over input array [a] and outputs string representing it.
+ *
+ * @HindleyMilner inspectArray :: [a] -> string
+ *
+ * @param {array} a
+ * @return {string}
+ *
+ * @example
+ * import {inspectArray} from '@7urtle/lambda';
+ *
+ * function namedFunction() {
+ *   return null;
+ * }
+ *
+ * inspectArray([1, 'a']); // => "[1, 'a']"
+ * inspectArray([namedFunction, 'a']); // => "[namedFunction, 'a']"
  */
 export const inspectArray = a => `[${join(', ')(map(deepInspect)(a))}]`;
 
 /**
- * inspectString :: a -> string
- *
  * inspectString outputs string representing input.
+ *
+ * @HindleyMilner inspectString :: a -> string
+ *
+ * @param {*} a
+ * @return {string}
+ *
+ * @example
+ * import {inspectString} from '@7urtle/lambda';
+ *
+ * inspectString('my string'); // => "'my string'"
  */
 export const inspectString = a => `'${a}'`;
 
 /**
- * inspectObject :: a -> string
- *
  * inspectObject outputs string representing input.
+ *
+ * @HindleyMilner inspectObject :: a -> string
+ *
+ * @param {object} a
+ * @return {string}
+ *
+ * @example
+ * import {inspectObject} from '@7urtle/lambda';
+ *
+ * inspectObject({a: 'b'}); // => "{a: 'b'}"
  */
 export const inspectObject = a =>
   isFunction(a.inspect)
@@ -82,9 +188,25 @@ export const inspectObject = a =>
     : `{${join(', ')(map(join(': '))(map(k => [k, deepInspect(a[k])])(keysOf(a))))}}`
 
 /**
- * deepInspect :: a -> string
- *
  * deepInspect runs recursively over input and outputs string representing the input.
+ *
+ * @HindleyMilner deepInspect :: a -> string
+ *
+ * @param {*} a
+ * @return {string}
+ *
+ * @example
+ * import {deepInspect} from '@7urtle/lambda';
+ *
+ * function namedFunction() {
+ *   return null;
+ * }
+ *
+ * deepInspect({a: 'b'}); // => "{a: 'b'}"
+ * deepInspect(namedFunction); // => 'namedFunction'
+ * deepInspect([1, 'a']); // => "[1, 'a']"
+ * deepInspect('my string'); // => "'my string'"
+ * deepInspect(undefined); // => 'undefined'
  */
 export const deepInspect = a =>
   isUndefined(a)

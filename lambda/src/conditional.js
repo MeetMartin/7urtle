@@ -488,73 +488,221 @@ export const isObject = isTypeOf('object');
 export const isNotObject = isNotTypeOf('object');
 
 /**
- * isArray :: a -> boolean
+ * isArray output is true if input is an array.
  *
- * isArray output is true if b is an array.
+ * @HindleyMilner isArray :: a -> boolean
+ *
+ * @pure
+ * @param {*} a
+ * @return {boolean}
+ *
+ * @example
+ * import {isArray} from '@7urtle/lambda';
+ *
+ * isArray([]); // => true
+ * isArray({}); // => false
  */
 export const isArray = Array.isArray;
 
 /**
- * isFunction :: a -> boolean
+ * isNotArray output is true if input is not an array.
  *
- * isFunction output is true if b is a function.
+ * @HindleyMilner isNotArray :: a -> boolean
+ *
+ * @pure
+ * @param {*} a
+ * @return {boolean}
+ *
+ * @example
+ * import {isNotArray} from '@7urtle/lambda';
+ *
+ * isNotArray([]); // => false
+ * isNotArray({}); // => true
+ */
+export const isNotArray = a => !Array.isArray(a);
+
+/**
+ * isFunction output is true if input is a function.
+ *
+ * @HindleyMilner isFunction :: a -> boolean
+ *
+ * @pure
+ * @param {*} a
+ * @return {boolean}
+ *
+ * @example
+ * import {isFunction} from '@7urtle/lambda';
+ *
+ * isFunction(() => null); // => true
+ * isFunction(1); // => false
  */
 export const isFunction = isTypeOf('function');
 
 /**
- * isLength :: (string|array) -> b -> boolean
+ * isNotFunction output is true if input is not a function.
  *
+ * @HindleyMilner isNotFunction :: a -> boolean
+ *
+ * @pure
+ * @param {*} a
+ * @return {boolean}
+ *
+ * @example
+ * import {isNotFunction} from '@7urtle/lambda';
+ *
+ * isNotFunction(() => null); // => false
+ * isNotFunction(1); // => true
+ */
+export const isNotFunction = isNotTypeOf('function');
+
+/**
  * isLength output is true if b is a length of a.
+ *
+ * @HindleyMilner isLength :: (string|array) -> b -> boolean
+ *
+ * @pure
+ * @param {string|array} a
+ * @param {number} b
+ * @return {boolean}
+ *
+ * @example
+ * import {isLength} from '@7urtle/lambda';
+ *
+ * isLength(3)('abc'); // => true
+ * isLength(3)([1,2,3]); // => true
+ * isLength(3)('abc'); // => false
  */
 export const isLength = nary(a => b => isEqual(lengthOf(b))(a));
 
 /**
- * isNotLength :: (string|array) -> b -> boolean
- *
  * isNotLength output is true if b is not a length of a.
+ *
+ * @HindleyMilner isNotLength :: (string|array) -> b -> boolean
+ *
+ * @pure
+ * @param {string|array} a
+ * @param {number} b
+ * @return {boolean}
+ *
+ * @example
+ * import {isNotLength} from '@7urtle/lambda';
+ *
+ * isNotLength(3)('abc'); // => false
+ * isNotLength(3)([1,2,3]); // => false
+ * isNotLength(3)('abc'); // => true
  */
 export const isNotLength = nary(a => b => !isLength(a)(b));
 
 /**
- * isEmpty :: (string|array) -> boolean
+ * isEmpty output is true if input has a length of 0. isEmpty output is always false if input is an object and not
+ * an array or a string.
  *
- * isEmpty output is true if input has a length of 0.
- * isEmpty output is always false if input is an object and not an array or a string.
+ * @HindleyMilner isEmpty :: (string|array) -> boolean
+ *
+ * @pure
+ * @param {string|array} a
+ * @return {boolean}
+ *
+ * @example
+ * import {isEmpty} from '@7urtle/lambda';
+ *
+ * isEmpty(''); // => true
+ * isEmpty([]); // => true
+ * isEmpty('abc'); // => false
+ * isEmpty({}); // => false
  */
 export const isEmpty = isLength(0);
 
 /**
- * isNotEmpty :: (string|array) -> boolean
+ * isNotEmpty output is true if input does not have a length of 0. isNotEmpty output is always true if input is
+ * an object and not an array or a string.
  *
- * isNotEmpty output is true if input does not have a length of 0.
- * isNotEmpty output is always true if input is an object and not an array or a string.
+ * @HindleyMilner isNotEmpty :: (string|array) -> boolean
+ *
+ * @pure
+ * @param {string|array} a
+ * @return {boolean}
+ *
+ * @example
+ * import {isNotEmpty} from '@7urtle/lambda';
+ *
+ * isNotEmpty(''); // => false
+ * isNotEmpty([]); // => false
+ * isNotEmpty('abc'); // => true
+ * isNotEmpty({}); => true
  */
 export const isNotEmpty = isNotLength(0);
 
 /**
- * isZero :: a -> boolean
+ * isZero output is true if input is 0.
  *
- * isZero output is true if a is 0.
+ * @HindleyMilner isZero :: a -> boolean
+ *
+ * @pure
+ * @param {number} a
+ * @return {boolean}
+ *
+ * @example
+ * import {isZero} from '@7urtle/lambda';
+ *
+ * isZero(0); // => true
+ * isZero(1); // => false
  */
 export const isZero = isEqual(0);
 
 /**
- * isNotZero :: a -> boolean
+ * isNotZero output is true if input is not 0.
  *
- * isNotZero output is true if a is not 0.
+ * @HindleyMilner isNotZero :: a -> boolean
+ *
+ * @pure
+ * @param {number} a
+ * @return {boolean}
+ *
+ * @example
+ * import {isZero} from '@7urtle/lambda';
+ *
+ * isZero(0); // => false
+ * isZero(1); // => true
  */
 export const isNotZero = isNotEqual(0);
 
 /**
- * isNothing :: a -> boolean
- *
  * isNothing returns true if input is null, undefined or empty string or empty array.
+ *
+ * @HindleyMilner isNothing :: a -> boolean
+ *
+ * @pure
+ * @param {number} a
+ * @return {boolean}
+ *
+ * @example
+ * import {isNothing} from '@7urtle/lambda';
+ *
+ * isNothing(null); // => true
+ * isNothing(undefined); // => true
+ * isNothing(''); // => true
+ * isNothing([]); // => true
+ * isNothing('7urtle'); // => false
  */
 export const isNothing = a => isNull(a) || isUndefined(a) || isEmpty(a);
 
 /**
- * isJust :: a -> boolean
- *
  * isJust returns true if input is not null, undefined or empty string or empty array.
+ *
+ * @HindleyMilner isJust :: a -> boolean
+ *
+ * @pure
+ * @param {number} a
+ * @return {boolean}
+ *
+ * @example
+ * import {isJust} from '@7urtle/lambda';
+ *
+ * isJust(null); // => false
+ * isJust(undefined); // => false
+ * isJust(''); // => false
+ * isJust([]); // => false
+ * isJust('7urtle'); // => true
  */
 export const isJust = a => !isNothing(a);
