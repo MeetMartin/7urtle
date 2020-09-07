@@ -6,7 +6,7 @@ import {nary} from "./arity";
  * Maybe is one of the simplest and well known monads. In other languages or libraries it is also sometimes
  * called Option.
  *
- * Maybe expects a value as it's input. It is Nothing if the value is null, undefined, or empty. It returns
+ * Maybe expects a value as its input. It is Nothing if the value is null, undefined, or empty. It returns
  * Just for all other cases.
  *
  * Maybe is called Maybe because it maybe holds a value. You want to use Maybe for situations when you don't
@@ -44,7 +44,7 @@ import {nary} from "./arity";
  * Maybe.of(3).flatMap(a => Maybe.of(null)).inspect(); // => 'Nothing'
  * Maybe.of(3).flatMap(a => a + 2); // => 5
  *
- * // as applicative functor you can apply functors to each other especially using liftA2 or liftA3
+ * // as an applicative functor you can apply Maybes to each other especially using liftA2 or liftA3
  * const add = a => b => a + b;
  * liftA2(add)(Maybe.of(2))(Maybe.of(3)); // => Just(5)
  * Maybe.of(1).map(add).ap(Maybe.of(2)).inspect(); // => 'Just(3)'
