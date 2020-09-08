@@ -1,13 +1,43 @@
 import {deepInspect} from "./utils";
+import {isUndefined} from "./conditional";
 
 /**
- * Case.of() outputs instance of Case.
- * Case.of([]).inspect() outputs string Case(a -> b).
- * Case.of([]).match(a) matches input a against map provided as input of Case.
- * Case.of([]).match(a) outputs undefined if no matching case is found.
- * Case.of([]).map(a -> b) composes function over Case match function.
- * Case.of([]).map(a -> Case) outputs Case(Case).
- * Case.of([]).flatMap(a -> Case) outputs Case.
+ * Case is a monad that helps you with conditional processing.
+ *
+ * Case expects an array of key-value pairs as its input. Case.match then matches against a key to provide its value.
+ *
+ * Case is internally build on a JavaScript map and turns it into an applicative functor monad.
+ *
+ * @example
+ * import {Case, upperCaseOf, liftA2} from '@7urtle/lambda';
+ *
+ * // in the example we define Case using key-value pairs. Case.of() outputs an instance of Case.
+ * const myCase = Case.of([[1, 'one'], ['key', 'value'], ['_', 'fallback']);
+ *
+ * // you reach a value by matching keys using Case.match
+ * myCase.match(1); // => 'one'
+ * myCase.match('key'); // => 'value'
+ * myCase.match('nope'); // => 'fallback'
+ *
+ * // if no fallback is defined and no key is matched, we return undefined
+ * Case.of([]).match('nope'); // => undefined
+ *
+ * // you can also inspect it by
+ * myCase.inspect(); // => 'Case(...
+ *
+ * // as a functor the result is safely mappable (map doesn't execute over undefined matches)
+ * myCase.map(value => upperCaseOf(value)).match('key'); // => 'VALUE'
+ * Case.of([]).map(upperCaseOf).match('key'); // => undefined
+ *
+ * // as a monad Case can be safely flat mapped with other Cases (flatMap doesn't execute over undefined)
+ * Case.of([[1, 'I am']]).flatMap(a => Case.of([[1, a + ' a turtle']]).match(1); // => 'I am a turtle'
+ * Case.of([[1, 'I am']]).flatMap(a => Case.of([])).match(1); // => undefined
+ *
+ * // as an applicative functor you can apply Cases to each other especially using liftA2 or liftA3
+ * const add = a => b => a + b;
+ * liftA2(add)(Case.of([[1, 1]))(Case.of([[1, 2]])).match(1); // => 3
+ * Case.of([[1, add]]).ap(Case.of([[1, 'I am']])).ap(Case.of([[1, ' a turtle']])).match(1); // => 'I am a turtle'
+ * Case.of([[1, add]]).ap(Case.of([])).ap(Case.of([[1, 'I am']])).match(1); // => undefined
  */
 export class Case {
   constructor(x) {
@@ -25,10 +55,14 @@ export class Case {
   }
 
   map(fn) {
-    return new Case(a => fn(this.match(a)));
+    return new Case(a => (result => isUndefined(result) ? result : fn(result))(this.match(a)));
   }
 
   flatMap(fn) {
-    return new Case(a => this.map(fn).match(a).match(a));
+    return new Case(a => (result => isUndefined(result) ? undefined : result.match(a))(this.map(fn).match(a)));
+  }
+
+  ap(f) {
+    return this.flatMap(fn => f.map(fn));
   }
 }

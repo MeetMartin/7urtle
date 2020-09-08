@@ -4,7 +4,7 @@ import {nary} from "./arity";
 
 /**
  * Maybe is one of the simplest and well known monads. In other languages or libraries it is also sometimes
- * called Option.
+ * called Option. Maybe is also quite similar to our monad Either.
  *
  * Maybe expects a value as its input. It is Nothing if the value is null, undefined, or empty. It returns
  * Just for all other cases.
@@ -121,14 +121,15 @@ class Nothing extends Maybe {
 /**
  * maybe outputs result of a function onJust if input Maybe is Just or outputs input error if input Maybe is Nothing.
  *
- * maybe can be called both as a curried unary function or as a standard binary function.
+ * maybe can be called both as a curried unary function or as a standard ternary function.
  *
  * @HindleyMilner maybe :: a -> (b -> c) -> Maybe
  *
  * @pure
- * @param {*} a
- * @param {function} b
- * @return {Maybe}
+ * @param {*} error
+ * @param {function} onJust
+ * @param {Maybe} functorMaybe
+ * @return {*}
  *
  * @example
  * import {maybe, Maybe} from '@7urtle/lambda';
@@ -137,7 +138,7 @@ class Nothing extends Maybe {
  * maybe('error')(a => a)(Maybe.of(undefined)); // => 'error'
  * maybe('error')(a => a)(Maybe.of(undefined)) === Maybe.of(undefined).isNothing() ? 'error' ? 'not error';
  *
- * // maybe can be called both as a curried unary function or as a standard binary function
+ * // maybe can be called both as a curried unary function or as a standard ternary function
  * maybe('error')(a => a)(Maybe.of('abc')) === maybe('error', a => a, Maybe.of('abc'));
  */
 export const maybe = nary(error => onJust => functorMaybe =>

@@ -2,23 +2,66 @@ import {deepInspect} from "./utils";
 import {nary} from "./arity";
 
 /**
- * Either.of() outputs instance of Either.
- * Either.of(a) outputs instance of Right holding its input value.
- * Either.Right(a) outputs instance of Right holding its input value.
- * Either.Left(a) outputs instance of Left holding its input value.
- * Either.of(a).inspect() outputs string Right(a).
- * Either.Right(a).inspect() outputs string Right(a).
- * Either.Left(a).inspect() outputs string Left(a).
- * Either.of(a).isRight() always outputs true.
- * Either.Left(a).isLeft() outputs false if Either is Left.
- * Either.try(a -> b) outputs Right(b) if no error is thrown.
- * Either.try(a -> b) outputs Left(e.message) if error is thrown.
- * Either.of(a).map(a -> b) executes function over Either input a.
- * Either.of(a).map(a -> Right) outputs Right(Right).
- * Either.Left(a).map(a -> b) does not execute provided function and retains Left input value.
- * Either.of(a).flatMap(a -> b) executes function over Either input a returns its raw value through flatten.
- * Either.Left(a).flatMap(a -> b) does not execute provided function and retains Left input value.
- * Either.of(Either -> Either -> c).ap(Either).ap(Either) provides applicative interface.
+ * Either is an excellent monad for handling error states and it is fairly similar to our monad Maybe. Either.Left
+ * represents an error state and Either.Right represents a success state.
+ *
+ * Either.of expects a value as its input. Either.of is the same as Either.Right. You can initiate Either
+ * in its error state by Either.Left.
+ *
+ * You can also initiate it using Either.try which expects a function as an input. It is Left if an error
+ * or exception is thrown. It is Right if there are no errors or exceptions.
+ *
+ * Either is called Either because it allows you to branch based on an error state. You want to use Either
+ * for situations when you don't know whether there might be an error. It makes the very visible that an error
+ * can occur and it forces the consumer to handle the situation.
+ *
+ * @example
+ * import {either, Either, upperCaseOf, liftA2} from '@7urtle/lambda';
+ *
+ * // in the example we randomly give Either a value or throw an error. Either.try() outputs an instance of Either.
+ * const myEither = Either.try(() => Math.random() > 0.5 ? 'random success' : throw 'random failure');
+ *
+ * // you can also return Either.Left or Either.Right based on a function logic
+ * const myFunction = Math.random() > 0.5 ? Either.Right('random success') : Either.Left('random failure');
+ *
+ * // you could access the actual value like this
+ * myEither.value; // => 'random success' or 'random failure'
+ *
+ * // you can also inspect it by
+ * myEither.inspect(); // => "Right('random success')" or Left('random failure')
+ *
+ * // Either.of and Either.Right both represent success states
+ * Either.of('some value').inspect() === Either.Right('some value').inspect(); // => true
+ *
+ * // you can check if the value is Left
+ * myEither.isLeft(); // => true or false
+ * Either.of('abc').isLeft(); // => false
+ * Either.Right('anything').isLeft(); // => false
+ * Either.Left('anything').isLeft(); // => true
+ * Either.try(() => throw 'error').isLeft(); // => true
+ *
+ * // you can check if the value is Right
+ * myEither.isRight(); // => true or false
+ * Either.of('abc').isRight(); // => true
+ * Either.Right('anything').isRight(); // => true
+ * Either.Left('anything').isRight(); // => false
+ * Either.try(() => throw 'error').isRight(); // => false
+ *
+ * // as a functor the value inside is safely mappable (map doesn't execute over Left)
+ * myEither.map(value => upperCaseOf(value));
+ * myEither.inspect(); // => "Right('RANDOM SUCCESS')" or "Left('random failure')"
+ *
+ * // as a monad Either can be safely flat mapped with other Eithers (flatMap doesn't execute over Left)
+ * Either.of(3).flatMap(a => Either.of(a + 2)).inspect(); // => 'Right(5)'
+ * Either.Left(3).flatMap(a => Either.of(null)).inspect(); // => 'Left(3)'
+ * Either.of(3).flatMap(a => a + 2); // => 5
+ *
+ * // as an applicative functor you can apply Eithers to each other especially using liftA2 or liftA3
+ * const add = a => b => a + b;
+ * liftA2(add)(Either.of(2))(Either.of(3)); // => Right(5)
+ * Either.of(1).map(add).ap(Either.of(2)).inspect(); // => 'Right(3)'
+ * Either.Left(1).map(add).ap(Either.of(2)).inspect(); // => 'Left(1)'
+ * Either.of(add).ap(Either.of(1)).ap(Either.of(2)).inspect(); // => 'Right(3)'
  */
 export class Either {
   constructor(x) {
@@ -99,9 +142,27 @@ class Left extends Either {
 }
 
 /**
- * either :: (a -> b) -> (b -> c) -> Either
- *
  * either outputs result of a function onRight if input Either is Right or outputs result of a function onLeft if input Either is Left.
+ *
+ * either can be called both as a curried unary function or as a standard ternary function.
+ *
+ * @HindleyMilner either :: (a -> b) -> (b -> c) -> Either
+ *
+ * @pure
+ * @param {function} onLeft
+ * @param {function} onRight
+ * @param {Either} functorEither
+ * @return {*}
+ *
+ * @example
+ * import {either, Either} from '@7urtle/lambda';
+ *
+ * either(a => 'error ' + a)(a => 'success ' + a)(Either.of('abc')); // => 'success abc'
+ * either(a => 'error ' + a)(a => 'success ' + a)(Either.Left('failure')); // => 'error failure'
+ * either(a => 'error ' + a)(a => 'success ' + a)(Either.try(() => throw 'failure')); // => 'error failure'
+ *
+ * // either can be called both as a curried unary function or as a standard ternary function
+ * either(a => 'error ' + a)(a => 'success ' + a)(Either.of('abc')) === either(a => 'error ' + a, a => 'success ' + a, Either.of('abc'));
  */
 export const either = nary(onLeft => onRight => functorEither =>
   functorEither.isLeft()
