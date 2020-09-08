@@ -90,3 +90,28 @@ test('some outputs true if any element of input array passes input checker funct
   expect(λ.someOf(a => a > 5)([2, 3, 4])).toEqual(false);
   expect(λ.someOf(a => a > 1)([2, 3, 4])).toEqual(λ.someOf(a => a > 1, [2, 3, 4]));
 });
+
+test('sort outputs an array sorted based on input compare function.', () => {
+  expect(λ.sort((a, b) => a < b ? -1 : a > b ? 1 : 0)(['a', 'd', 'c', 'd'])).toEqual(['a', 'c', 'd', 'd']);
+  expect(λ.sort((a, b) => a - b)([5, 3, 6])).toEqual([3, 5, 6]);
+  expect(λ.sort((a, b) => a - b)([5, 3, 6])).toEqual(λ.sort((a, b) => a - b, [5, 3, 6]));
+  const list = [3, 1];
+  λ.sort((a, b) => a - b)(list);
+  expect(list).toEqual([3, 1]);
+});
+
+test('sortAlphabetically outputs an array sorted alphabetically from a to z.', () => {
+  expect(λ.sortAlphabetically(['eva', 'adam', 'eva'])).toEqual(['adam', 'eva', 'eva']);
+});
+
+test('sortAlphabeticallyZA outputs an array sorted alphabetically from z to a.', () => {
+  expect(λ.sortAlphabeticallyZA(['eva', 'adam', 'eva'])).toEqual(['eva', 'eva', 'adam']);
+});
+
+test('sortNumerically outputs an array sorted numerically from 1 to 2.', () => {
+  expect(λ.sortNumerically([3, 4, 1, 3])).toEqual([1, 3, 3, 4]);
+});
+
+test('sortNumerically21 outputs an array sorted numerically from 2 to 1.', () => {
+  expect(λ.sortNumerically21([3, 4, 1, 3])).toEqual([4, 3, 3, 1]);
+});

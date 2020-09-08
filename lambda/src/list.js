@@ -287,3 +287,90 @@ export const slice = nary(end => start => list => list.slice(start, end));
  * someOf(a => a > 1)([2, 3, 4]) === someOf(a => a > 1, [2, 3, 4]);
  */
 export const someOf = nary(checker => list => list.some(checker));
+
+/**
+ * sort outputs an array sorted based on input compare function.
+ *
+ * sort can be called both as a curried unary function or as a standard binary function.
+ *
+ * @HindleyMilner sort :: (a -> number) -> [a] -> [a]
+ *
+ * @pure
+ * @param {function} compare
+ * @param {array} list
+ * @return {array}
+ *
+ * @example
+ * import {sort} from '@7urtle/lambda';
+ *
+ * sort((a, b) => a < b ? -1 : a > b ? 1 : 0)(['a', 'd', 'c', 'd']); // => ['a', 'c', 'd', 'd']
+ * sort((a, b) => a - b)([5, 3, 6]); // => [3, 5, 6]
+ *
+ * // some can be called both as a curried unary function or as a standard binary function
+ * sort((a, b) => a - b)([5, 3, 6]) === sort((a, b) => a - b, [5, 3, 6]);
+ */
+export const sort = nary(compare => list => [...list].sort(compare));
+
+/**
+ * sortAlphabetically outputs an array sorted alphabetically from a to z.
+ *
+ * @HindleyMilner sortAlphabetically :: [string] -> [string]
+ *
+ * @pure
+ * @param {array} list
+ * @return {array}
+ *
+ * @example
+ * import {sortAlphabetically} from '@7urtle/lambda';
+ *
+ * sortAlphabetically(['Petra', 'Martin', 'Petra']); // => ['Martin', 'Petra', 'Petra']
+ */
+export const sortAlphabetically = sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
+
+/**
+ * sortAlphabeticallyZA outputs an array sorted alphabetically from z to a.
+ *
+ * @HindleyMilner sortAlphabeticallyZA :: [string] -> [string]
+ *
+ * @pure
+ * @param {array} list
+ * @return {array}
+ *
+ * @example
+ * import {sortAlphabeticallyZA} from '@7urtle/lambda';
+ *
+ * sortAlphabeticallyZA(['Petra', 'Martin', 'Petra']); // => ['Petra', 'Petra', 'Martin']
+ */
+export const sortAlphabeticallyZA = sort((a, b) => a < b ? 1 : a > b ? -1 : 0);
+
+/**
+ * sortNumerically outputs an array sorted numerically from 1 to 2.
+ *
+ * @HindleyMilner sortNumerically :: [number] -> [number]
+ *
+ * @pure
+ * @param {array} list
+ * @return {array}
+ *
+ * @example
+ * import {sortNumerically} from '@7urtle/lambda';
+ *
+ * sortNumerically([3, 4, 1, 3]); // => [1, 3, 3, 4]
+ */
+export const sortNumerically = sort((a, b) => a - b);
+
+/**
+ * sortNumerically21 outputs an array sorted numerically from 2 to 1.
+ *
+ * @HindleyMilner sortNumerically21 :: [number] -> [number]
+ *
+ * @pure
+ * @param {array} list
+ * @return {array}
+ *
+ * @example
+ * import {sortNumerically21} from '@7urtle/lambda';
+ *
+ * sortNumerically21([3, 4, 1, 3]); // => [4, 3, 3, 1]
+ */
+export const sortNumerically21 = sort((a, b) => b - a);
