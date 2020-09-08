@@ -102,10 +102,12 @@ test('sort outputs an array sorted based on input compare function.', () => {
 
 test('sortAlphabetically outputs an array sorted alphabetically from a to z.', () => {
   expect(λ.sortAlphabetically(['eva', 'adam', 'eva'])).toEqual(['adam', 'eva', 'eva']);
+  expect(λ.sortAlphabetically(['eva', 'adam', 'Eva'])).toEqual(['adam', 'eva', 'Eva']);
 });
 
 test('sortAlphabeticallyZA outputs an array sorted alphabetically from z to a.', () => {
   expect(λ.sortAlphabeticallyZA(['eva', 'adam', 'eva'])).toEqual(['eva', 'eva', 'adam']);
+  expect(λ.sortAlphabeticallyZA(['eva', 'adam', 'Eva'])).toEqual(['eva', 'Eva', 'adam']);
 });
 
 test('sortNumerically outputs an array sorted numerically from 1 to 2.', () => {

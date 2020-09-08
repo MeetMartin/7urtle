@@ -1,5 +1,6 @@
 import {minusOneToUndefined} from './utils';
 import {nary} from "./arity";
+import {upperCaseOf} from "./string";
 
 /**
  * reduce executes input reducer function that over each member of input array [b] to output a single value. It is
@@ -323,9 +324,9 @@ export const sort = nary(compare => list => [...list].sort(compare));
  * @example
  * import {sortAlphabetically} from '@7urtle/lambda';
  *
- * sortAlphabetically(['Petra', 'Martin', 'Petra']); // => ['Martin', 'Petra', 'Petra']
+ * sortAlphabetically(['petra', 'Martin', 'Petra']); // => ['Martin', 'petra', 'Petra']
  */
-export const sortAlphabetically = sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
+export const sortAlphabetically = sort((a, b) => (a => b => a < b ? -1 : a > b ? 1 : 0)(upperCaseOf(a))(upperCaseOf(b)));
 
 /**
  * sortAlphabeticallyZA outputs an array sorted alphabetically from z to a.
@@ -339,9 +340,9 @@ export const sortAlphabetically = sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
  * @example
  * import {sortAlphabeticallyZA} from '@7urtle/lambda';
  *
- * sortAlphabeticallyZA(['Petra', 'Martin', 'Petra']); // => ['Petra', 'Petra', 'Martin']
+ * sortAlphabeticallyZA(['petra', 'Martin', 'Petra']); // => ['petra', 'Petra', 'Martin']
  */
-export const sortAlphabeticallyZA = sort((a, b) => a < b ? 1 : a > b ? -1 : 0);
+export const sortAlphabeticallyZA = sort((a, b) => (a => b => a < b ? 1 : a > b ? -1 : 0)(upperCaseOf(a))(upperCaseOf(b)));
 
 /**
  * sortNumerically outputs an array sorted numerically from 1 to 2.
