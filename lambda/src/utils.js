@@ -99,6 +99,7 @@ export const spy = passThrough(a => console.log(deepInspect(a)));
  *
  * @HindleyMilner minusOneToUndefined :: a -> a|boolean
  *
+ * @pure
  * @param {*} anything
  * @return {*|boolean}
  *
@@ -116,6 +117,7 @@ export const minusOneToUndefined = anything => isEqual(-1)(anything) ? undefined
  *
  * @HindleyMilner inspectFunction :: (a -> b) -> string
  *
+ * @pure
  * @param {function} fn
  * @return {string}
  *
@@ -139,6 +141,7 @@ export const inspectFunction = fn => fn.name ? fn.name : String(fn);
  *
  * @HindleyMilner inspectArray :: [a] -> string
  *
+ * @pure
  * @param {array} a
  * @return {string}
  *
@@ -159,6 +162,7 @@ export const inspectArray = a => `[${join(', ')(map(deepInspect)(a))}]`;
  *
  * @HindleyMilner inspectString :: a -> string
  *
+ * @pure
  * @param {*} a
  * @return {string}
  *
@@ -174,6 +178,7 @@ export const inspectString = a => `'${a}'`;
  *
  * @HindleyMilner inspectObject :: a -> string
  *
+ * @pure
  * @param {object} a
  * @return {string}
  *
@@ -192,6 +197,7 @@ export const inspectObject = a =>
  *
  * @HindleyMilner deepInspect :: a -> string
  *
+ * @pure
  * @param {*} a
  * @return {string}
  *
