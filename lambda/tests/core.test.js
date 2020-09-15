@@ -153,3 +153,23 @@ test('memoize uses input memory to save output of input function and then uses i
   expect(memory[1]).toBe(3);
   expect(λ.memoize(memory)(addTwo)(1)).toBe(λ.memoize(memory, addTwo)(1));
 });
+
+test('memo takes input function and returns it enhanced by memoization which ensures that each result is always remembered internally and executed only once.', () => {
+  const addTwo = a => a + 2;
+  let count = 0;
+  const increaseCount = () => ++count;
+  const memoAddTwo = λ.memo(addTwo);
+  const memoAddThree = λ.memo(a => a + 3);
+
+  expect(memoAddTwo(1)).toBe(3);
+  expect(memoAddThree(1)).toBe(4);
+  increaseCount();
+  increaseCount();
+  expect(count).toBe(2);
+
+  const memoIncreaseCount = λ.memo(increaseCount);
+  memoIncreaseCount();
+  memoIncreaseCount();
+  memoIncreaseCount();
+  expect(count).toBe(3);
+});

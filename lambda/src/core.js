@@ -327,3 +327,40 @@ export const lastIndexOf = nary(a => b => minusOneToUndefined(b.lastIndexOf(a)))
  */
 export const memoize = nary(memory => fn => anything =>
     anything in memory ? memory[anything] : (passThrough(b => memory[anything] = b))(fn(anything)));
+
+/**
+ * memo takes input function and returns it enhanced by memoization which ensures that each result is
+ * always remembered internally and executed only once.
+ *
+ * @HindleyMilner memo :: (a -> b) -> (a -> b)
+ *
+ * @pure
+ * @param {function} fn
+ * @return {function}
+ *
+ * @example
+ * import {memo} from '@7urtle/lambda';
+ *
+ * const addTwo = a => a + 2;
+ * const memoAddTwo = memo(addTwo);
+ * const memoAddThree = memo(a => a + 3);
+ *
+ * memoAddTwo(1); // => 3
+ * memoAddThree(1); // => 4
+ *
+ * let count = 0;
+ * const increaseCount = () => ++count;
+ *
+ * increaseCount(); // 1
+ * increaseCount(); // 2
+ *
+ * const memoIncreaseCount = λ.memo(increaseCount);
+ *
+ * memoIncreaseCount(); // 3
+ * memoIncreaseCount(); // 3
+ * memoIncreaseCount(); // 3
+ */
+export const memo = fn => {
+  let memory = {};
+  return anything => anything in memory ? memory[anything] : (passThrough(b => memory[anything] = b))(fn(anything));
+};
