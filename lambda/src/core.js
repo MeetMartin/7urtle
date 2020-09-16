@@ -354,7 +354,7 @@ export const memoize = nary(memory => fn => anything =>
  * increaseCount(); // 1
  * increaseCount(); // 2
  *
- * const memoIncreaseCount = λ.memo(increaseCount);
+ * const memoIncreaseCount = memo(increaseCount);
  *
  * memoIncreaseCount(); // 3
  * memoIncreaseCount(); // 3
