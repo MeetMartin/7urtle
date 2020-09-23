@@ -1,6 +1,6 @@
 import {reduce, reduceRight} from './list';
 import {isString, isArray, isObject} from './conditional';
-import {minusOneToUndefined, passThrough} from './utils';
+import {deepInspect, minusOneToUndefined, passThrough} from './utils';
 import {nary} from "./arity";
 
 /**
@@ -186,7 +186,7 @@ export const liftA2 = nary(fn => ap1 => ap2 => ap1.map(fn).ap(ap2));
  *
  * // function add which expects three inputs is applied to the values of three applicative functors Maybe
  * // the result is a Maybe functor with the internal value 9
- * liftA3(add)(Maybe.of(2))(Maybe.of(3))(Maybe.of(4)); // => Just(5)
+ * liftA3(add)(Maybe.of(2))(Maybe.of(3))(Maybe.of(4)); // => Just(9)
  *
  * // an example of applying a function over a Maybe of undefined value to demonstrate continued safety of functors
  * liftA3(add)(Maybe.of(1))(Maybe.of(2))(Maybe.of(undefined)).isNothing(); // => true
@@ -326,7 +326,10 @@ export const lastIndexOf = nary(a => b => minusOneToUndefined(b.lastIndexOf(a)))
  * memoize(memory)(addTwo)(1) === memoize(memory, addTwo, 1);
  */
 export const memoize = nary(memory => fn => anything =>
-    anything in memory ? memory[anything] : (passThrough(b => memory[anything] = b))(fn(anything)));
+    anything in memory
+        ? memory[anything]
+        : passThrough(b => memory[anything] = b)(fn(anything))
+);
 
 /**
  * memo takes input function and returns it enhanced by memoization which ensures that each result is
@@ -360,7 +363,4 @@ export const memoize = nary(memory => fn => anything =>
  * memoIncreaseCount(); // 3
  * memoIncreaseCount(); // 3
  */
-export const memo = fn => {
-  let memory = {};
-  return anything => anything in memory ? memory[anything] : (passThrough(b => memory[anything] = b))(fn(anything));
-};
+export const memo = fn => memoize({})(fn);

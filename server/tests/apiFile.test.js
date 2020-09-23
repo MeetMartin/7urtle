@@ -1,6 +1,6 @@
 import apiFile, * as lib from "../src/apis/apiFile";
 
-test('fileExists outputs Either of input request if file exists on input path or Either.Left of 404 if it does not.', () => {
+test('fileExists outputs Either of input request if file exists on input path or Either.Failure of 404 if it does not.', () => {
   //expect(lib.fileExists('./tests/mocks/static.html')({method: 'get'}).value).toEqual({method: 'get'});
   //expect(lib.fileExists('./nope.html')({method: 'get'}).value).toEqual(404);
   expect(true).toBe(true);

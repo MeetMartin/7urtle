@@ -10,7 +10,7 @@ import {deepInspect} from "./utils";
  * the results of the trigger.
  *
  * @example
- * import {SyncEffect, log, upperCaseOf, liftA2} from '@7urtle/lambda';
+ * import {SyncEffect, log, upperCaseOf, liftA2, Either, isNull} from '@7urtle/lambda';
  *
  * // we create SyncEffect that expects a number from 0 to 1
  * // and based on that, it returns a value or throws an error
@@ -42,6 +42,28 @@ import {deepInspect} from "./utils";
  * const add = a => b => a + b;
  * liftA2(add)(SyncEffect.of(() => 1)(SyncEffect.of(() => 2)).trigger(); // => 3
  * SyncEffect.of(() => add).ap(SyncEffect.of(() => 1)).ap(SyncEffect.of(() => 2)).trigger(); // => 3
+ *
+ * // in practice you can use SyncEffect to work for example with DOM
+ * const DOMSyncEffect = SyncEffect.of(targetID => document.querySelector(targetID));
+ * const TopOffsetSyncEffect = DOMSyncEffect.map(a => a.offsetTop);
+ * const ClientHeightSyncEffect = DOMSyncEffect.map(a => a.clientHeight);
+ *
+ * TopOffsetSyncEffect.trigger('article'); // 1280
+ * Either.try(ClientHeightSyncEffect.trigger('#dontexist')); // Failure('Uncaught TypeError: Cannot read property 'offsetTop' of null')
+ *
+ * const DOMSyncEffect2 =
+ *   SyncEffect
+ *   .of(targetID =>
+ *     Either
+ *     .try(document.querySelector(targetID))
+ *     .flatMap(a =>
+ *       isNull(a)
+ *       ? Either.Failure(`Element "{$targetID}" does not exist.')
+ *       : Either.Success(a)
+ *     )
+ *   );
+ *
+ * DOMSyncEffect2.map(a => a.clientHeight).trigger('#dontexist'); // Failure('Element "#dontexist" does not exist.')
  */
 export class SyncEffect {
   constructor(fn) {

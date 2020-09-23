@@ -44,14 +44,14 @@ test('sendHead uses 200 as response status if no status is specified in the inpu
   expect(head).toEqual({status: 200, headers: {'content-type': 'text/plain', 'content-length': 9}});
 });
 
-test('sendContent triggers responseHook.end side effect and outputs Right(responseHook) on success.', () => {
+test('sendContent triggers responseHook.end side effect and outputs Success(responseHook) on success.', () => {
   const result = lib.sendContent(responseHook)(response);
   expect(result.isRight()).toEqual(true);
   expect(result.value).toEqual(response);
   expect(end).toEqual('Not Found');
 });
 
-test('sendContent triggers responseHook.end side effect and outputs Left(string) on fail.', () => {
+test('sendContent triggers responseHook.end side effect and outputs Failure(string) on fail.', () => {
   const result = lib.sendContent(responseHookError)(response);
   expect(result.isLeft()).toEqual(true);
   expect(result.value).toEqual('I failed :(');
@@ -70,7 +70,7 @@ test('streamFile triggers read data stream side effect streaming response.file o
 
 /*test('sendOrStream outputs Either calling streamFile or sendContent depending on whether response.file is just.', () => {
   const result = lib.sendOrStream(response)(responseHook);
-  expect(result.isRight()).toEqual(true);
+  expect(result.isSuccess()).toEqual(true);
   expect(result.value).toEqual(responseHook);
   expect(end).toEqual('Not Found');
 
@@ -78,7 +78,7 @@ test('streamFile triggers read data stream side effect streaming response.file o
     file: './idontexist.html'
   };
   const result2 = lib.sendOrStream(response2)(responseHook);
-  expect(result2.isLeft()).toEqual(true);
+  expect(result2.isFailure()).toEqual(true);
   expect(result2.value).toEqual('File does not exist.');
 
   const response3 = {
@@ -86,7 +86,7 @@ test('streamFile triggers read data stream side effect streaming response.file o
     content: 'Not Found Again'
   };
   const result3 = lib.sendOrStream(response3)(responseHook);
-  expect(result3.isRight()).toEqual(true);
+  expect(result3.isSuccess()).toEqual(true);
   expect(result3.value).toEqual(responseHook);
   expect(end).toEqual('Not Found Again');
 });

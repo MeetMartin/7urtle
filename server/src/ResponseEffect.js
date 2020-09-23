@@ -28,8 +28,8 @@ const sendHead = responseHook => response =>
 /**
  * sendContent :: object -> object -> Either
  *
- * sendContent triggers responseHook.end side effect and outputs Right(responseHook) on success.
- * sendContent triggers responseHook.end side effect and outputs Left(string) on fail.
+ * sendContent triggers responseHook.end side effect and outputs Success(responseHook) on success.
+ * sendContent triggers responseHook.end side effect and outputs Failure(string) on fail.
  */
 const sendContent = responseHook => response =>
   Either.try(() =>
@@ -41,8 +41,8 @@ const sendContent = responseHook => response =>
 /**
  * streamFile :: object -> object -> (a -> b, c -> d) -> {}
  *
- * streamFile triggers read data stream side effect streaming response.file and outputs Right(responseHook) on success.
- * streamFile triggers read data stream side effect streaming response.file and outputs Left(string) on fail.
+ * streamFile triggers read data stream side effect streaming response.file and outputs Success(responseHook) on success.
+ * streamFile triggers read data stream side effect streaming response.file and outputs Failure(string) on fail.
  */
 const streamFile = responseHook => response => (reject, resolve) =>
   fs.existsSync(response.file)
