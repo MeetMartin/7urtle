@@ -50,20 +50,6 @@ import {deepInspect} from "./utils";
  *
  * TopOffsetSyncEffect.trigger('article'); // 1280
  * Either.try(ClientHeightSyncEffect.trigger('#dontexist')); // Failure('Uncaught TypeError: Cannot read property 'offsetTop' of null')
- *
- * const DOMSyncEffect2 =
- *   SyncEffect
- *   .of(targetID =>
- *     Either
- *     .try(document.querySelector(targetID))
- *     .flatMap(a =>
- *       isNull(a)
- *       ? Either.Failure(`Element "{$targetID}" does not exist.')
- *       : Either.Success(a)
- *     )
- *   );
- *
- * DOMSyncEffect2.map(a => a.clientHeight).trigger('#dontexist'); // Failure('Element "#dontexist" does not exist.')
  */
 export class SyncEffect {
   constructor(fn) {

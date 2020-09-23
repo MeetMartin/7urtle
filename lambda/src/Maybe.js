@@ -123,7 +123,7 @@ class Nothing extends Maybe {
  *
  * maybe can be called both as a curried unary function or as a standard ternary function.
  *
- * @HindleyMilner maybe :: a -> (b -> c) -> Maybe
+ * @HindleyMilner maybe :: a -> (b -> c) -> Maybe -> d
  *
  * @pure
  * @param {*} error
