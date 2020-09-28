@@ -1,5 +1,6 @@
 import {isArray, isEqual, isString, isObject, isFunction, isNull, isUndefined, isGreaterThan} from "./conditional";
-import {keysOf, join, map} from "./list";
+import {keysOf, join} from "./list";
+import {map} from "./core";
 import {nary} from "./arity";
 
 /**

@@ -24,26 +24,15 @@ test('pipe executes functions in reverse order to compose.', () => {
   expect(λ.pipe(g, f)('a')).toBe(λ.compose(f, g)('a'));
 });
 
-test('functorMap maps function over inputted functor outputting resulting functor.', () => {
-  class Functor {
-    constructor(x) {
-      this.value = x;
-    }
-    static of(x) {
-      return new Functor(x);
-    }
-    map(fn) {
-      return Functor.of(fn(this.value));
-    }
-    flatMap(fn) {
-      return fn(this.value);
-    }
-  }
-  expect(λ.functorMap(a => a + 's')(Functor.of('7urtle')).value).toBe('7urtles');
-  expect(λ.functorMap(a => a + 's')(Functor.of('7urtle')).value).toBe(λ.functorMap(a => a + 's', Functor.of('7urtle')).value);
+test('map executes input mapper over each member of input array [a] to output new array [b].', () => {
+  const mapper = a => a + 'm';
+  const list = ['a', 'b', 'c'];
+  expect(λ.map(mapper)(list)).toEqual(['am', 'bm', 'cm']);
+  expect(list).toEqual(['a', 'b', 'c']);
+  expect(λ.map(mapper)(list)).toEqual(λ.map(mapper, list));
 });
 
-test('functorFlatMap flatMaps function outputting functor over inputted functor outputting resulting functor.', () => {
+test('map maps function over inputted functor outputting resulting functor.', () => {
   class Functor {
     constructor(x) {
       this.value = x;
@@ -58,8 +47,27 @@ test('functorFlatMap flatMaps function outputting functor over inputted functor 
       return fn(this.value);
     }
   }
-  expect(λ.functorFlatMap(a => Functor.of(a + 's'))(Functor.of('7urtle')).value).toBe('7urtles');
-  expect(λ.functorFlatMap(a => Functor.of(a + 's'))(Functor.of('7urtle')).value).toBe(λ.functorFlatMap(a => Functor.of(a + 's'), Functor.of('7urtle')).value);
+  expect(λ.map(a => a + 's')(Functor.of('7urtle')).value).toBe('7urtles');
+  expect(λ.map(a => a + 's')(Functor.of('7urtle')).value).toBe(λ.map(a => a + 's', Functor.of('7urtle')).value);
+});
+
+test('flatMap flatMaps function outputting functor over inputted functor outputting resulting functor.', () => {
+  class Functor {
+    constructor(x) {
+      this.value = x;
+    }
+    static of(x) {
+      return new Functor(x);
+    }
+    map(fn) {
+      return Functor.of(fn(this.value));
+    }
+    flatMap(fn) {
+      return fn(this.value);
+    }
+  }
+  expect(λ.flatMap(a => Functor.of(a + 's'))(Functor.of('7urtle')).value).toBe('7urtles');
+  expect(λ.flatMap(a => Functor.of(a + 's'))(Functor.of('7urtle')).value).toBe(λ.flatMap(a => Functor.of(a + 's'), Functor.of('7urtle')).value);
 });
 
 test('liftA2 provides point-free way of writing calls over applicative functors and functions with arity 2.', () => {

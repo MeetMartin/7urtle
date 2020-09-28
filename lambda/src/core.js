@@ -75,63 +75,70 @@ export const compose = (...fns) => anything => reduceRight(anything)((v, f) => f
 export const pipe = (...fns) => anything => reduce(anything)((v, f) => f(v))(fns);
 
 /**
- * functorMap maps function over inputted functor outputting resulting functor.
+ * map maps function over inputted functor outputting resulting functor.
+ * map executes input mapper the input array or functor to output new array or functor.
  *
- * You should use functorMap when you want to work with functors using functions
- * and functional composition rather than calling maps.
+ * In case of monads, you should use map when you want to work with functors using functions
+ * and functional composition rather than calling Functor.map.
  *
- * The function can be called both as a unary functorMap(fn)(functor) and binary functorMap(fn, functor).
+ * map can be called both as a curried unary function or as a standard binary function.
  *
- * @HindleyMilner functorMap :: (a -> b) -> Functor -> Functor
+ * @HindleyMilner map :: (a -> b) -> a -> b
  *
  * @param {function} fn
- * @param {functor} functor
- * @return {functor}
+ * @param {array|functor} target
+ * @return {array|functor}
  *
  * @example
- * import {functorMap, Maybe, upperCaseOf} from '@7urtle/lambda';
+ * import {map, Maybe, upperCaseOf} from '@7urtle/lambda';
+ *
+ * const mapper = a => a + 'm';
+ * const list = ['a', 'b', 'c'];
+ *
+ * // the function mapper is applied to each member of the array
+ * map(mapper)(list); // => ['am', 'bm', 'cm']
  *
  * // the function upperCaseOf is applied to the value of the functor
- * functorMap(upperCaseOf)(Maybe.of('something')); // => Just('SOMETHING')
+ * map(upperCaseOf)(Maybe.of('something')); // => Just('SOMETHING')
  *
- * // use of functorMap equals the use of map on the functor
- * functorMap(upperCaseOf)(Maybe.of('something')).value === Maybe.of('something').map(upperCaseOf).value;
+ * // use of map equals the use of map on the functor
+ * map(upperCaseOf)(Maybe.of('something')).value === Maybe.of('something').map(upperCaseOf).value;
  *
- * // functorMap can be called both as a curried unary function or as a standard binary function
- * functorMap(upperCaseOf)(Maybe.of('something')).value === functorMap(upperCaseOf, Maybe.of('something')).value;
+ * // map can be called both as a curried unary function or as a standard binary function
+ * map(upperCaseOf)(Maybe.of('something')).value === map(upperCaseOf, Maybe.of('something')).value;
  */
-export const functorMap = nary(fn => functor => functor.map(fn));
+export const map = nary(mapper => list => list.map(mapper));
 
 /**
- * functorFlatMap maps function over inputted functor outputting resulting flattened functor.
+ * flatMap maps function over inputted functor outputting resulting flattened functor.
  *
- * You should use functorFlatMap when you want to work with functors using functions
+ * You should use flatMap when you want to work with functors using functions
  * and functional composition rather than calling flatMaps.
  *
- * The function can be called both as a unary functorFlatMap(fn)(functor) and binary functorFlatMap(fn, functor).
+ * The function can be called both as a unary flatMap(fn)(functor) and binary flatMap(fn, functor).
  *
- * @HindleyMilner functorFlatMap :: (a -> Functor) -> Functor -> Functor
+ * @HindleyMilner flatMap :: (a -> Functor) -> Functor -> Functor
  *
  * @param {function} fn
  * @param {functor} functor
  * @return {functor}
  *
  * @example
- * import {functorFlatMap, functorMap, Maybe} from '@7urtle/lambda';
+ * import {flatMap, map, Maybe} from '@7urtle/lambda';
  *
  * const maybePlus2 = number => Maybe.of(number + 2);
  *
  * // the function maybePlus2 is applied to the value of the functor
- * functorFlatMap(maybePlus2)(Maybe.of(3)); // => Just(5)
- * functorMap(maybePlus2)(Maybe.of(3)); // => Just(Just(5))
+ * flatMap(maybePlus2)(Maybe.of(3)); // => Just(5)
+ * map(maybePlus2)(Maybe.of(3)); // => Just(Just(5))
  *
- * // use of functorFlatMap equals the use of flatMap on the functor
- * functorFlatMap(maybePlus2)(Maybe.of(3)).value === Maybe.of(3).flatMap(maybePlus2).value;
+ * // use of flatMap equals the use of flatMap on the functor
+ * flatMap(maybePlus2)(Maybe.of(3)).value === Maybe.of(3).flatMap(maybePlus2).value;
  *
- * // functorFlatMap can be called both as a curried unary function or as a standard binary function
- * functorFlatMap(maybePlus2)(Maybe.of(3)).value === functorFlatMap(maybePlus2, Maybe.of(3)).value;
+ * // flatMap can be called both as a curried unary function or as a standard binary function
+ * flatMap(maybePlus2)(Maybe.of(3)).value === flatMap(maybePlus2, Maybe.of(3)).value;
  */
-export const functorFlatMap = nary(fn => functor => functor.flatMap(fn));
+export const flatMap = nary(fn => functor => functor.flatMap(fn));
 
 /**
  * liftA2 provides point-free way of writing calls over applicative functors and functions expecting 2 inputs. It

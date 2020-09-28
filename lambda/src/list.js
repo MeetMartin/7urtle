@@ -61,31 +61,6 @@ export const reduce = nary(initial => reducer => list => list.reduce(reducer, in
 export const reduceRight = nary(initial => reducer => list => list.reduceRight(reducer, initial));
 
 /**
- * map executes input mapper over each member of input array [a] to output new array [b].
- *
- * map can be called both as a curried unary function or as a standard binary function.
- *
- * @HindleyMilner map :: (a -> b) -> [a] -> [b]
- *
- * @pure
- * @param {function} mapper
- * @param {array} list
- * @return {*}
- *
- * @example
- * import {map} from '@7urtle/lambda';
- *
- * const mapper = a => a + 'm';
- * const list = ['a', 'b', 'c'];
- *
- * map(mapper)(list); // => ['am', 'bm', 'cm']
- *
- * // map can be called both as a curried unary function or as a standard binary function
- * map(mapper)(list) === map(mapper, list);
- */
-export const map = nary(mapper => list => list.map(mapper));
-
-/**
  * filter executes input checker over each member of input array [a] to filter and output filtered new array [b].
  *
  * filter can be called both as a curried unary function or as a standard binary function.

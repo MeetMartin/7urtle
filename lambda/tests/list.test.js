@@ -21,14 +21,6 @@ test('reduceRight executes functions in reverse order to reduce.', () => {
   expect(λ.reduceRight('start')(reducer)(list)).toBe(λ.reduceRight('start', reducer, list));
 });
 
-test('map executes input mapper over each member of input array [a] to output new array [b].', () => {
-  const mapper = a => a + 'm';
-  const list = ['a', 'b', 'c'];
-  expect(λ.map(mapper)(list)).toEqual(['am', 'bm', 'cm']);
-  expect(list).toEqual(['a', 'b', 'c']);
-  expect(λ.map(mapper)(list)).toEqual(λ.map(mapper, list));
-});
-
 test('filter executes input checker over each member of input array [a] to filter and output filtered new array [b].', () => {
   const list = [0, 1, 2, 3];
   expect(λ.filter(a => a > 1)(list)).toEqual([2, 3]);
