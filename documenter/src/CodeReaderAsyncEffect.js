@@ -47,13 +47,21 @@ const processLineNameState = line =>
     (line =>
         (line =>
             startsWith('const ')(line)
-            ? {
-                state: states.END,
-                contents: {
-                    name: getNameFromLine(6)(line),
-                    type: 'expression'
+            ? endsWith(' = {')(line)
+              ? {
+                    state: states.END,
+                    contents: {
+                        name: getNameFromLine(6)(line),
+                        type: 'object'
+                    }
                 }
-            }
+              : {
+                    state: states.END,
+                    contents: {
+                        name: getNameFromLine(6)(line),
+                        type: 'expression'
+                    }
+                }
             : startsWith('class ')(line)
             ? {
                 state: states.END,

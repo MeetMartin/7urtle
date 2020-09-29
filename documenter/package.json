@@ -1,6 +1,6 @@
 {
   "name": "@7urtle/documenter",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Functional programming documentation generation tool.",
   "main": "dist/documenter.min.js",
   "module": "src/index.js",

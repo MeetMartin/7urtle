@@ -10,6 +10,7 @@ test('getNameFromLine returns the name of class or a function from a line of sou
 test('processLineNameState returns object with a new state and the name and type of a documented function based on a source file line.', () => {
     expect(CodeReaderAsyncEffect.processLineNameState('const lambda = something => ({});')).toEqual({state: 'END', contents: {name: 'lambda', type: 'expression'}});
     expect(CodeReaderAsyncEffect.processLineNameState(' export const lambda = something => ({});')).toEqual({state: 'END', contents: {name: 'lambda', type: 'expression'}});
+    expect(CodeReaderAsyncEffect.processLineNameState('const something = {')).toEqual({state: 'END', contents: {name: 'something', type: 'object'}});
     expect(CodeReaderAsyncEffect.processLineNameState('     const lambda = something => ({}); ')).toEqual({state: 'END', contents: {name: 'lambda', type: 'expression'}});
     expect(CodeReaderAsyncEffect.processLineNameState('function namedFunction (something) {return something};')).toEqual({state: 'END', contents: {name: 'namedFunction', type: 'function'}});
     expect(CodeReaderAsyncEffect.processLineNameState('class myClass {}')).toEqual({state: 'END', contents: {name: 'myClass', type: 'class'}});
