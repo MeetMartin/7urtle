@@ -8,10 +8,6 @@ const throwing = () => {
   throw 'I am a thrown error.';
 };
 
-test('AsyncEffect.of() outputs instance of AsyncEffect.', () => {
-  expect(λ.AsyncEffect.of() instanceof λ.AsyncEffect).toBe(true);
-});
-
 test('AsyncEffect.of(() -> a).inspect() outputs string AsyncEffect(a).', () => {
   expect(λ.AsyncEffect.of(() => '7turtle').inspect().includes('AsyncEffect(function')).toBe(true);
 });
@@ -33,6 +29,20 @@ test('AsyncEffect.of((a, b, c) -> d).trigger(e -> f)(g -> h)(i) for resolving as
 test('AsyncEffect.of((a -> b -> c -> d).trigger accepts ternary function.', done => {
   λ.AsyncEffect.of(resolving).trigger(error => error, result => {
     expect(result).toBe('7urtle');
+    done();
+  }, '7urtle');
+});
+
+test('AsyncEffect.of((a -> b -> c -> d).trigger accepts ternary function after map.', done => {
+  λ.AsyncEffect.of(resolving).map(a => a + 's').trigger(error => error, result => {
+    expect(result).toBe('7urtles');
+    done();
+  }, '7urtle');
+});
+
+test('AsyncEffect.of((a -> b -> c -> d).trigger accepts ternary function after flatMap.', done => {
+  λ.AsyncEffect.of(resolving).flatMap(a => λ.AsyncEffect.of(reject => resolve => value => resolve(a + 's'))).trigger(error => error, result => {
+    expect(result).toBe('7urtles');
     done();
   }, '7urtle');
 });
@@ -70,13 +80,6 @@ test('AsyncEffect.of(a -> b -> c -> d).map(b -> d) composes function over AsyncE
     expect(result).toBe('7urtles');
     done();
   })('7urtle');
-});
-
-test('AsyncEffect.of(a -> b -> c -> d).map(b -> AsyncEffect) outputs AsyncEffect(AsyncEffect).', done => {
-  λ.AsyncEffect.of(resolving).map(() => λ.AsyncEffect.of(resolving)).trigger(error => error)(result => {
-    expect(result instanceof λ.AsyncEffect).toBe(true);
-    done();
-  })();
 });
 
 test('AsyncEffect.of(a -> b -> c -> d).flatMap(b -> AsyncEffect) outputs AsyncEffect.', done => {

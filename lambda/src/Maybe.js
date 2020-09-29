@@ -56,67 +56,29 @@ import {nary} from "./arity";
  * Maybe.of(document.querySelector('#idontexist')).map(a => a.offsetTop); // => Nothing
  * maybe('error: the object doesnt exist')(a => 'offset from top is ' + a)(Maybe.of(document.querySelector('#iexist')).map(a => a.offsetTop))
  */
-export class Maybe {
-  constructor(x) {
-    this.value = x;
-  }
+export const Maybe = {
+  of: value => isNothing(value) ? Nothing(value) : Just(value)
+};
 
-  static of(x) {
-    return isNothing(x) ? new Nothing(x) : new Just(x) ;
-  }
-}
+const Nothing = value => ({
+  value: value,
+  inspect: () => 'Nothing',
+  isNothing: () => true,
+  isJust: () => false,
+  map: () => Nothing(value),
+  flatMap: () => Nothing(value),
+  ap: () => Nothing(value)
+});
 
-class Just extends Maybe {
-  inspect() {
-    return `Just(${deepInspect(this.value)})`;
-  }
-
-  isNothing() {
-    return false;
-  }
-
-  isJust() {
-    return true;
-  }
-
-  map(fn) {
-    return Maybe.of(fn(this.value));
-  }
-
-  flatMap(fn) {
-    return fn(this.value);
-  }
-
-  ap(f) {
-    return f.map(this.value);
-  }
-}
-
-class Nothing extends Maybe {
-  inspect () {
-    return 'Nothing';
-  }
-
-  isNothing() {
-    return true
-  }
-
-  isJust() {
-    return false;
-  }
-
-  map(fn) {
-    return this;
-  }
-
-  flatMap(fn) {
-    return this;
-  }
-
-  ap(f) {
-    return this;
-  }
-}
+const Just = value => ({
+  value: value,
+  inspect: () => `Just(${deepInspect(value)})`,
+  isNothing: () => false,
+  isJust: () => true,
+  map: fn => Maybe.of(fn(value)),
+  flatMap: fn => fn(value),
+  ap: f => f.map(value)
+});
 
 /**
  * maybe outputs result of a function onJust if input Maybe is Just or outputs input error if input Maybe is Nothing.

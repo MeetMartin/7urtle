@@ -1,4 +1,5 @@
 import {deepInspect} from "./utils";
+import {isUndefined} from "./conditional";
 
 /**
  * SyncEffect is a monad that allows you to safely work with synchronous side effects in JavaScript.
@@ -51,34 +52,15 @@ import {deepInspect} from "./utils";
  * TopOffsetSyncEffect.trigger('article'); // 1280
  * Either.try(ClientHeightSyncEffect.trigger('#dontexist')); // Failure('Uncaught TypeError: Cannot read property 'offsetTop' of null')
  */
-export class SyncEffect {
-  constructor(fn) {
-    this.trigger = fn;
-  }
+export const SyncEffect = {
+  of: trigger => getSyncEffect(trigger),
+  wrap: value => getSyncEffect(() => value)
+};
 
-  inspect() {
-    return `SyncEffect(${deepInspect(this.trigger)})`;
-  }
-
-  static of(x) {
-    return new SyncEffect(x);
-  }
-
-  static wrap(x) {
-    return new SyncEffect(() => x);
-  }
-
-  map(fn) {
-    return new SyncEffect(a => fn(this.trigger(a)));
-  }
-
-  flatMap(fn) {
-    return new SyncEffect(() => {
-      return this.map(fn).trigger().trigger();
-    })
-  }
-
-  ap(f) {
-    return this.flatMap(fn => f.map(fn));
-  }
-}
+const getSyncEffect = trigger => ({
+  trigger: trigger,
+  inspect: () => `SyncEffect(${deepInspect(trigger)})`,
+  map: fn => getSyncEffect(a => fn(trigger(a))),
+  flatMap: fn => getSyncEffect(() => getSyncEffect(trigger).map(fn).trigger().trigger()),
+  ap: f => getSyncEffect(trigger).flatMap(fn => f.map(fn))
+});

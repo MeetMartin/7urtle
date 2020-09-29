@@ -63,83 +63,38 @@ import {nary} from "./arity";
  * Either.Failure(1).map(add).ap(Either.of(2)).inspect(); // => 'Failure(1)'
  * Either.of(add).ap(Either.of(1)).ap(Either.of(2)).inspect(); // => 'Success(3)'
  */
-export class Either {
-  constructor(x) {
-    this.value = x;
-  }
-
-  static of(x) {
-    return new Right(x);
-  }
-
-  static Success(x) {
-    return new Right(x);
-  }
-
-  static Failure(x) {
-    return new Left(x);
-  }
-
-  static try(fn) {
+export const Either = {
+  of: value => Success(value),
+  Success: value => Success(value),
+  Failure: value => Failure(value),
+  try: fn => {
     try {
-      return new Right(fn());
+      return Success(fn());
     } catch(e) {
-      return new Left(e.message);
+      return Failure(e.message);
     }
   }
-}
+};
 
-class Right extends Either {
-  inspect() {
-    return `Success(${deepInspect(this.value)})`;
-  }
+const Failure = value => ({
+  value: value,
+  inspect: () => `Failure(${deepInspect(value)})`,
+  isFailure: () => true,
+  isSuccess: () => false,
+  map: () => Failure(value),
+  flatMap: () => Failure(value),
+  ap: () => Failure(value)
+});
 
-  isFailure() {
-    return false;
-  }
-
-  isSuccess() {
-    return true;
-  }
-
-  map(fn) {
-    return Either.of(fn(this.value));
-  }
-
-  flatMap(fn) {
-    return fn(this.value);
-  }
-
-  ap(f) {
-    return f.map(this.value);
-  }
-}
-
-class Left extends Either {
-  inspect() {
-    return `Failure(${deepInspect(this.value)})`;
-  }
-
-  isFailure() {
-    return true;
-  }
-
-  isSuccess() {
-    return false;
-  }
-
-  map() {
-    return this;
-  }
-
-  flatMap() {
-    return this;
-  }
-
-  ap() {
-    return this;
-  }
-}
+const Success = value => ({
+  value: value,
+  inspect: () => `Success(${deepInspect(value)})`,
+  isFailure: () => false,
+  isSuccess: () => true,
+  map: fn => Either.of(fn(value)),
+  flatMap: fn => fn(value),
+  ap: f => f.map(value)
+});
 
 /**
  * either outputs result of a function onRight if input Either is Success or outputs result of a function onLeft if input Either is Failure.

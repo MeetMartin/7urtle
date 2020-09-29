@@ -1,9 +1,5 @@
 import * as λ from '../src';
 
-test('SyncEffect.of() outputs instance of SyncEffect.', () => {
-  expect(λ.SyncEffect.of() instanceof λ.SyncEffect).toBe(true);
-});
-
 test('SyncEffect.wrap(a) is equal to SyncEffect.of(() -> a).', () => {
   expect(λ.SyncEffect.wrap('7turtle').trigger()).toBe(λ.SyncEffect.of(() => '7turtle').trigger());
 });

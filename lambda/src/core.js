@@ -1,6 +1,6 @@
 import {reduce, reduceRight} from './list';
 import {isString, isArray, isObject} from './conditional';
-import {deepInspect, minusOneToUndefined, passThrough} from './utils';
+import {minusOneToUndefined, passThrough} from './utils';
 import {nary} from "./arity";
 
 /**

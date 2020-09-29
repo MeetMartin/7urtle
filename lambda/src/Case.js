@@ -39,30 +39,14 @@ import {isUndefined} from "./conditional";
  * Case.of([[1, add]]).ap(Case.of([[1, 'I am']])).ap(Case.of([[1, ' a turtle']])).match(1); // => 'I am a turtle'
  * Case.of([[1, add]]).ap(Case.of([])).ap(Case.of([[1, 'I am']])).match(1); // => undefined
  */
-export class Case {
-  constructor(x) {
-    this.match = x;
-  }
+export const Case = {
+  of: match => getCase((match => a => match.get(a) || match.get('_') || undefined)(new Map(match)))
+};
 
-  inspect() {
-    return `Case(${deepInspect(this.match)})`;
-  }
-
-  static of(x) {
-    return new Case(
-      (x => a => x.get(a) || x.get('_') || undefined)(new Map(x))
-    );
-  }
-
-  map(fn) {
-    return new Case(a => (result => isUndefined(result) ? result : fn(result))(this.match(a)));
-  }
-
-  flatMap(fn) {
-    return new Case(a => (result => isUndefined(result) ? undefined : result.match(a))(this.map(fn).match(a)));
-  }
-
-  ap(f) {
-    return this.flatMap(fn => f.map(fn));
-  }
-}
+const getCase = match => ({
+  match: match,
+  inspect: () => `Case(${deepInspect(match)})`,
+  map: fn => getCase(a => (result => isUndefined(result) ? result : fn(result))(match(a))),
+  flatMap: fn => getCase(a => (result => isUndefined(result) ? undefined : result.match(a))(getCase(match).map(fn).match(a))),
+  ap: f => getCase(match).flatMap(fn => f.map(fn))
+});

@@ -1,9 +1,5 @@
 import * as λ from '../src';
 
-test('Maybe.of() outputs instance of Maybe.', () => {
-  expect(λ.Maybe.of(3) instanceof λ.Maybe).toBe(true);
-});
-
 test('Maybe.of(a).inspect() outputs string Just(a) or Nothing.', () => {
   expect(λ.Maybe.of(3).inspect()).toBe('Just(3)');
   expect(λ.Maybe.of(null).inspect()).toBe('Nothing');

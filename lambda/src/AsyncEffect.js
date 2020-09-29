@@ -83,39 +83,22 @@ import {isFunction} from "./conditional";
  * (result => log(response.data))
  * ('/my/ajax/url');
  */
-export class AsyncEffect {
-  constructor(fn) {
-    this.trigger = nary(reject => resolve => value => {
-      try {
-        const result = fn(reject, resolve, value);
-        return isFunction(result) ? result(resolve)(value) : result;
-      } catch(error) {
-        reject(error);
-      }
-    })
-  }
+export const AsyncEffect = {
+  of: trigger => getAsyncEffect(nary(reject => resolve => value => {
+    try {
+      const result = trigger(reject, resolve, value);
+      return isFunction(result) ? result(resolve)(value) : result;
+    } catch(error) {
+      reject(error);
+    }
+  }))
+};
 
-  inspect() {
-    return `AsyncEffect(${deepInspect(this.trigger)})`;
-  }
-
-  static of(fn) {
-    return new AsyncEffect(fn);
-  }
-
-  promise(value) {
-    return new Promise((resolve, reject) => this.trigger(reject)(resolve)(value));
-  }
-
-  map(fn) {
-    return new AsyncEffect(reject => resolve => value => this.trigger(reject)(a => resolve(fn(a)))(value));
-  }
-
-  flatMap(fn) {
-    return new AsyncEffect(reject => resolve => value => this.trigger(reject)(x => fn(x).trigger(reject)(resolve)(value))(value));
-  }
-
-  ap(f) {
-    return this.flatMap(fn => f.map(fn));
-  }
-}
+const getAsyncEffect = trigger => ({
+  trigger: trigger,
+  inspect: () => `AsyncEffect(${deepInspect(trigger)})`,
+  promise: value => new Promise((resolve, reject) => trigger(reject)(resolve)(value)),
+  map: fn => getAsyncEffect(nary(reject => resolve => value => trigger(reject)(a => resolve(fn(a)))(value))),
+  flatMap: fn => getAsyncEffect(nary(reject => resolve => value => trigger(reject)(x => fn(x).trigger(reject)(resolve)(value))(value))),
+  ap: f => getAsyncEffect(trigger).flatMap(fn => f.map(fn))
+});

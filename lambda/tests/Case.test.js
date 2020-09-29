@@ -1,9 +1,5 @@
 import * as λ from '../src';
 
-test('Case.of() outputs instance of Case.', () => {
-  expect(λ.Case.of() instanceof λ.Case).toBe(true);
-});
-
 test('Case.of([]).inspect() outputs string Case(a -> b).', () => {
   expect(λ.Case.of([['_', '7turtle']]).inspect().includes('Case(function')).toBe(true);
 });

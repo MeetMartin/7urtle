@@ -1,9 +1,5 @@
 import * as λ from '../src';
 
-test('Either.of() outputs instance of Either.', () => {
-  expect(λ.Either.of(3) instanceof λ.Either).toBe(true);
-});
-
 test('Either.of(a) outputs instance of Success holding its input value.', () => {
   expect(λ.Either.of(3).inspect()).toBe('Success(3)');
 });
