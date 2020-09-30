@@ -5,7 +5,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'lambda.min.js',
-    library: 'lambda',
+    library: 'L',
     libraryTarget: 'umd',
     globalObject: 'this'
   },
