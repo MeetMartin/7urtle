@@ -1,9 +1,3 @@
 .idea
-.sonarlint
 .vscode
 .DS_Store
-**/coverage/
-/documenter/node_modules/
-/lambda/node_modules/
-/logger/node_modules/
-/server/node_modules/
