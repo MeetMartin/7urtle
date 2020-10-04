@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://www.7urtle.com/sitemap.xml

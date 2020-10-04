@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>http://www.7urtle.com/</loc>
+    </url>
+    <url>
+        <loc>http://www.7urtle.com/get-started-with-7urtle-lambda</loc>
+    </url>
+    <url>
+        <loc>http://www.7urtle.com/learn-functional-programming-in-javascript</loc>
+    </url>
+    <url>
+        <loc>http://www.7urtle.com/documentation-7urtle-lambda</loc>
+    </url>
+    <url>
+        <loc>http://www.7urtle.com/about-7urtle-lambda</loc>
+    </url>
+    <url>
+        <loc>http://www.7urtle.com/javascript-functional-programming-basics</loc>
+    </url>
+    <url>
+        <loc>http://www.7urtle.com/javascript-functional-programming-advantages</loc>
+    </url>
+    <url>
+        <loc>http://www.7urtle.com/javascript-applicative-functor-monads</loc>
+    </url>
+    <url>
+        <loc>http://www.7urtle.com/testing-in-javascript-with-functional-programming</loc>
+    </url>
+</urlset>
